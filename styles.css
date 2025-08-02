@@ -42,3 +42,33 @@ footer {
 	padding: 1rem;
 	margin-top: 2rem;
 }
+
+.icon {
+  width: auto;
+  height: 40px;
+  margin-right: 8px;
+  vertical-align: middle;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.cv-item ul {
+  list-style: none;
+}
+
+.cv-item ul li {
+  display: flex;
+  padding: 10px 0;
+  border-bottom: 1px solid #ccc;
+  align-items: flex-start;
+  gap: 10px;
+  align-items: center;
+}
+
+.cv-item ul li:last-child {
+  border-bottom: none;
+}
+
+.cv-text {
+  flex: 1;
+}
