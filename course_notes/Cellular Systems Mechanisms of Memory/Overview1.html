@@ -1,0 +1,489 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Memory Mechanisms Synthesis</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,650&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one reading column; wide exhibits (maps, tables) scroll inside their own frames. Color encodes memory system: implicit / explicit / shared mechanism. */
+:root{
+  --bg:#f5f7f6; --surface:#ffffff; --fg:#18201d; --muted:#56635e; --line:#c9d3cf; --edge:#4c5a55;
+  --imp:#2b7a66; --imp-soft:#e1f0eb;
+  --exp:#3a5ea6; --exp-soft:#e4eaf7;
+  --mech:#a66a1f; --mech-soft:#f6ecdc;
+  --display:"Source Serif 4", Georgia, "Times New Roman", serif;
+  --body:"IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono:"IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#111614; --surface:#18201d; --fg:#e3e9e6; --muted:#9aa9a3; --line:#2f3b37; --edge:#9fb0aa;
+  --imp:#5fc1a5; --imp-soft:#173029; --exp:#8fa9ea; --exp-soft:#1b2540; --mech:#e2ab5f; --mech-soft:#33280f; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#111614; --surface:#18201d; --fg:#e3e9e6; --muted:#9aa9a3; --line:#2f3b37; --edge:#9fb0aa;
+  --imp:#5fc1a5; --imp-soft:#173029; --exp:#8fa9ea; --exp-soft:#1b2540; --mech:#e2ab5f; --mech-soft:#33280f; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15.5px;line-height:1.55;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:28px 64px}
+main{max-width:1020px;margin:0 auto;display:flex;flex-direction:column;gap:56px}
+header{display:flex;flex-direction:column;gap:10px;max-width:68ch}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+h1{font-family:var(--display);font-weight:650;font-size:clamp(28px,4.4vw,40px);line-height:1.12;margin:0;text-wrap:balance}
+h2{font-family:var(--display);font-weight:650;font-size:26px;line-height:1.2;margin:0;text-wrap:balance;display:flex;gap:.55em;align-items:baseline}
+h2 .n{font-family:var(--mono);font-size:14px;font-weight:500;color:var(--muted)}
+h3{font-family:var(--body);font-weight:600;font-size:17px;margin:0;text-wrap:balance}
+p{margin:0;max-width:68ch}
+section{display:flex;flex-direction:column;gap:22px}
+.block{display:flex;flex-direction:column;gap:12px;min-width:0}
+.lede{color:var(--muted)}
+.caption{font-size:14.5px;color:var(--muted);max-width:72ch}
+.caption b{color:var(--fg);font-weight:600}
+.frame{overflow-x:auto;border:1px solid var(--line);background:var(--surface);border-radius:6px}
+.frame svg{display:block;min-width:820px;width:100%;height:auto}
+.legend{display:flex;flex-wrap:wrap;gap:8px 20px;font-size:13px;color:var(--muted)}
+.legend span{display:inline-flex;gap:7px;align-items:center}
+.sw{width:14px;height:14px;border-radius:3px;border:1.5px solid}
+.sw.i{background:var(--imp-soft);border-color:var(--imp)}.sw.e{background:var(--exp-soft);border-color:var(--exp)}.sw.m{background:var(--mech-soft);border-color:var(--mech)}
+/* template stages */
+.template{display:flex;flex-wrap:wrap;gap:8px;padding:0;margin:0;list-style:none;counter-reset:s}
+.template li{counter-increment:s;flex:1 1 180px;min-width:0;background:var(--mech-soft);border:1px solid var(--line);border-radius:6px;padding:10px 12px;font-size:14px;line-height:1.4}
+.template li::before{content:"Stage " counter(s);display:block;font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--mech);margin-bottom:3px}
+/* tables */
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:6px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:760px;font-size:13.5px;line-height:1.42}
+th,td{text-align:left;vertical-align:top;padding:9px 11px;border-bottom:1px solid var(--line)}
+thead th{font-family:var(--mono);font-size:11.5px;font-weight:500;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);background:var(--bg);position:sticky;top:0}
+tbody th{font-weight:600;width:15%}
+tbody tr:last-child th,tbody tr:last-child td{border-bottom:none}
+td .up{color:var(--imp);font-weight:600}td .down{color:var(--exp);font-weight:600}
+.tag{display:inline-block;font-family:var(--mono);font-size:10.5px;letter-spacing:.04em;padding:1px 6px;border-radius:3px;margin-right:4px;vertical-align:1px}
+.tag.i{background:var(--imp-soft);color:var(--imp)}.tag.e{background:var(--exp-soft);color:var(--exp)}
+.take{font-size:14.5px;border-left:3px solid var(--mech);padding:2px 0 2px 12px;max-width:76ch}
+.take b{font-weight:600}
+.analogy{font-size:14px;background:var(--surface);border:1px dashed var(--line);border-radius:6px;padding:10px 14px;max-width:76ch}
+.analogy .lab{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--mech);margin-right:6px}
+.problem{font-family:var(--display);font-size:19px;line-height:1.35;max-width:62ch}
+.problem span{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:4px;font-family:var(--mono)}
+/* figure reference cards */
+.refs{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:14px}
+.ref{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:14px 16px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.ref .src{font-family:var(--mono);font-size:12px;color:var(--mech)}
+.ref .where{font-size:12.5px;color:var(--muted)}
+.ref ul{margin:0;padding-left:18px;font-size:13.5px;display:flex;flex-direction:column;gap:4px}
+.ref ul b{font-weight:600}
+ol.why{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:12px;max-width:74ch}
+ol.why li{padding-left:4px}
+/* svg */
+.nd{stroke-width:1.5}
+.nd.i{fill:var(--imp-soft);stroke:var(--imp)}.nd.e{fill:var(--exp-soft);stroke:var(--exp)}.nd.m{fill:var(--mech-soft);stroke:var(--mech)}.nd.q{fill:var(--surface);stroke:var(--fg)}
+.nt{fill:var(--fg);font-family:var(--body);font-size:13px;font-weight:600}
+.ns{fill:var(--muted);font-family:var(--body);font-size:11px}
+.nr{fill:var(--fg);font-family:var(--body);font-size:11.5px}
+.ed{stroke:var(--edge);stroke-width:1.4;fill:none}
+.lb{fill:var(--surface)}
+.lt{fill:var(--edge);font-family:var(--mono);font-size:10.5px}
+.ah{fill:var(--edge)}
+.grp{fill:none;stroke:var(--line);stroke-dasharray:4 4}
+</style>
+
+<main>
+<header>
+  <div class="eyebrow">Cellular &amp; systems mechanisms of memory · synthesis layer</div>
+  <h1>How the pieces connect</h1>
+  <p class="lede">Connections, comparisons and functional meaning across the five sources: Kandel ch. 42 (cerebellum), ch. 66 (implicit memory), ch. 67 (explicit memory), Hirano (cerebellar LTD), Purves ch. 25 (Aplysia). Mechanism details stay in the notes and the source figures.</p>
+</header>
+
+<!-- 1 OVERVIEW -->
+<section id="map">
+  <h2><span class="n">1</span>Overview map</h2>
+  <p class="caption"><b>The story:</b> every system in the material answers the same question with the same two-part answer: a synaptic change written only when two signals coincide, made lasting by a shared PKA–CREB switch; the systems differ in where they sit and what they store.</p>
+  <div class="frame">
+  <svg viewBox="0 0 1100 640" role="img" aria-label="Overview map of topics and their relationships">
+    <defs><marker id="a1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah" d="M0,0 L10,5 L0,10 z"/></marker></defs>
+    <!-- edges -->
+    <line class="ed" x1="550" y1="64" x2="568" y2="128" marker-end="url(#a1)"/>
+    <line class="ed" x1="250" y1="128" x2="468" y2="150" marker-end="url(#a1)"/>
+    <line class="ed" x1="250" y1="228" x2="468" y2="180" marker-end="url(#a1)"/>
+    <line class="ed" x1="250" y1="328" x2="468" y2="208" marker-end="url(#a1)"/>
+    <line class="ed" x1="250" y1="428" x2="468" y2="232" marker-end="url(#a1)"/>
+    <line class="ed" x1="250" y1="528" x2="468" y2="420" marker-end="url(#a1)"/>
+    <line class="ed" x1="870" y1="255" x2="672" y2="215" marker-end="url(#a1)"/>
+    <line class="ed" x1="870" y1="285" x2="672" y2="370" marker-end="url(#a1)"/>
+    <line class="ed" x1="975" y1="156" x2="975" y2="238" marker-end="url(#a1)"/>
+    <line class="ed" x1="975" y1="296" x2="975" y2="398" marker-end="url(#a1)"/>
+    <line class="ed" x1="570" y1="240" x2="570" y2="338" marker-end="url(#a1)"/>
+    <line class="ed" x1="570" y1="440" x2="570" y2="558" marker-end="url(#a1)"/>
+    <!-- edge labels -->
+    <rect class="lb" x="503" y="88" width="112" height="17" rx="3"/><text class="lt" x="559" y="100" text-anchor="middle">answered first by</text>
+    <rect class="lb" x="308" y="130" width="104" height="17" rx="3"/><text class="lt" x="360" y="142" text-anchor="middle">simplest case of</text>
+    <rect class="lb" x="288" y="187" width="144" height="31" rx="3"/><text class="lt" x="360" y="199" text-anchor="middle">same cyclase detector;</text><text class="lt" x="360" y="212" text-anchor="middle">dopamine as US</text>
+    <rect class="lb" x="288" y="252" width="144" height="31" rx="3"/><text class="lt" x="360" y="264" text-anchor="middle">NMDA-dependent LTP,</text><text class="lt" x="360" y="277" text-anchor="middle">as in hippocampus</text>
+    <rect class="lb" x="292" y="318" width="164" height="31" rx="3"/><text class="lt" x="374" y="330" text-anchor="middle">same principle, opposite</text><text class="lt" x="374" y="343" text-anchor="middle">sign: CF error → LTD</text>
+    <rect class="lb" x="304" y="458" width="120" height="31" rx="3"/><text class="lt" x="364" y="470" text-anchor="middle">habit persistence</text><text class="lt" x="364" y="483" text-anchor="middle">needs CREB</text>
+    <rect class="lb" x="695" y="226" width="152" height="17" rx="3"/><text class="lt" x="771" y="238" text-anchor="middle">NMDA receptor = detector</text>
+    <rect class="lb" x="718" y="320" width="108" height="17" rx="3"/><text class="lt" x="772" y="332" text-anchor="middle">late LTP runs on</text>
+    <rect class="lb" x="886" y="181" width="178" height="31" rx="3"/><text class="lt" x="975" y="193" text-anchor="middle">contrast: holds by firing,</text><text class="lt" x="975" y="206" text-anchor="middle">not by synaptic change</text>
+    <rect class="lb" x="912" y="332" width="126" height="31" rx="3"/><text class="lt" x="975" y="344" text-anchor="middle">late LTP keeps</text><text class="lt" x="975" y="357" text-anchor="middle">place fields stable</text>
+    <rect class="lb" x="512" y="274" width="116" height="31" rx="3"/><text class="lt" x="570" y="286" text-anchor="middle">repeated, spaced</text><text class="lt" x="570" y="299" text-anchor="middle">training recruits</text>
+    <rect class="lb" x="508" y="484" width="124" height="31" rx="3"/><text class="lt" x="570" y="496" text-anchor="middle">growth and pruning</text><text class="lt" x="570" y="509" text-anchor="middle">scale up to</text>
+    <!-- question -->
+    <rect class="nd q" x="250" y="10" width="600" height="54" rx="6"/>
+    <text class="nt" x="550" y="32" text-anchor="middle">Central question</text>
+    <text class="nr" x="550" y="51" text-anchor="middle">How does experience change synapses so that behavior changes, and how does the change last?</text>
+    <!-- left: implicit -->
+    <rect class="nd i" x="20" y="100" width="230" height="56" rx="6"/><text class="nt" x="32" y="123">Aplysia gill-withdrawal reflex</text><text class="ns" x="32" y="142">nonassociative + associative learning</text>
+    <rect class="nd i" x="20" y="200" width="230" height="56" rx="6"/><text class="nt" x="32" y="223">Drosophila olfactory learning</text><text class="ns" x="32" y="242">dunce, rutabaga, CREB mutants</text>
+    <rect class="nd i" x="20" y="300" width="230" height="56" rx="6"/><text class="nt" x="32" y="323">Amygdala: learned fear</text><text class="ns" x="32" y="342">tone + shock meet in lateral nucleus</text>
+    <rect class="nd i" x="20" y="400" width="230" height="56" rx="6"/><text class="nt" x="32" y="423">Cerebellum: motor learning</text><text class="ns" x="32" y="442">climbing-fiber error → PF LTD</text>
+    <rect class="nd i" x="20" y="500" width="230" height="56" rx="6"/><text class="nt" x="32" y="523">Striatum: habits</text><text class="ns" x="32" y="542">win-stay; corticostriatal LTP</text>
+    <!-- center: mechanism -->
+    <rect class="nd m" x="470" y="130" width="200" height="110" rx="6"/>
+    <text class="nt" x="570" y="152" text-anchor="middle">What is written?</text>
+    <text class="nr" x="570" y="174" text-anchor="middle">A change in synaptic strength,</text>
+    <text class="nr" x="570" y="191" text-anchor="middle">made only when two signals</text>
+    <text class="nr" x="570" y="208" text-anchor="middle">coincide at one molecule</text>
+    <text class="ns" x="570" y="226" text-anchor="middle">cyclase · NMDA receptor · PKC</text>
+    <rect class="nd m" x="470" y="340" width="200" height="100" rx="6"/>
+    <text class="nt" x="570" y="362" text-anchor="middle">How does it last?</text>
+    <text class="nr" x="570" y="384" text-anchor="middle">Repetition → PKA → CREB</text>
+    <text class="nr" x="570" y="401" text-anchor="middle">→ genes → growth or pruning,</text>
+    <text class="nr" x="570" y="418" text-anchor="middle">kept by self-sustaining molecules</text>
+    <rect class="nd m" x="420" y="560" width="300" height="56" rx="6"/>
+    <text class="nt" x="570" y="582" text-anchor="middle">What does it add up to?</text>
+    <text class="nr" x="570" y="601" text-anchor="middle">Experience-shaped cortical maps → individuality</text>
+    <!-- right: explicit -->
+    <rect class="nd e" x="870" y="100" width="210" height="56" rx="6"/><text class="nt" x="882" y="123">Prefrontal cortex</text><text class="ns" x="882" y="142">working memory, persistent firing</text>
+    <rect class="nd e" x="870" y="240" width="210" height="56" rx="6"/><text class="nt" x="882" y="263">Hippocampal LTP / LTD</text><text class="ns" x="882" y="282">Schaffer, mossy fiber; Hebb</text>
+    <rect class="nd e" x="870" y="400" width="210" height="56" rx="6"/><text class="nt" x="882" y="423">Hippocampal map</text><text class="ns" x="882" y="442">place cells; separation, completion</text>
+  </svg>
+  </div>
+  <div class="legend"><span><i class="sw i"></i>Implicit memory systems</span><span><i class="sw e"></i>Explicit memory systems</span><span><i class="sw m"></i>Shared answer to the central question</span></div>
+  <p class="caption">Where each system sits in the brain is already shown in Kandel ch. 66, Fig. 66-1 (taxonomy and structures).</p>
+</section>
+
+<!-- 2 RECURRING PRINCIPLES -->
+<section id="principles">
+  <h2><span class="n">2</span>Recurring principles</h2>
+
+  <div class="block">
+    <h3>A · Coincidence detection: one molecule needs two signals</h3>
+    <ol class="template">
+      <li>One signal marks <b>which input</b> was active.</li>
+      <li>A second signal reports <b>that it mattered</b> (US, error, postsynaptic firing).</li>
+      <li>A single molecule responds strongly only when both arrive together, in the right order.</li>
+      <li>The change is confined to the marked input.</li>
+    </ol>
+    <div class="tw"><table>
+      <thead><tr><th>Instance</th><th>Stage 1: “which input”</th><th>Stage 2: “it mattered”</th><th>Stage 3: detector</th><th>Stage 4: result</th><th>Key difference</th></tr></thead>
+      <tbody>
+        <tr><th><span class="tag i">imp</span>Aplysia conditioning</th><td>CS spike → Ca²⁺/calmodulin in sensory terminal</td><td>Tail shock → 5-HT → Gs</td><td>Adenylyl cyclase</td><td><span class="up">↑</span> extra cAMP → PKA → more release</td><td>Presynaptic; CS must precede US</td></tr>
+        <tr><th><span class="tag i">imp</span>Drosophila odor learning</th><td>Odor → Ca²⁺ in Kenyon cell</td><td>Shock → dopamine → Gs</td><td>rutabaga adenylyl cyclase</td><td><span class="up">↑</span> cAMP → avoid odor</td><td>Dopamine replaces 5-HT</td></tr>
+        <tr><th><span class="tag e">exp</span>Schaffer LTP</th><td>Presynaptic spike → glutamate bound to NMDA receptor</td><td>Postsynaptic depolarization expels Mg²⁺</td><td>NMDA receptor</td><td><span class="up">↑</span> Ca²⁺ → kinases → AMPA insertion</td><td>Postsynaptic; pre must fire before post</td></tr>
+        <tr><th><span class="tag i">imp</span>Amygdala fear</th><td>Tone pathway → glutamate</td><td>Shock-driven strong depolarization</td><td>NMDA receptor (+ L-type channels)</td><td><span class="up">↑</span> LTP of tone input</td><td>Mammalian version of Aplysia logic</td></tr>
+        <tr><th><span class="tag i">imp</span>Cerebellar LTD</th><td>Parallel fibers → mGluR1 → DAG, IP₃</td><td>Climbing fiber (error) → depolarization → Ca²⁺</td><td>PKC (and IP₃ receptor)</td><td><span class="down">↓</span> AMPA endocytosis</td><td>Same logic, opposite sign</td></tr>
+        <tr><th>Synaptic capture</th><td>Weak stimulus tags one synapse (local PKA)</td><td>Strong stimulus elsewhere → nuclear gene products</td><td>The tagged synapse</td><td><span class="up">↑</span> long-term change only where tagged</td><td>Same logic, slower timescale (hours)</td></tr>
+      </tbody>
+    </table></div>
+    <p class="take"><b>Takeaway:</b> association is always built into a protein that needs two inputs at once; systems differ only in which side holds the detector and whether the result strengthens or weakens.</p>
+    <p class="analogy"><span class="lab">Analogy</span>A logical AND gate. It breaks down because the biological detectors are graded and order-sensitive: a weak coincidence at the NMDA receptor gives LTD instead of “no output”, and reversing CS and US gives nothing.</p>
+  </div>
+
+  <div class="block">
+    <h3>B · The two-stage storage switch: strength first, structure later</h3>
+    <ol class="template">
+      <li>Single or weak training modifies <b>existing</b> proteins (short-term).</li>
+      <li>Repeated, spaced training keeps a kinase active long enough to reach the nucleus.</li>
+      <li>CREB-dependent transcription produces new proteins.</li>
+      <li>Synapse <b>number</b> changes, held by a self-sustaining molecule.</li>
+    </ol>
+    <div class="tw"><table>
+      <thead><tr><th>Instance</th><th>Stage 1: short-term</th><th>Stage 2: trigger</th><th>Stage 3: nucleus</th><th>Stage 4: structure / upkeep</th></tr></thead>
+      <tbody>
+        <tr><th>Aplysia sensitization</th><td>PKA closes K⁺ channels; PKC mobilizes vesicles</td><td>Spaced 5-HT → prolonged cAMP; PKA + MAPK enter nucleus</td><td>CREB-1 on, CREB-2 off; CBP opens chromatin</td><td>More terminals; persistent PKA; CPEB keeps local growth</td></tr>
+        <tr><th>Aplysia habituation</th><td>Less transmitter released</td><td>Repeated sessions</td><td>Not described in the sources</td><td>Fewer terminals (pruning)</td></tr>
+        <tr><th>Hippocampal LTP</th><td>Early LTP: CaMKII, PKC, AMPA insertion</td><td>Repeated tetani → Ca²⁺ → cyclase → PKA → MAPK</td><td>CREB-1 + CBP acetylation</td><td>New release sites and spines; PKMζ</td></tr>
+        <tr><th>Drosophila</th><td>PKA-dependent short-term memory</td><td>Repeated training</td><td>CREB activator</td><td>CPEB prion-like domain for long-term memory</td></tr>
+        <tr><th>Amygdala fear</th><td>NMDA-dependent LTP</td><td>PKA + MAPK</td><td>CREB; high-CREB neurons recruited</td><td>Persistent fear memory</td></tr>
+        <tr><th>Striatum habits</th><td>Corticostriatal LTP</td><td>Repetition</td><td>CREB</td><td>Persistent habit</td></tr>
+        <tr><th>Cerebellar LTD</th><td>Ca²⁺ + PKC → AMPA endocytosis</td><td>Same induction, followed by a late phase</td><td>mRNA and protein synthesis needed</td><td>Day-lasting late phase</td></tr>
+      </tbody>
+    </table></div>
+    <p class="take"><b>Takeaway:</b> short-term memory changes how strong existing synapses are; long-term memory changes how many synapses there are, and the same PKA–CREB gate, with an activator and a repressor, sets the threshold between the two.</p>
+  </div>
+
+  <div class="block">
+    <h3>C · Bidirectional plasticity: every learning synapse can go both ways</h3>
+    <ol class="template">
+      <li>One rule strengthens the synapse.</li>
+      <li>A different rule weakens the same synapse.</li>
+      <li>A single variable selects the direction.</li>
+    </ol>
+    <div class="tw"><table>
+      <thead><tr><th>Synapse</th><th>Stage 1: up</th><th>Stage 2: down</th><th>Stage 3: what decides</th><th>What the second direction buys</th></tr></thead>
+      <tbody>
+        <tr><th>Aplysia sensory → motor</th><td>Sensitization (heterosynaptic, 5-HT)</td><td>Habituation (homosynaptic, own use)</td><td>Modulator present vs. own repeated activity</td><td>Ignore the harmless, react to the dangerous</td></tr>
+        <tr><th>Schaffer CA3 → CA1</th><td>LTP: high frequency, pre before post</td><td>LTD: low frequency, post before pre</td><td>Size of postsynaptic Ca²⁺ (kinases vs. phosphatases)</td><td>No saturation; flexible relearning</td></tr>
+        <tr><th>Parallel fiber → Purkinje</th><td>LTP: parallel fibers alone</td><td>LTD: parallel fibers + climbing fiber</td><td>Whether the climbing-fiber error coincides</td><td>Error-free inputs can recover strength</td></tr>
+      </tbody>
+    </table></div>
+    <p class="take"><b>Takeaway:</b> a synapse that could only strengthen would saturate; each system pairs its strengthening rule with a weakening rule, and one variable (modulator, Ca²⁺ size, climbing-fiber timing) chooses between them.</p>
+  </div>
+
+  <div class="block">
+    <h3>D · Self-sustaining states: a memory must outlive its trigger</h3>
+    <ol class="template">
+      <li>A brief trigger.</li>
+      <li>A state that regenerates its own cause.</li>
+      <li>The state outlasts the trigger until it is blocked or reset.</li>
+    </ol>
+    <div class="tw"><table>
+      <thead><tr><th>Loop</th><th>Stage 1: trigger</th><th>Stage 2: what feeds back</th><th>Stage 3: what it bridges</th><th>Shown necessary by</th></tr></thead>
+      <tbody>
+        <tr><th>CAN channel loop (PFC, entorhinal)</th><td>Burst of spikes with ACh present</td><td>Ca²⁺ → CAN current → spikes → Ca²⁺</td><td>Seconds: working memory delay</td><td>Persists with synapses blocked</td></tr>
+        <tr><th>Reverberation / mutual inhibition</th><td>Brief excitatory input</td><td>Recurrent excitation, or disinhibition</td><td>Seconds</td><td>Goldfish eye-position neurons (mutual inhibition)</td></tr>
+        <tr><th>PKC–MAPK loop (cerebellar LTD)</th><td>PF + CF coincidence</td><td>PKC ↔ MAPK positive feedback</td><td>Keeps LTD induction going after the stimulus</td><td>MAPK and PKC both required</td></tr>
+        <tr><th>Persistent PKA</th><td>Repeated 5-HT</td><td>Regulatory subunits degraded → catalytic subunits free</td><td>About a day</td><td>Activity after cAMP falls</td></tr>
+        <tr><th>CaMKII</th><td>Brief Ca²⁺</td><td>Autophosphorylation → Ca²⁺-independent</td><td>Proposed molecular switch</td><td>Mimicking mutation shifts plasticity</td></tr>
+        <tr><th>PKMζ</th><td>Tetanus → local translation</td><td>No regulatory domain → always active</td><td>Late LTP, long-term spatial memory</td><td>Inhibitor erases established memory</td></tr>
+        <tr><th>CPEB (prion-like)</th><td>5-HT → local CPEB above threshold</td><td>Aggregates recruit soluble CPEB</td><td>Beyond protein turnover</td><td>Blocking CPEB ends late facilitation</td></tr>
+      </tbody>
+    </table></div>
+    <p class="take"><b>Takeaway:</b> each timescale of memory has its own loop: electrical loops hold seconds, kinase loops hold hours, and a prion-like protein holds a change longer than any single protein molecule survives.</p>
+  </div>
+
+  <div class="block">
+    <h3>E · A modulatory signal decides what is worth storing</h3>
+    <ol class="template">
+      <li>A significant event (danger, error, attention).</li>
+      <li>A diffuse modulatory input to the storing cells.</li>
+      <li>A second messenger, mostly cAMP–PKA, that gates plasticity or persistence.</li>
+    </ol>
+    <div class="tw"><table>
+      <thead><tr><th>Modulator</th><th>Stage 1: event</th><th>Stage 2: target</th><th>Stage 3: what it gates</th></tr></thead>
+      <tbody>
+        <tr><th>Serotonin</th><td>Tail shock</td><td>Aplysia sensory terminals</td><td>Sensitization, conditioning, long-term facilitation</td></tr>
+        <tr><th>Dopamine (fly)</th><td>Foot shock</td><td>Kenyon cells (dumb receptor → rutabaga cyclase)</td><td>Olfactory fear memory</td></tr>
+        <tr><th>Dopamine D1/D5</th><td>Attention to space</td><td>Hippocampus</td><td>Long-term stability of place fields</td></tr>
+        <tr><th>Dopamine D1</th><td>—</td><td>Prefrontal cortex</td><td>Working memory, best at intermediate level</td></tr>
+        <tr><th>Norepinephrine</th><td>—</td><td>Mossy fiber terminals (β-adrenergic)</td><td>Mossy fiber LTP</td></tr>
+        <tr><th>Acetylcholine</th><td>—</td><td>Entorhinal / prefrontal neurons (muscarinic)</td><td>Enables CAN channels for persistent firing</td></tr>
+        <tr><th>Climbing fiber</th><td>Movement error</td><td>Purkinje cells</td><td>LTD of co-active parallel fibers</td></tr>
+      </tbody>
+    </table></div>
+    <p class="take"><b>Takeaway:</b> storage is selective because plasticity waits for a “this matters” signal; attention-dependent place fields show the same gating that makes explicit memory require attention.</p>
+  </div>
+</section>
+
+<!-- 3 CONTRASTS -->
+<section id="contrasts">
+  <h2><span class="n">3</span>Contrast tables</h2>
+
+  <div class="block">
+    <h3>Same name, different thing</h3>
+    <p class="caption">Identical terms appear in different structures and mean unrelated elements.</p>
+    <div class="tw"><table>
+      <thead><tr><th>Term</th><th>In the cerebellum</th><th>In the hippocampus</th><th>Elsewhere</th></tr></thead>
+      <tbody>
+        <tr><th>Mossy fibers</th><td>Afferents from spinal cord, brainstem, pons → granule cells; many weak inputs, rate code</td><td>Axons of dentate granule cells → CA3; nonassociative presynaptic LTP</td><td>—</td></tr>
+        <tr><th>Granule cells</th><td>Input layer; axons form parallel fibers</td><td>Dentate gyrus; pattern separation; adult-born</td><td>Olfactory bulb: inhibitory, adult-born</td></tr>
+        <tr><th>Long-term depression</th><td>PF + CF coincidence → PKC</td><td>Low-frequency stimulation → small Ca²⁺ → phosphatases</td><td>—</td></tr>
+        <tr><th>Facilitation vs. potentiation</th><td>—</td><td>LTP: homosynaptic, tetanus-induced</td><td>Aplysia facilitation: heterosynaptic, 5-HT-induced, presynaptic</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <div class="block">
+    <h3>Hippocampal LTD vs. cerebellar LTD</h3>
+    <p class="caption">Both remove AMPA receptors, but they are triggered by opposite logics.</p>
+    <div class="tw"><table>
+      <thead><tr><th>Dimension</th><th>Hippocampal (Schaffer) LTD</th><th>Cerebellar (PF → Purkinje) LTD</th></tr></thead>
+      <tbody>
+        <tr><th>Induction</th><td>Prolonged low-frequency stimulation, or post before pre</td><td>Parallel fibers paired with climbing fiber</td></tr>
+        <tr><th>Ca²⁺ source</th><td>NMDA receptors, weakly unblocked</td><td>Voltage-gated channels (CF) + IP₃ release (PF)</td></tr>
+        <tr><th>Ca²⁺ meaning</th><td>Small rise = depress; large rise = potentiate</td><td>Large rise + DAG = depress</td></tr>
+        <tr><th>Key enzyme</th><td>Calcineurin → phosphatases</td><td>PKC</td></tr>
+        <tr><th>Expression</th><td>AMPA endocytosis (GluA1 dephosphorylated, GluA2 phosphorylated)</td><td>AMPA endocytosis (GluA2 phosphorylated → GRIP to PICK1)</td></tr>
+        <tr><th>Rule</th><td>Anti-Hebbian: inputs that don’t help fire the cell weaken</td><td>Error-driven: inputs active during an error weaken</td></tr>
+        <tr><th>Function</th><td>Prevent saturation; behavioral flexibility</td><td>Correct movement; tune internal models</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <div class="block">
+    <h3>Which LTP?</h3>
+    <p class="caption">“LTP” names a family; the decisive question is where it is induced and whether it needs a second signal.</p>
+    <div class="tw"><table>
+      <thead><tr><th>Form</th><th>Induced</th><th>NMDA needed</th><th>Associative</th><th>Expressed as</th><th>Parallel elsewhere</th></tr></thead>
+      <tbody>
+        <tr><th>Mossy fiber → CA3</th><td>Presynaptically</td><td>No</td><td>No</td><td>More release (PKA)</td><td>Aplysia sensitization; NE as modulator</td></tr>
+        <tr><th>Schaffer → CA1</th><td>Postsynaptically</td><td>Yes</td><td>Yes (Hebbian)</td><td>AMPA insertion; more release via retrograde signal</td><td>Aplysia conditioning, postsynaptic part</td></tr>
+        <tr><th>Thalamus/cortex → lateral amygdala</th><td>Postsynaptically</td><td>Yes, with L-type channels</td><td>Yes (tone + shock)</td><td>AMPA insertion + more release</td><td>Schaffer LTP</td></tr>
+        <tr><th>Parallel fiber → Purkinje</th><td>Pre (higher-frequency PF) or post (lower-frequency PF)</td><td>—</td><td>No: PF alone, without CF</td><td>Pre: more release; post: larger response</td><td>Counterpart to cerebellar LTD</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <div class="block">
+    <h3>Induction vs. expression vs. maintenance</h3>
+    <p class="caption">Three questions about one change; blocking each at different times reveals which one a molecule serves.</p>
+    <div class="tw"><table>
+      <thead><tr><th>Phase</th><th>Question it answers</th><th>Main players (Schaffer LTP)</th><th>Block before learning</th><th>Block after learning</th></tr></thead>
+      <tbody>
+        <tr><th>Induction</th><td>Should this synapse change?</td><td>NMDA receptor, Ca²⁺, CaMKII, PKC</td><td>No learning (water maze)</td><td>Recall intact</td></tr>
+        <tr><th>Expression</th><td>What is physically different?</td><td>AMPA insertion; more release; later new release sites</td><td>—</td><td>—</td></tr>
+        <tr><th>Maintenance</th><td>How does the change stay?</td><td>PKMζ; local protein synthesis (CPEB in Aplysia)</td><td>—</td><td>PKMζ inhibitor erases LTP and memory</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <div class="block">
+    <h3>Three ways to hold information</h3>
+    <div class="tw"><table>
+      <thead><tr><th>Form</th><th>Medium</th><th>Lost when</th><th>Needs new proteins</th><th>Example site</th></tr></thead>
+      <tbody>
+        <tr><th>Working memory</th><td>Ongoing firing (intrinsic + network loops)</td><td>Firing stops</td><td>No</td><td>Prefrontal cortex</td></tr>
+        <tr><th>Short-term memory</th><td>Covalent modification of existing synaptic proteins</td><td>Modifications reversed</td><td>No</td><td>Early LTP; short-term sensitization</td></tr>
+        <tr><th>Long-term memory</th><td>Gene expression → new or lost synapses</td><td>Maintenance blocked; pruning</td><td>Yes</td><td>Late LTP; long-term sensitization</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</section>
+
+<!-- 4 FUNCTIONAL DIAGRAMS -->
+<section id="functional">
+  <h2><span class="n">4</span>Functional diagrams</h2>
+
+  <div class="block">
+    <h3>The cerebellum as comparator and teacher</h3>
+    <p class="problem"><span>Problem solved</span>A fast movement ends before sensory feedback can correct it, so the correction must be predicted in advance, and the prediction must be kept accurate.</p>
+    <div class="frame">
+    <svg viewBox="0 0 900 470" role="img" aria-label="Cerebellar loop by function">
+      <defs><marker id="a2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah" d="M0,0 L10,5 L0,10 z"/></marker></defs>
+      <!-- edges -->
+      <path class="ed" d="M130,198 L130,65 L298,65" marker-end="url(#a2)"/>
+      <line class="ed" x1="560" y1="62" x2="638" y2="62" marker-end="url(#a2)"/>
+      <line class="ed" x1="440" y1="110" x2="440" y2="198" marker-end="url(#a2)"/>
+      <line class="ed" x1="760" y1="94" x2="760" y2="198" marker-end="url(#a2)"/>
+      <line class="ed" x1="640" y1="232" x2="552" y2="232" marker-end="url(#a2)"/>
+      <line class="ed" x1="330" y1="232" x2="242" y2="232" marker-end="url(#a2)"/>
+      <line class="ed" x1="760" y1="380" x2="760" y2="266" marker-end="url(#a2)"/>
+      <path class="ed" d="M480,264 L480,404 L638,404" marker-end="url(#a2)"/>
+      <path class="ed" d="M100,264 L100,436 L638,436" marker-end="url(#a2)"/>
+      <!-- labels -->
+      <rect class="lb" x="152" y="49" width="128" height="31" rx="3"/><text class="lt" x="216" y="61" text-anchor="middle">efference copy +</text><text class="lt" x="216" y="74" text-anchor="middle">sensed movement</text>
+      <rect class="lb" x="573" y="38" width="54" height="17" rx="3"/><text class="lt" x="600" y="50" text-anchor="middle">excite</text>
+      <rect class="lb" x="372" y="146" width="136" height="17" rx="3"/><text class="lt" x="440" y="158" text-anchor="middle">collaterals excite</text>
+      <rect class="lb" x="700" y="131" width="120" height="31" rx="3"/><text class="lt" x="760" y="143" text-anchor="middle">weak, plastic</text><text class="lt" x="760" y="156" text-anchor="middle">excitation</text>
+      <rect class="lb" x="563" y="207" width="66" height="17" rx="3"/><text class="lt" x="596" y="219" text-anchor="middle">inhibits</text>
+      <rect class="lb" x="243" y="240" width="86" height="31" rx="3"/><text class="lt" x="286" y="252" text-anchor="middle">feed-forward</text><text class="lt" x="286" y="265" text-anchor="middle">correction</text>
+      <rect class="lb" x="690" y="307" width="140" height="31" rx="3"/><text class="lt" x="760" y="319" text-anchor="middle">error → LTD at</text><text class="lt" x="760" y="332" text-anchor="middle">active PF synapses</text>
+      <rect class="lb" x="490" y="372" width="140" height="31" rx="3"/><text class="lt" x="560" y="384" text-anchor="middle">inhibits: tunes its</text><text class="lt" x="560" y="397" text-anchor="middle">own teaching signal</text>
+      <rect class="lb" x="210" y="420" width="160" height="31" rx="3"/><text class="lt" x="290" y="432" text-anchor="middle">movement error</text><text class="lt" x="290" y="445" text-anchor="middle">(e.g., retinal slip)</text>
+      <!-- nodes -->
+      <rect class="nd q" x="20" y="200" width="220" height="64" rx="6"/><text class="nt" x="32" y="224">Descending motor systems</text><text class="nr" x="32" y="246">carry out the movement</text>
+      <rect class="nd m" x="300" y="20" width="260" height="90" rx="6"/><text class="nt" x="312" y="42">Mossy-fiber inputs</text><text class="nr" x="312" y="62">intended: efference copy</text><text class="nr" x="312" y="79">actual: sensory report</text><text class="ns" x="312" y="98">what was ordered vs. what happened</text>
+      <rect class="nd m" x="640" y="30" width="240" height="64" rx="6"/><text class="nt" x="652" y="54">Granule cells → parallel fibers</text><text class="nr" x="652" y="76">spread each context over many cells</text>
+      <rect class="nd m" x="640" y="200" width="240" height="64" rx="6"/><text class="nt" x="652" y="224">Purkinje cell</text><text class="nr" x="652" y="246">learned prediction, as inhibition</text>
+      <rect class="nd m" x="330" y="200" width="220" height="64" rx="6"/><text class="nt" x="342" y="224">Deep cerebellar nuclei</text><text class="nr" x="342" y="246">excitation sculpted by inhibition</text>
+      <rect class="nd q" x="640" y="380" width="240" height="64" rx="6"/><text class="nt" x="652" y="404">Inferior olive → climbing fiber</text><text class="nr" x="652" y="426">reports errors, teaches</text>
+    </svg>
+    </div>
+    <p class="caption"><b>The story:</b> the cerebellum compares what was ordered with what happened, sends its correction ahead of the movement through the deep nuclei, and uses climbing-fiber errors to silence the parallel-fiber inputs that led to the mistake until the error signal falls silent. Wiring is in Kandel ch. 42, Fig. 42-6 and Hirano Fig. 2; this adds what each element contributes.</p>
+    <p class="analogy"><span class="lab">Analogy</span>A coach who watches each attempt and adjusts the next. It breaks down because the cerebellum also corrects within a movement through its predictions (the early antagonist burst), and it learns mainly by silencing inputs rather than adding instructions.</p>
+  </div>
+
+  <div class="block">
+    <h3>Source figures with role labels added</h3>
+    <p class="caption">These figures already show the structure; the lists add what each element is for.</p>
+    <div class="refs">
+      <div class="ref">
+        <div class="src">Kandel ch. 67, Fig. 67-2</div><div class="where">Notes §3 circuit, §5.3–5.4</div>
+        <ul>
+          <li><b>Entorhinal grid cells:</b> supply landmark-free coordinates</li>
+          <li><b>Dentate granule cells:</b> make similar inputs distinct (pattern separation)</li>
+          <li><b>CA3 recurrent synapses:</b> refill a whole pattern from part of it (completion)</li>
+          <li><b>CA1:</b> compares processed (trisynaptic) with direct input; output stage</li>
+          <li><b>Schaffer synapse:</b> associative storage site</li>
+        </ul>
+      </div>
+      <div class="ref">
+        <div class="src">Kandel ch. 67, Fig. 67-4</div><div class="where">Notes §3.2–3.3</div>
+        <ul>
+          <li><b>Glutamate on NMDA receptor:</b> “this input was active”</li>
+          <li><b>Mg²⁺ block:</b> “the cell is strongly depolarized”</li>
+          <li><b>Ca²⁺ influx:</b> write signal; its size sets LTP vs. LTD</li>
+          <li><b>AMPA receptors:</b> readout of stored strength</li>
+          <li><b>Retrograde messenger:</b> tells only active terminals</li>
+        </ul>
+      </div>
+      <div class="ref">
+        <div class="src">Kandel ch. 66, Figs. 66-6, 66-7; ch. 67, Fig. 67-9</div><div class="where">Notes §4.1–4.4</div>
+        <ul>
+          <li><b>CREB-2:</b> brake that sets the threshold for long-term storage</li>
+          <li><b>CBP:</b> opens chromatin so genes can be read</li>
+          <li><b>Ubiquitin hydrolase:</b> makes PKA persistent (bridge to growth)</li>
+          <li><b>C/EBP:</b> starts the growth program</li>
+          <li><b>PKMζ:</b> keeps the late change in place</li>
+        </ul>
+      </div>
+      <div class="ref">
+        <div class="src">Kandel ch. 66, Figs. 66-9, 66-10, 66-11</div><div class="where">Notes §4.5–4.6</div>
+        <ul>
+          <li><b>Five pulses at one branch:</b> orders gene products for the whole cell</li>
+          <li><b>One pulse (PKA):</b> permission to use the products here</li>
+          <li><b>PI3 kinase, local translation:</b> permission to keep them past a day</li>
+          <li><b>CPEB aggregate:</b> local, self-renewing memory of that permission</li>
+        </ul>
+        <p class="analogy" style="margin-top:4px"><span class="lab">Analogy</span>Parcels sent to every address but accepted only where someone signed. It breaks down because the signature fades unless local manufacturing (translation) starts, and accepted parcels then rebuild the house.</p>
+      </div>
+      <div class="ref">
+        <div class="src">Kandel ch. 42, Figs. 42-3, 42-6</div><div class="where">Notes §7.2–7.3</div>
+        <ul>
+          <li><b>Vestibulocerebellum:</b> corrects balance and eye reflexes when they fail</li>
+          <li><b>Spinocerebellum:</b> adjusts movements while they run</li>
+          <li><b>Cerebrocerebellum:</b> plans and times movements before they start</li>
+          <li><b>Golgi loop:</b> keeps the input code sparse</li>
+          <li><b>Olive loop:</b> each region regulates its own teaching signal</li>
+          <li><b>Basket cells:</b> sharpen an active parallel-fiber beam</li>
+        </ul>
+      </div>
+      <div class="ref">
+        <div class="src">Hirano, Fig. 4</div><div class="where">Notes §7.6</div>
+        <ul>
+          <li><b>Parallel-fiber arm (mGluR1 → DAG, IP₃):</b> “which synapses were active”</li>
+          <li><b>Climbing-fiber arm (Ca²⁺):</b> “an error happened”</li>
+          <li><b>PKC:</b> the AND gate where both meet</li>
+          <li><b>AMPA endocytosis:</b> the stored correction</li>
+        </ul>
+      </div>
+      <div class="ref">
+        <div class="src">Kandel ch. 42, Fig. 42-10</div><div class="where">Notes §7.4</div>
+        <ul>
+          <li><b>Control trace:</b> antagonist burst predicted, before feedback</li>
+          <li><b>Cooled trace:</b> antagonist waits for feedback → overshoot</li>
+          <li><b>Repeated late corrections:</b> the origin of intention tremor</li>
+        </ul>
+      </div>
+      <div class="ref">
+        <div class="src">Kandel ch. 66, Fig. 66-4 · Purves Fig. 25.2C</div><div class="where">Notes §2.2</div>
+        <ul>
+          <li><b>K⁺ channel closure:</b> widens the spike → more Ca²⁺ per spike</li>
+          <li><b>Vesicle mobilization (PKC):</b> more vesicles ready to go</li>
+          <li><b>Two pathways:</b> one raises Ca²⁺ entry, the other the supply it acts on</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 5 WHY QUESTIONS -->
+<section id="why">
+  <h2><span class="n">5</span>Why questions</h2>
+  <ol class="why">
+    <li>Why must the CS precede the US in Aplysia conditioning, and why must the presynaptic spike precede the postsynaptic spike for LTP? What property do the two detectors share that makes order matter?</li>
+    <li>Why does an NMDA receptor blocker given before training prevent spatial learning but not later recall, while a PKMζ inhibitor given after training erases the memory?</li>
+    <li>Why does the cerebellum need a low-rate climbing-fiber input when mossy fibers already carry detailed sensory information about the movement?</li>
+    <li>Why would a system that could only strengthen synapses eventually stop learning, and how do the hippocampus and the cerebellum each solve this with different weakening rules?</li>
+    <li>Why can a single pulse of serotonin at one branch produce long-term facilitation when five pulses are given at another branch, and what does this say about where the specificity of long-term memory is stored?</li>
+  </ol>
+</section>
+</main>
+
+</body></html>

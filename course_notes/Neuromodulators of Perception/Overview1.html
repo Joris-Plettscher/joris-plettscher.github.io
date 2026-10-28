@@ -1,0 +1,584 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Symptoms to Synapses</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,600&family=Public+Sans:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one reading column; three level colours (clinical = eosin, function = ochre, mechanism = haematoxylin) borrowed from an H&E stain */
+:root{
+  --bg:#F6F5F9; --surface:#FFFFFF; --ink:#1D1A2B; --muted:#5D5970; --line:#D9D6E3;
+  --hema:#3B4596; --eosin:#B33A6B; --ochre:#8A6210;
+  --hema-soft:#E7E9F6; --eosin-soft:#F7E5ED; --ochre-soft:#F4EBD6;
+  --font-display:"Newsreader", Georgia, "Times New Roman", serif;
+  --font-body:"Public Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono:"IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#14131B; --surface:#1D1C27; --ink:#ECEAF3; --muted:#A8A4BA; --line:#353341;
+    --hema:#9AA4EE; --eosin:#EC89B1; --ochre:#E0B256;
+    --hema-soft:#252945; --eosin-soft:#3A2231; --ochre-soft:#382E17;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#14131B; --surface:#1D1C27; --ink:#ECEAF3; --muted:#A8A4BA; --line:#353341;
+  --hema:#9AA4EE; --eosin:#EC89B1; --ochre:#E0B256;
+  --hema-soft:#252945; --eosin-soft:#3A2231; --ochre-soft:#382E17;
+  color-scheme:dark;
+}
+body{background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:15px;line-height:1.55;}
+.wrap{max-width:1000px;margin:0 auto;padding-block:40px 80px;padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));}
+header{display:grid;gap:10px;margin-bottom:28px;}
+.eyebrow{font-family:var(--font-mono);font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);}
+h1{font-family:var(--font-display);font-weight:600;font-size:clamp(34px,5vw,50px);line-height:1.05;margin:0;text-wrap:balance;}
+h2{font-family:var(--font-display);font-weight:600;font-size:28px;line-height:1.15;margin:0;text-wrap:balance;display:flex;gap:12px;align-items:baseline;}
+h2 .n{font-family:var(--font-mono);font-size:14px;font-weight:500;color:var(--muted);}
+h3{font-family:var(--font-display);font-weight:600;font-size:21px;margin:0;text-wrap:balance;}
+p{margin:0;max-width:68ch;}
+section{display:grid;gap:18px;padding-block:34px;border-top:1px solid var(--line);}
+.block{display:grid;gap:12px;padding-block:14px;}
+.question{font-family:var(--font-display);font-size:21px;line-height:1.35;max-width:60ch;border-left:3px solid var(--eosin);padding-left:16px;}
+.lead{color:var(--muted);max-width:68ch;}
+figure{margin:0;display:grid;gap:10px;}
+.scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+.scroll svg{display:block;width:100%;height:auto;}
+.map svg{min-width:760px;}
+.dia svg{min-width:720px;}
+figcaption,.caption{font-family:var(--font-display);font-style:italic;font-size:17px;line-height:1.4;max-width:70ch;}
+.takeaway{font-size:14.5px;max-width:75ch;padding:10px 14px;background:var(--surface);border:1px solid var(--line);border-radius:6px;}
+.takeaway b{font-family:var(--font-mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:500;margin-right:6px;}
+.analogy{font-size:14px;color:var(--muted);max-width:75ch;}
+.analogy b{color:var(--ink);font-weight:600;}
+.template{display:flex;flex-wrap:wrap;gap:8px;list-style:none;margin:0;padding:0;counter-reset:st;}
+.template li{counter-increment:st;flex:1 1 180px;min-width:0;background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:9px 12px;font-size:13.5px;line-height:1.4;}
+.template li::before{content:"Stage " counter(st);display:block;font-family:var(--font-mono);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:3px;}
+table{border-collapse:collapse;width:100%;min-width:680px;font-size:13.5px;line-height:1.42;background:var(--surface);}
+th,td{text-align:left;vertical-align:top;padding:9px 11px;border-bottom:1px solid var(--line);}
+thead th{font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);background:var(--bg);border-bottom:1.5px solid var(--ink);}
+tbody th{font-weight:600;width:16%;}
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:6px;}
+.tw table{border:0;}
+tr:last-child th,tr:last-child td{border-bottom:0;}
+.lvl{display:inline-block;font-family:var(--font-mono);font-size:10px;letter-spacing:.05em;text-transform:uppercase;padding:1px 6px;border-radius:3px;margin-left:6px;vertical-align:1px;}
+.lvl.c{background:var(--eosin-soft);color:var(--eosin);}
+.lvl.f{background:var(--ochre-soft);color:var(--ochre);}
+.lvl.m{background:var(--hema-soft);color:var(--hema);}
+.dash{color:var(--muted);}
+.problem{font-size:15px;font-weight:600;max-width:72ch;}
+.problem span{font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-right:8px;}
+.note{font-size:13.5px;color:var(--muted);max-width:75ch;}
+.figref{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));}
+.fr{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:12px 14px;display:grid;gap:6px;align-content:start;min-width:0;}
+.fr h4{margin:0;font-size:14px;font-weight:600;}
+.fr .where{font-family:var(--font-mono);font-size:11px;color:var(--muted);}
+.fr ul{margin:0;padding-left:18px;font-size:13.5px;display:grid;gap:3px;}
+.matrix td{width:28%;}
+.pill{display:inline-block;font-size:12.5px;line-height:1.35;}
+.qs{margin:0;padding-left:22px;display:grid;gap:14px;max-width:75ch;}
+.qs li{font-size:15.5px;}
+.qs li::marker{font-family:var(--font-mono);color:var(--muted);}
+/* SVG classes */
+.svg-node{fill:var(--surface);stroke-width:1.6;}
+.svg-node.c{stroke:var(--eosin);} .svg-node.f{stroke:var(--ochre);} .svg-node.m{stroke:var(--hema);} .svg-node.n{stroke:var(--muted);}
+.t-name{font-family:var(--font-body);font-size:13.5px;font-weight:600;fill:var(--ink);}
+.t-role{font-family:var(--font-body);font-size:11.5px;font-style:italic;fill:var(--muted);}
+.t-edge{font-family:var(--font-body);font-size:11.5px;fill:var(--ink);paint-order:stroke;stroke:var(--bg);stroke-width:4px;stroke-linejoin:round;}
+.t-band{font-family:var(--font-mono);font-size:10.5px;letter-spacing:.06em;}
+.t-band.c{fill:var(--eosin);} .t-band.f{fill:var(--ochre);} .t-band.m{fill:var(--hema);}
+.e{stroke:var(--muted);stroke-width:1.5;fill:none;}
+.e.dashed{stroke-dasharray:5 4;}
+.ah{fill:var(--muted);}
+.band-rule{stroke:var(--line);stroke-width:1;}
+.membrane{fill:var(--hema-soft);}
+.mdot{fill:var(--eosin);}
+.divider{stroke:var(--muted);stroke-width:1;stroke-dasharray:3 4;}
+@media (max-width:520px){ h2{font-size:24px;} .question{font-size:18px;} }
+</style>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">Synthesis layer · Nadim (2014), Hengeveld MW et al., RDoC</div>
+  <h1>Symptoms to Synapses</h1>
+  <p class="lead">Connections, comparisons and functional meaning across the three sources. Details live in the study notes (cited as Notes §); mechanisms the sources already draw are referenced by figure.</p>
+</header>
+
+<!-- 1 OVERVIEW -->
+<section>
+  <h2><span class="n">1</span>Overview map</h2>
+  <p class="question">How do observable mental symptoms relate to what produces them, and at which level should a disorder be described: as a syndrome, as a deviating function, or as a reconfigured circuit?</p>
+  <figure class="map">
+    <div class="scroll">
+    <svg viewBox="0 0 960 590" role="img" aria-label="Map of three levels: clinical (symptoms, classification, diagnosis), function (mental triad, RDoC constructs) and mechanism (neuromodulation, circuit output), with labelled relationships between them.">
+      <defs>
+        <marker id="ah1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah" d="M0,0 L10,5 L0,10 z"/></marker>
+      </defs>
+      <!-- bands -->
+      <line class="band-rule" x1="10" y1="56" x2="950" y2="56"/>
+      <text class="t-band c" x="16" y="72">CLINICAL · what is wrong, and why in this patient?</text>
+      <line class="band-rule" x1="10" y1="256" x2="950" y2="256"/>
+      <text class="t-band f" x="16" y="272">FUNCTION · which function deviates?</text>
+      <line class="band-rule" x1="10" y1="446" x2="950" y2="446"/>
+      <text class="t-band m" x="16" y="462">MECHANISM · how is function produced and changed?</text>
+
+      <!-- nodes -->
+      <rect class="svg-node c" x="130" y="86" width="200" height="80" rx="6"/>
+      <text class="t-name" x="230" y="117" text-anchor="middle">Symptoms &amp; signs</text>
+      <text class="t-role" x="230" y="137" text-anchor="middle">history + mental state exam</text>
+
+      <rect class="svg-node c" x="460" y="86" width="220" height="80" rx="6"/>
+      <text class="t-name" x="570" y="117" text-anchor="middle">Classification (DSM)</text>
+      <text class="t-role" x="570" y="137" text-anchor="middle">categorical syndrome label</text>
+
+      <rect class="svg-node c" x="760" y="86" width="190" height="80" rx="6"/>
+      <text class="t-name" x="855" y="112" text-anchor="middle">Diagnosis</text>
+      <text class="t-role" x="855" y="132" text-anchor="middle">causes, severity, meaning</text>
+      <text class="t-role" x="855" y="148" text-anchor="middle">for one patient</text>
+
+      <rect class="svg-node f" x="130" y="286" width="220" height="80" rx="6"/>
+      <text class="t-name" x="240" y="317" text-anchor="middle">Mental functions</text>
+      <text class="t-role" x="240" y="337" text-anchor="middle">cognitive · affective · conative</text>
+
+      <rect class="svg-node f" x="560" y="286" width="240" height="80" rx="6"/>
+      <text class="t-name" x="680" y="312" text-anchor="middle">RDoC constructs</text>
+      <text class="t-role" x="680" y="332" text-anchor="middle">symptoms = deviations of</text>
+      <text class="t-role" x="680" y="348" text-anchor="middle">normal function</text>
+
+      <rect class="svg-node m" x="130" y="476" width="230" height="80" rx="6"/>
+      <text class="t-name" x="245" y="507" text-anchor="middle">Neuromodulation</text>
+      <text class="t-role" x="245" y="527" text-anchor="middle">tunes ion channels &amp; synapses</text>
+
+      <rect class="svg-node m" x="560" y="476" width="240" height="80" rx="6"/>
+      <text class="t-name" x="680" y="507" text-anchor="middle">Circuit output</text>
+      <text class="t-role" x="680" y="527" text-anchor="middle">flexible activity → behaviour</text>
+
+      <!-- edges -->
+      <path class="e" d="M330 126 H455" marker-end="url(#ah1)"/>
+      <text class="t-edge" x="393" y="108" text-anchor="middle">grouped into</text>
+      <text class="t-edge" x="393" y="147" text-anchor="middle">syndromes</text>
+
+      <path class="e" d="M680 126 H755" marker-end="url(#ah1)"/>
+      <text class="t-edge" x="718" y="108" text-anchor="middle">one input</text>
+      <text class="t-edge" x="718" y="147" text-anchor="middle">to</text>
+
+      <path class="e" d="M230 286 V171" marker-end="url(#ah1)"/>
+      <text class="t-edge" x="240" y="216">organises the</text>
+      <text class="t-edge" x="240" y="231">record of</text>
+
+      <path class="e dashed" d="M350 326 H556" marker-start="url(#ah1)" marker-end="url(#ah1)"/>
+      <text class="t-edge" x="453" y="306" text-anchor="middle">parallel: both describe</text>
+      <text class="t-edge" x="453" y="347" text-anchor="middle">functions, not disorders</text>
+
+      <path class="e" d="M600 286 V171" marker-end="url(#ah1)"/>
+      <text class="t-edge" x="610" y="196">critiques:</text>
+      <text class="t-edge" x="610" y="211">heterogeneity,</text>
+      <text class="t-edge" x="610" y="226">comorbidity,</text>
+      <text class="t-edge" x="610" y="241">arbitrary cut-offs</text>
+
+      <path class="e" d="M360 516 H555" marker-end="url(#ah1)"/>
+      <text class="t-edge" x="458" y="500" text-anchor="middle">reconfigures</text>
+      <text class="t-edge" x="458" y="536" text-anchor="middle">excitability · synapses</text>
+
+      <path class="e" d="M700 366 V471" marker-end="url(#ah1)"/>
+      <text class="t-edge" x="710" y="395">units of analysis</text>
+      <text class="t-edge" x="710" y="410">reach down to circuits</text>
+      <text class="t-edge" x="710" y="425">&amp; physiology</text>
+
+      <path class="e" d="M575 476 L304 371" marker-end="url(#ah1)"/>
+      <text class="t-edge" x="430" y="414" text-anchor="middle">ultimately produces</text>
+      <text class="t-edge" x="430" y="429" text-anchor="middle">(the unbridged gap)</text>
+    </svg>
+    </div>
+    <figcaption>The clinic names disorders from symptoms, RDoC re-describes the same symptoms as deviating functions, and neuromodulation explains how the circuits behind those functions are reconfigured; the link from circuit to behaviour is the gap all three sources point to.</figcaption>
+  </figure>
+</section>
+
+<!-- 2 RECURRING PRINCIPLES -->
+<section>
+  <h2><span class="n">2</span>Recurring principles</h2>
+
+  <div class="block">
+    <h3>A · Many-to-many mapping</h3>
+    <ol class="template">
+      <li>Several sources exist (modulators, causes, disorders)</li>
+      <li>One source spreads to many targets (divergence)</li>
+      <li>Many sources converge on one target (convergence)</li>
+      <li>The observable is ambiguous until the whole pattern is read</li>
+    </ol>
+    <div class="tw"><table>
+      <thead><tr><th>Instance</th><th>Divergence (one → many)</th><th>Convergence (many → one)</th><th>What is observed</th><th>How the ambiguity is resolved</th></tr></thead>
+      <tbody>
+        <tr><th>Modulators on one neuron <span class="lvl m">mech</span></th><td>One modulator acts on several channels, via several pathways, sometimes with opposite signs</td><td>Different modulators reach the same enzyme or channel</td><td>A change in excitability</td><td>Identify receptor, pathway and channel in that cell (Nadim (2014) Fig 2a)</td></tr>
+        <tr><th>Modulators across a circuit <span class="lvl m">mech</span></th><td>Amines change many currents; which ones and the sign depend on cell type</td><td>Peptides converge on one channel type, each in a different subset of cells</td><td>A change in circuit output</td><td>Map convergence and divergence within and across identified neurons</td></tr>
+        <tr><th>Symptoms and disorders <span class="lvl c">clin</span></th><td>One disorder produces key and optional symptoms</td><td>Several disorders produce sadness</td><td>The presenting complaint</td><td>Read the co-occurring pattern, then apply the hierarchy (differential classification)</td></tr>
+        <tr><th>DSM categories <span class="lvl f">func</span></th><td>One patient meets criteria for several disorders (comorbidity)</td><td>Different symptom sets reach the same diagnosis (heterogeneity)</td><td>A diagnostic label</td><td>RDoC: study the functional constructs shared across disorders</td></tr>
+        <tr><th>Physical vs primary cause <span class="lvl c">clin</span></th><td>A physical condition can underlie almost any psychiatric disorder</td><td>A physical illness and a primary disorder can give the same picture</td><td>A psychiatric syndrome</td><td>Age of onset, history, brief neuropsychiatric screen, lab tests</td></tr>
+      </tbody>
+    </table></div>
+    <p class="takeaway"><b>Takeaway</b>At every level the observable is a many-to-many readout, so no source reads cause from a single element; each resolves it by looking at a pattern across elements.</p>
+  </div>
+
+  <div class="block">
+    <h3>B · Net balance of opposing influences</h3>
+    <ol class="template">
+      <li>Two influences push the same target in opposite directions</li>
+      <li>They interact: add, synergise, or suppress each other</li>
+      <li>The net balance sets the state</li>
+      <li>Shift the balance and the outcome changes</li>
+    </ol>
+    <div class="tw"><table>
+      <thead><tr><th>Instance</th><th>Influence one way</th><th>Influence the other way</th><th>How they interact</th><th>What sets the net result</th></tr></thead>
+      <tbody>
+        <tr><th>STDP control <span class="lvl m">mech</span></th><td>PKA pathway (β-adrenergic): LTP</td><td>PLC pathway (M1 muscarinic): LTD</td><td>Each suppresses the other (push-pull)</td><td>Which pathways are active; only with both does spike timing decide</td></tr>
+        <tr><th>Excitability <span class="lvl m">mech</span></th><td>Inward currents</td><td>Outward currents</td><td>A modulator shifts both, in the same or opposite directions</td><td>Same direction: more or less firing. Mixed: fine-tuning or a qualitative change (Nadim (2014) Fig 2b)</td></tr>
+        <tr><th>Convergent modulators <span class="lvl m">mech</span></th><td>Modulator 1</td><td>Modulator 2</td><td>Occluding (additive), synergistic (more than additive) or antagonistic</td><td>The combination present; neurons are always under modulatory influence</td></tr>
+        <tr><th>Aetiopathogenesis <span class="lvl c">clin</span></th><td>Illness-promoting factors (predisposing, precipitating, perpetuating)</td><td>Protective factors</td><td>Both enter the diagnostic description</td><td>Expected course and treatment effect</td></tr>
+        <tr><th>Psychotherapeutic assessment <span class="lvl c">clin</span></th><td>Vulnerable areas</td><td>Strengths: coping, use of support, working relationship</td><td>Both mapped, together with the patient's perception</td><td>Suitability for (intensive) treatment</td></tr>
+      </tbody>
+    </table></div>
+    <p class="takeaway"><b>Takeaway</b>Whether at a synapse or in a patient, knowing that one factor is present says little until you know what opposes it.</p>
+  </div>
+
+  <div class="block">
+    <h3>C · Fast change versus lasting change</h3>
+    <ol class="template">
+      <li>A set point or vulnerability exists</li>
+      <li>A trigger causes an acute, reversible change</li>
+      <li>Prolonged or repeated exposure recruits durable change in expression or structure</li>
+      <li>The new state persists and shapes later responses</li>
+    </ol>
+    <div class="tw"><table>
+      <thead><tr><th>Instance</th><th>Set point / vulnerability</th><th>Acute change</th><th>Durable change</th><th>What persists</th></tr></thead>
+      <tbody>
+        <tr><th>Aplysia sensitisation <span class="lvl m">mech</span></th><td>A sensory→motor synapse that habituates</td><td>5-HT, PKA, less K⁺ current, wider spike, more release</td><td>PKC and AMPA-like receptor insertion; then CREB, new proteins, structural change</td><td>Long-term sensitisation of the reflex</td></tr>
+        <tr><th>Channel maintenance <span class="lvl m">mech</span></th><td>Endogenous modulators keep channel expression co-regulated</td><td>Modulators change gating</td><td>Tonic dopamine raises a transient K⁺ current via translation; removal of modulators alters expression via transcription</td><td>The neuron's channel complement itself</td></tr>
+        <tr><th>Spinal cord injury <span class="lvl m">mech</span></th><td>Descending amines drive persistent Ca²⁺ currents</td><td>Loss of aminergic input</td><td>Amine receptors become constitutively active; supersensitivity to modulators</td><td>Motor neurons recover persistent Ca²⁺ currents</td></tr>
+        <tr><th>Psychiatric episode <span class="lvl c">clin</span></th><td>Predisposing: heredity, life story, personality traits</td><td>Precipitating factors (none apparent in the Hengeveld MW et al. Box 2.4 case)</td><td>Perpetuating factors (e.g. relationship problems); recurrence after incomplete recovery</td><td>Previous episodes are the strongest predictor of new ones</td></tr>
+        <tr><th>Development <span class="lvl f">func</span></th><td>Developmental trajectory and environment</td><td>No single trigger: a gradual shift</td><td>A symptom-defined disorder, i.e. a well-advanced stage</td><td>Earlier mechanisms are the target for pre-emption</td></tr>
+      </tbody>
+    </table></div>
+    <p class="takeaway"><b>Takeaway</b>Both levels separate what starts a change from what keeps it going; the clinical precipitating–perpetuating split is a structural parallel to short- versus long-term facilitation, not a mechanism the sources link.</p>
+  </div>
+</section>
+
+<!-- 3 CONTRASTS -->
+<section>
+  <h2><span class="n">3</span>Contrast tables</h2>
+
+  <div class="block">
+    <h3>Strength, short-term plasticity, long-term plasticity</h3>
+    <div class="tw"><table>
+      <thead><tr><th>Dimension</th><th>Synaptic strength</th><th>Short-term plasticity (STP)</th><th>Long-term plasticity</th></tr></thead>
+      <tbody>
+        <tr><th>What it describes</th><td>Response to a single presynaptic input</td><td>How efficacy changes across a train of inputs</td><td>A lasting change in strength after induction (LTP/LTD, STDP, long-term facilitation)</td></tr>
+        <tr><th>Depends on</th><td>The synapse's current state</td><td>Presynaptic firing frequency</td><td>Spike timing plus modulator state; or prolonged 5-HT (Aplysia)</td></tr>
+        <tr><th>Function</th><td>How much one spike passes on</td><td>Gain control: filters by frequency</td><td>Storage: learning and memory</td></tr>
+        <tr><th>Modulator's handle</th><td>Raise, lower, silence, unmask</td><td>Change magnitude, or flip depression ↔ facilitation</td><td>Gate and sign (PKA → LTP, PLC → LTD) or trigger (CREB)</td></tr>
+        <tr><th>Trap</th><td>Stronger synapse need not change network frequency</td><td>Can move opposite to strength</td><td>Spike timing alone does not decide the sign</td></tr>
+        <tr><th>Source figure</th><td>Nadim (2014) Fig 1a, left box</td><td>Nadim (2014) Fig 1a, right box</td><td>Nadim (2014) Fig 1b</td></tr>
+      </tbody>
+    </table></div>
+    <p class="caption">The same synapse can be weaker for one spike, stronger for a burst, and changed for good after pairing; "the synapse got stronger" is ambiguous until you say which of the three you mean.</p>
+    <p class="analogy"><b>Analogy:</b> strength is how loud the first note sounds; STP is whether the notes of a fast passage swell or fade; long-term plasticity retunes the instrument. It breaks down because a musician chooses each note, while STP follows automatically from the input rate.</p>
+  </div>
+
+  <div class="block">
+    <h3>Fast transmission versus neuromodulation</h3>
+    <div class="tw"><table>
+      <thead><tr><th>Dimension</th><th>Classical fast transmission</th><th>Neuromodulation</th></tr></thead>
+      <tbody>
+        <tr><th>Release</th><td>Fast, synaptic</td><td>Other modes; often diffuse or via the circulation</td></tr>
+        <tr><th>Receptor</th><td>Ionotropic, at the synapse</td><td>Mostly GPCRs, but also ionotropic receptors off the synapse (extrasynaptic, presynaptic, axonal)</td></tr>
+        <tr><th>Signal</th><td>Phasic, point-to-point</td><td>Tonic or broad (e.g. low-concentration GABA)</td></tr>
+        <tr><th>Effect</th><td>Produces a postsynaptic response</td><td>Changes how neurons and synapses respond: excitability, strength, dynamics, plasticity</td></tr>
+        <tr><th>Same molecule, both roles</th><td>ACh at the neuromuscular junction · synaptic GABA<sub>A</sub> · AMPA in fast glutamatergic transmission</td><td>ACh mostly in the CNS · extrasynaptic GABA<sub>A</sub> · presynaptic AMPA actions</td></tr>
+      </tbody>
+    </table></div>
+    <p class="caption">Modulation is defined by what a signal does to the circuit, not by which molecule or receptor type carries it.</p>
+  </div>
+
+  <div class="block">
+    <h3>One switch or many dials</h3>
+    <div class="tw"><table>
+      <thead><tr><th>Field</th><th>"One switch" view</th><th>"Many dials" view</th><th>How the source reconciles them</th></tr></thead>
+      <tbody>
+        <tr><th>Neuromodulation <span class="lvl m">mech</span></th><td>Global view: one or a few modulators set a brain state; presence ≈ behavioural state</td><td>Cellular view: many modulators act on every neuron, always, in balance</td><td>Not contradictory data; a problem of bridging levels of analysis</td></tr>
+        <tr><th>Classification <span class="lvl c">clin</span></th><td>Categorical: qualitative difference, ill or not ill</td><td>Dimensional: a continuum with an agreed threshold, like hypertension</td><td>Categorical is used for clinical convenience, though natural borders are unlikely</td></tr>
+        <tr><th>Research grouping <span class="lvl f">func</span></th><td>DSM groups: well vs ill by symptom count</td><td>RDoC: constructs from normal to abnormal</td><td>RDoC is a research framework and does not replace DSM/ICD</td></tr>
+      </tbody>
+    </table></div>
+    <p class="caption">In both the cell and the clinic, the "switch" view is the convenient summary and the "dials" view is closer to the data; each source keeps the switch for practical use while doubting it describes nature.</p>
+    <p class="analogy"><b>Analogy:</b> a light switch versus a dimmer. It breaks down because the real system has many dials acting on one another, not a single dimmer.</p>
+  </div>
+
+  <div class="block">
+    <h3>Look-alike signs and where the algorithm sends them</h3>
+    <div class="tw"><table>
+      <thead><tr><th>Sign</th><th>Distinguishing feature (Hengeveld MW et al. Table 2.7)</th><th>Algorithm step (Hengeveld MW et al. Fig 2.1)</th></tr></thead>
+      <tbody>
+        <tr><th>Hallucination</th><td>Perceives something that is not there</td><td>Step 2 · psychosis spectrum</td></tr>
+        <tr><th>Illusion</th><td>Briefly misperceives a real object, usually under emotion</td><td>Not a key sign of any step</td></tr>
+        <tr><th>Visual agnosia</th><td>Cannot name objects felt with eyes closed (gnosis)</td><td>Step 1 · neurocognitive</td></tr>
+        <tr><th>Delusion</th><td>Incorrect belief that cannot be corrected</td><td>Step 2 · psychosis spectrum</td></tr>
+        <tr><th>Compulsive thought / behaviour</th><td>Intrusive, unwanted thoughts; repeated pointless acts</td><td>Step 5 · obsessive-compulsive</td></tr>
+        <tr><th>Derealisation / depersonalisation</th><td>Environment / self feels unreal</td><td>Step 7 · dissociative, unless an earlier step applies</td></tr>
+        <tr><th>Antero- / retrograde amnesia</th><td>Gap after / before an acute cerebral disorder</td><td>Step 1 · neurocognitive</td></tr>
+        <tr><th>Dissociative amnesia</th><td>Cannot recall psychotraumatic personal experiences</td><td>Step 7 · dissociative</td></tr>
+        <tr><th>Urge-driven / impulsive behaviour</th><td>Acting on urges; outbursts, self-harm</td><td>Step 9 · impulse control (eating-related urges: Step 8)</td></tr>
+        <tr><th>Sadness</th><td>Depressed mood</td><td>Step 3 · mood, unless anxiety is the main problem (Step 4)</td></tr>
+      </tbody>
+    </table></div>
+    <p class="caption">Signs that sound alike lead to different chapters, and the feature that tells them apart in Table 2.7 is exactly what the algorithm's step asks about; because the algorithm runs top-down, a sign that fits an earlier step wins.</p>
+  </div>
+</section>
+
+<!-- 4 FUNCTIONAL DIAGRAMS -->
+<section>
+  <h2><span class="n">4</span>Functional diagrams</h2>
+
+  <div class="block">
+    <h3>Sensitisation in Aplysia</h3>
+    <p class="problem"><span>Problem</span>How does a reflex that normally habituates become stronger after a harmful event, and stay stronger with training?</p>
+    <figure class="dia">
+      <div class="scroll">
+      <svg viewBox="0 0 960 440" role="img" aria-label="Serotonin raises the gain of the sensory-to-motor synapse quickly through PKA reducing a potassium brake, and lastingly through CREB-driven synaptic growth.">
+        <defs>
+          <marker id="ah2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah" d="M0,0 L10,5 L0,10 z"/></marker>
+        </defs>
+        <rect class="svg-node n" x="20" y="40" width="170" height="70" rx="6"/>
+        <text class="t-name" x="105" y="70" text-anchor="middle">Siphon touch</text>
+        <text class="t-role" x="105" y="90" text-anchor="middle">test stimulus</text>
+
+        <rect class="svg-node c" x="300" y="40" width="300" height="70" rx="6"/>
+        <text class="t-name" x="450" y="70" text-anchor="middle">Sensory → motor synapse</text>
+        <text class="t-role" x="450" y="90" text-anchor="middle">the reflex's gain</text>
+
+        <rect class="svg-node n" x="720" y="40" width="220" height="70" rx="6"/>
+        <text class="t-name" x="830" y="70" text-anchor="middle">Gill withdrawal</text>
+        <text class="t-role" x="830" y="90" text-anchor="middle">behavioural readout</text>
+
+        <rect class="svg-node m" x="220" y="200" width="170" height="70" rx="6"/>
+        <text class="t-name" x="305" y="230" text-anchor="middle">PKA</text>
+        <text class="t-role" x="305" y="250" text-anchor="middle">short-term switch</text>
+
+        <rect class="svg-node m" x="470" y="200" width="200" height="70" rx="6"/>
+        <text class="t-name" x="570" y="230" text-anchor="middle">K⁺ current</text>
+        <text class="t-role" x="570" y="250" text-anchor="middle">brake that ends each spike</text>
+
+        <rect class="svg-node n" x="20" y="350" width="130" height="70" rx="6"/>
+        <text class="t-name" x="85" y="380" text-anchor="middle">Tail shock</text>
+        <text class="t-role" x="85" y="400" text-anchor="middle">harmful event</text>
+
+        <rect class="svg-node m" x="220" y="350" width="170" height="70" rx="6"/>
+        <text class="t-name" x="305" y="380" text-anchor="middle">5-HT release</text>
+        <text class="t-role" x="305" y="400" text-anchor="middle">modulator: raise gain</text>
+
+        <rect class="svg-node m" x="470" y="350" width="200" height="70" rx="6"/>
+        <text class="t-name" x="570" y="380" text-anchor="middle">CREB → transcription</text>
+        <text class="t-role" x="570" y="400" text-anchor="middle">long-term switch</text>
+
+        <path class="e" d="M190 75 H295" marker-end="url(#ah2)"/>
+        <text class="t-edge" x="245" y="62" text-anchor="middle">excites</text>
+        <text class="t-edge" x="245" y="96" text-anchor="middle">sensory neuron</text>
+
+        <path class="e" d="M600 75 H715" marker-end="url(#ah2)"/>
+        <text class="t-edge" x="658" y="62" text-anchor="middle">drives</text>
+        <text class="t-edge" x="658" y="96" text-anchor="middle">motor neuron</text>
+
+        <path class="e" d="M150 385 H215" marker-end="url(#ah2)"/>
+        <text class="t-edge" x="183" y="371" text-anchor="middle">releases</text>
+
+        <path class="e" d="M305 350 V275" marker-end="url(#ah2)"/>
+        <text class="t-edge" x="314" y="316">activates</text>
+
+        <path class="e" d="M390 235 H465" marker-end="url(#ah2)"/>
+        <text class="t-edge" x="428" y="225" text-anchor="middle">reduces</text>
+
+        <path class="e" d="M540 200 V115" marker-end="url(#ah2)"/>
+        <text class="t-edge" x="550" y="140">less brake →</text>
+        <text class="t-edge" x="550" y="155">wider spike →</text>
+        <text class="t-edge" x="550" y="170">more release</text>
+
+        <path class="e" d="M380 270 L466 347" marker-end="url(#ah2)"/>
+        <text class="t-edge" x="432" y="304">if prolonged</text>
+
+        <path class="e" d="M670 385 H705 V90 H605" marker-end="url(#ah2)"/>
+        <text class="t-edge" x="714" y="220">new proteins,</text>
+        <text class="t-edge" x="714" y="235">structural growth</text>
+        <text class="t-edge" x="714" y="250">(long-term)</text>
+      </svg>
+      </div>
+      <figcaption>One serotonin signal raises the reflex's gain twice over: quickly, by loosening the K⁺ brake on each spike, and lastingly, by switching on transcription that rebuilds the synapse.</figcaption>
+    </figure>
+    <p class="note">Between the two, prolonged 5-HT also recruits presynaptic PKC and postsynaptic Ca²⁺ pathways that insert AMPA-like receptors (intermediate-term facilitation). Steps: Notes §6.9.</p>
+  </div>
+
+  <div class="block">
+    <h3>Specificity from local signalling complexes</h3>
+    <p class="problem"><span>Problem</span>A modulator reaches the whole cell and second messengers act widely, yet only one channel type in one compartment changes. How?</p>
+    <figure class="dia">
+      <div class="scroll">
+      <svg viewBox="0 0 900 320" role="img" aria-label="A diffuse modulator reaches all receptors, but an anchored enzyme only modifies the channel inside its local complex; another channel type nearby and the same channel type in another compartment are unaffected.">
+        <defs>
+          <marker id="ah3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah" d="M0,0 L10,5 L0,10 z"/></marker>
+        </defs>
+        <text class="t-name" x="30" y="26">Diffuse modulator</text>
+        <text class="t-role" x="160" y="26">reaches every compartment: a message without an address</text>
+        <circle class="mdot" cx="60" cy="48" r="3.5"/><circle class="mdot" cx="120" cy="52" r="3.5"/><circle class="mdot" cx="180" cy="46" r="3.5"/><circle class="mdot" cx="240" cy="51" r="3.5"/><circle class="mdot" cx="300" cy="47" r="3.5"/><circle class="mdot" cx="360" cy="52" r="3.5"/><circle class="mdot" cx="420" cy="46" r="3.5"/><circle class="mdot" cx="480" cy="51" r="3.5"/><circle class="mdot" cx="540" cy="47" r="3.5"/><circle class="mdot" cx="600" cy="52" r="3.5"/><circle class="mdot" cx="660" cy="46" r="3.5"/><circle class="mdot" cx="720" cy="51" r="3.5"/><circle class="mdot" cx="780" cy="47" r="3.5"/><circle class="mdot" cx="840" cy="52" r="3.5"/>
+
+        <rect class="membrane" x="30" y="88" width="840" height="70" rx="10"/>
+        <line class="divider" x1="605" y1="70" x2="605" y2="310"/>
+
+        <rect class="svg-node m" x="50" y="95" width="140" height="56" rx="6"/>
+        <text class="t-name" x="120" y="118" text-anchor="middle">Receptor (GPCR)</text>
+        <text class="t-role" x="120" y="137" text-anchor="middle">detects the broadcast</text>
+
+        <rect class="svg-node c" x="225" y="95" width="170" height="56" rx="6"/>
+        <text class="t-name" x="310" y="118" text-anchor="middle">T-type Ca²⁺ channel</text>
+        <text class="t-role" x="310" y="137" text-anchor="middle">in the complex → modulated</text>
+
+        <rect class="svg-node n" x="420" y="95" width="160" height="56" rx="6"/>
+        <text class="t-name" x="500" y="118" text-anchor="middle">Na⁺ channel</text>
+        <text class="t-role" x="500" y="137" text-anchor="middle">other type → unchanged</text>
+
+        <rect class="svg-node n" x="640" y="95" width="220" height="56" rx="6"/>
+        <text class="t-name" x="750" y="118" text-anchor="middle">T-type Ca²⁺ channel</text>
+        <text class="t-role" x="750" y="137" text-anchor="middle">same type, elsewhere → unchanged</text>
+
+        <rect class="svg-node m" x="110" y="205" width="220" height="62" rx="6"/>
+        <text class="t-name" x="220" y="231" text-anchor="middle">Anchoring protein + enzyme</text>
+        <text class="t-role" x="220" y="251" text-anchor="middle">keeps the messenger local</text>
+
+        <path class="e" d="M120 58 V90" marker-end="url(#ah3)"/>
+        <text class="t-edge" x="128" y="78">binds</text>
+
+        <path class="e" d="M140 151 L186 201" marker-end="url(#ah3)"/>
+        <text class="t-edge" x="156" y="186" text-anchor="end">activates</text>
+
+        <path class="e" d="M285 205 L299 156" marker-end="url(#ah3)"/>
+        <text class="t-edge" x="304" y="186">phosphorylates</text>
+
+        <path class="e dashed" d="M330 225 L468 157" marker-end="url(#ah3)"/>
+        <text class="t-edge" x="478" y="174">no access</text>
+
+        <path class="e dashed" d="M330 250 L698 157" marker-end="url(#ah3)"/>
+        <text class="t-edge" x="710" y="176">no access</text>
+
+        <text class="t-band m" x="318" y="302" text-anchor="middle">COMPARTMENT A · e.g. axon initial segment</text>
+        <text class="t-band m" x="752" y="302" text-anchor="middle">COMPARTMENT B · e.g. soma / dendrites</text>
+      </svg>
+      </div>
+      <figcaption>Specificity comes from where the enzyme is anchored, not from where the modulator goes: the broadcast reaches everything, but only the channel inside the local complex receives the message.</figcaption>
+    </figure>
+    <p class="note">Pattern from Nadim (2014): dopamine (via PKC) inhibits T-type Ca²⁺ channels at the axon initial segment, but not Na⁺ channels there or T-type channels in soma and dendrites; local complexes are the explanation the source proposes. Notes §6.3.</p>
+  </div>
+
+  <div class="block">
+    <h3>Which part of the workup serves which aim</h3>
+    <p class="problem"><span>Problem</span>A psychiatric workup collects many kinds of history because psychiatric diagnosis has three aims, and each layer feeds different ones.</p>
+    <div class="tw"><table class="matrix">
+      <thead><tr><th>Layer</th><th>Aim 1 · signs → classification</th><th>Aim 2 · aetiology</th><th>Aim 3 · severity &amp; effects → treatment</th></tr></thead>
+      <tbody>
+        <tr><th>Specific history + mental state exam</th><td>Quality, chronology, accompanying symptoms; observed signs</td><td class="dash">—</td><td>Quantity: severity and effect on functioning; treatment so far</td></tr>
+        <tr><th>General psychiatric history</th><td>Screens other disorders → differential diagnosis</td><td class="dash">—</td><td class="dash">—</td></tr>
+        <tr><th>Past &amp; family history</th><td>Earlier and family disorders → differential diagnosis</td><td class="dash">—</td><td>Response to earlier treatment</td></tr>
+        <tr><th>Physical history, exam, tests</th><td>Brief neuropsychiatric tests quantify cognitive signs</td><td>Physical illness causing the disorder (onset after 40)</td><td>Illness resulting from it, or to weigh in treatment</td></tr>
+        <tr><th>Social history</th><td>Symptoms in daily life</td><td>Social causes</td><td>Social effects; support system</td></tr>
+        <tr><th>Biographical history</th><td>Past symptoms</td><td>Predisposing and protective factors; personality development</td><td class="dash">—</td></tr>
+        <tr><th>Informant</th><td>Verifies, complements, corrects; topics the patient avoids</td><td class="dash">—</td><td>Executive functioning in daily life; burden on relatives</td></tr>
+        <tr><th>Psychotherapeutic assessment</th><td class="dash">—</td><td>Vulnerable areas; meaning of the problem</td><td>Strengths, coping, motivation, working relationship</td></tr>
+      </tbody>
+    </table></div>
+    <p class="caption">Classification needs only the first column; everything to the right is what turns a classification into a diagnosis.</p>
+  </div>
+
+  <div class="block">
+    <h3>Covered by source figures</h3>
+    <div class="figref">
+      <div class="fr">
+        <h4>Nadim (2014) Fig 1a</h4>
+        <div class="where">Notes §6.7–6.8</div>
+        <ul>
+          <li>Left grey box = strength test (one input)</li>
+          <li>Right grey box = STP test (sustained input) = gain control</li>
+          <li>Control vs modulated = a modulator can move the two in opposite directions</li>
+        </ul>
+      </div>
+      <div class="fr">
+        <h4>Nadim (2014) Fig 1b</h4>
+        <div class="where">Notes §6.10</div>
+        <ul>
+          <li>x-axis = the timing signal: which neuron fired first</li>
+          <li>Black (PKA+PLC) = both pathways on: timing decides</li>
+          <li>Blue (PKA) = timing overridden toward LTP</li>
+          <li>Red (PLC) = timing overridden toward LTD</li>
+        </ul>
+      </div>
+      <div class="fr">
+        <h4>Nadim (2014) Fig 2a</h4>
+        <div class="where">Notes §6.1–6.2</div>
+        <ul>
+          <li>GPCR = detector that picks the pathway</li>
+          <li>Enzyme 1 = convergence hub for both modulators</li>
+          <li>+ / − arrows from one enzyme = divergence with opposite signs</li>
+          <li>Enzyme 2 = a second route from the same modulator</li>
+        </ul>
+      </div>
+      <div class="fr">
+        <h4>Nadim (2014) Fig 2b</h4>
+        <div class="where">Notes §6.5</div>
+        <ul>
+          <li>Current step = standard test input</li>
+          <li>Modulator 1 = gain change: same pattern, more spikes</li>
+          <li>Modulator 2 = qualitative change: spikes regroup into bursts</li>
+        </ul>
+        <p class="analogy"><b>Analogy:</b> modulator 1 turns the volume up, modulator 2 changes the rhythm. It breaks down because both act through many channels at once, not one knob.</p>
+      </div>
+      <div class="fr">
+        <h4>Hengeveld MW et al. Fig 2.1</h4>
+        <div class="where">Notes §4, algorithm</div>
+        <ul>
+          <li>Gate = what makes it a disorder at all (dysfunction + distress)</li>
+          <li>Step order = the urgency/expertise hierarchy of Table 2.5</li>
+          <li>Step 6 = the only step defined by a cause (a stressor), not by symptoms</li>
+          <li>Step 10 = defined by onset (since childhood / adolescence)</li>
+          <li>"Yes" exits = main category only; comorbidity still possible</li>
+        </ul>
+      </div>
+      <div class="fr">
+        <h4>Hengeveld MW et al. Tables 2.5 &amp; 2.6</h4>
+        <div class="where">Notes §3</div>
+        <ul>
+          <li>Row order = algorithm order: neurocognitive (step 1) → psychosis (2) → emotional (3 on) → behavioural (9)</li>
+          <li>Function column = which part of the mental state to examine first</li>
+        </ul>
+      </div>
+      <div class="fr">
+        <h4>RDoC framework graphic</h4>
+        <div class="where">Notes §5</div>
+        <ul>
+          <li>Domains = what is measured</li>
+          <li>Units of analysis = how it is measured</li>
+          <li>Development / lifespan = when</li>
+          <li>Environment = in what context</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 6 WHY QUESTIONS -->
+<section>
+  <h2><span class="n">5</span>Why questions</h2>
+  <ol class="qs">
+    <li>A modulator can weaken a synapse's response to a single spike yet increase its effect during a burst. Why is this possible, and why does "synaptic strength went down" not predict what the network will do?</li>
+    <li>Sadness in the clinic and dopamine in a rhythmic circuit pose the same interpretive problem. What is it, and why do differential classification and circuit mapping both solve it by reading a pattern rather than a single element?</li>
+    <li>Why does PKA activation alone produce LTP regardless of spike timing, and what does that imply for calling the STDP timing rule "the" learning rule?</li>
+    <li>Why is someone who just misses DSM criteria informative for RDoC but invisible to a categorical study, and how does the hypertension example show that the threshold is a choice rather than a discovery?</li>
+    <li>The Aplysia reflex separates a fast PKA effect from a slow CREB-dependent one. In what sense does this mirror the split between precipitating and perpetuating factors, and where does the parallel stop holding?</li>
+  </ol>
+</section>
+</div>
+
+</body></html>

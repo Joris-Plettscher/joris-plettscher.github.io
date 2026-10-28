@@ -1,0 +1,18 @@
+---
+---
+{%- comment -%}
+  Index of every file under /course_notes/. GitHub Pages (Jekyll) rebuilds it on
+  every push, so new notes appear in the library without editing anything here.
+{%- endcomment -%}
+{
+  "files": [
+{%- assign first = true -%}
+{%- for file in site.static_files -%}
+{%- if file.path contains "/course_notes/" -%}
+{%- unless first %},{% endunless %}
+    {{ file.path | jsonify }}
+{%- assign first = false -%}
+{%- endif -%}
+{%- endfor %}
+  ]
+}
