@@ -178,7 +178,7 @@
     document.title = "Study Notes | Joris Plettscher";
     show([
       heading("Study notes"),
-      el("p", { class: "lede", text: "Claude-generated case notes and weekly overviews of Brain Science courses in order to reduce redundant LLM usage." }),
+      el("p", { class: "lede", text: "Claude-generated case notes and weekly overviews of Brain Science courses in order to reduce redundant LLM usage. The overviews explain recurring principles, connections between them and mention important figures from the sources to look at. The notes provide in-detail summaries of all notes." }),
       courses.length ? el("p", { class: "legend" }, [
         el("span", null, [mark("overview"), "Overview"]),
         el("span", null, [mark("notes"), "Case notes"]),

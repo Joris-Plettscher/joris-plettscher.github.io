@@ -1,0 +1,505 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Computational Psychiatry Synthesis</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:wght@500;600&family=Public+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one reading column (prose ~70ch) inside a wider frame that lets diagrams and tables breathe; figures sit on raised panels, tables scroll inside their own wrappers. */
+:root{
+  --bg:#f4f6f5; --panel:#ffffff; --node:#eef2f0; --ink:#17201d; --muted:#596661; --line:#cdd5d1;
+  --accent:#0d6b63; --accent-soft:#d9eeeb; --drug:#9a4d08; --drug-soft:#fbe9d4;
+  --serif:"Spectral", Georgia, "Times New Roman", serif;
+  --sans:"Public Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --mono:"JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#111715; --panel:#18201e; --node:#212b28; --ink:#e2e9e6; --muted:#9caaa4; --line:#33403c;
+  --accent:#5cc5b8; --accent-soft:#17352f; --drug:#f2ac62; --drug-soft:#3a2915; color-scheme:dark } }
+:root[data-theme="dark"]{
+  --bg:#111715; --panel:#18201e; --node:#212b28; --ink:#e2e9e6; --muted:#9caaa4; --line:#33403c;
+  --accent:#5cc5b8; --accent-soft:#17352f; --drug:#f2ac62; --drug-soft:#3a2915; color-scheme:dark }
+
+body{background:var(--bg);color:var(--ink);font:15px/1.6 var(--sans);}
+.wrap{max-width:1100px;margin:0 auto;padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));padding-block:40px 72px;display:flex;flex-direction:column;gap:56px}
+header{display:flex;flex-direction:column;gap:14px;max-width:72ch}
+.eyebrow{font:500 12px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+h1{font:600 clamp(30px,4.2vw,44px)/1.1 var(--serif);margin:0;text-wrap:balance}
+h2{font:600 26px/1.2 var(--serif);margin:0;text-wrap:balance;display:flex;gap:14px;align-items:baseline}
+h2 .n{font:500 14px var(--mono);color:var(--accent)}
+h3{font:600 17px/1.3 var(--sans);margin:0;text-wrap:balance}
+p{margin:0;max-width:72ch}
+.question{border-left:3px solid var(--accent);padding:4px 0 4px 16px;display:flex;flex-direction:column;gap:6px}
+.question .q{font:500 20px/1.4 var(--serif)}
+.question .why{color:var(--muted);font-size:14px}
+section{display:flex;flex-direction:column;gap:22px}
+.block{display:flex;flex-direction:column;gap:12px}
+.lead{color:var(--muted);max-width:72ch}
+.m{font-family:var(--mono);font-size:.92em}
+
+figure{margin:0;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:18px 18px 14px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.scroll{overflow-x:auto;min-width:0}
+figure .scroll svg{display:block;min-width:760px;width:100%;height:auto}
+figcaption{font-size:14px;color:var(--muted);max-width:80ch}
+figcaption b{color:var(--ink);font-weight:600}
+.problem{font:500 14px var(--sans);color:var(--ink)}
+.problem span{font:500 11px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin-right:8px}
+
+/* SVG */
+.dg{color:var(--muted)}
+.dg .box{fill:var(--node);stroke:var(--line);stroke-width:1.2}
+.dg .box.key{fill:var(--accent-soft);stroke:var(--accent);stroke-width:2}
+.dg .box.obs{fill:var(--panel);stroke:var(--ink);stroke-width:1.4}
+.dg .box.strip{fill:var(--panel);stroke:var(--ink);stroke-width:1.2;stroke-dasharray:0}
+.dg .t{font:600 13px var(--sans);fill:var(--ink)}
+.dg .s{font:400 11px var(--sans);fill:var(--muted)}
+.dg .mt{font:500 12.5px var(--mono);fill:var(--ink)}
+.dg .e{stroke:currentColor;stroke-width:1.4;fill:none}
+.dg .e.fb{stroke:var(--accent);stroke-width:1.8}
+.dg .el{font:500 11px var(--sans);fill:var(--muted);paint-order:stroke;stroke:var(--panel);stroke-width:5px;stroke-linejoin:round}
+.dg .el.a{fill:var(--accent)}
+.dg .ah{fill:currentColor}
+.dg .ahA{fill:var(--accent)}
+.dg .pill{fill:var(--drug-soft);stroke:var(--drug);stroke-width:1}
+.dg .pt{font:600 11px var(--mono);fill:var(--drug)}
+.dg .br{stroke:var(--ink);stroke-width:1.2;fill:none}
+
+/* tables */
+.tw{overflow-x:auto;min-width:0;border:1px solid var(--line);border-radius:10px;background:var(--panel)}
+table{border-collapse:collapse;width:100%;font-size:13.5px;line-height:1.45;min-width:760px}
+th,td{text-align:left;vertical-align:top;padding:9px 12px;border-bottom:1px solid var(--line)}
+thead th{font:600 11px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);background:var(--node);border-bottom:1px solid var(--line)}
+tbody tr:last-child th,tbody tr:last-child td{border-bottom:0}
+tbody th{font-weight:600;color:var(--ink);width:15%}
+td.diff{color:var(--muted)}
+.template{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:13.5px}
+.template .st{background:var(--accent-soft);color:var(--ink);border:1px solid var(--accent);border-radius:6px;padding:4px 10px;font-weight:500}
+.template .ar{font:500 12px var(--mono);color:var(--muted)}
+.takeaway{font-size:14.5px;max-width:80ch}
+.takeaway b{color:var(--accent)}
+.analogy{font-size:14px;background:var(--node);border-radius:8px;padding:10px 14px;max-width:80ch;display:flex;flex-direction:column;gap:4px}
+.analogy .lab{font:600 11px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+.analogy .brk{color:var(--muted)}
+
+.refs{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
+.ref{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.ref .src{font:600 12px var(--mono);color:var(--accent)}
+.ref .what{font-size:13.5px;color:var(--ink)}
+.ref .notes{font:500 11px var(--mono);color:var(--muted)}
+.ref ul{margin:0;padding-left:18px;font-size:13px;color:var(--muted);display:flex;flex-direction:column;gap:3px}
+.ref ul b{color:var(--ink);font-weight:600}
+
+ol.whys{margin:0;padding-left:0;list-style:none;display:flex;flex-direction:column;gap:14px;counter-reset:w}
+ol.whys li{counter-increment:w;display:grid;grid-template-columns:36px 1fr;gap:4px 10px;max-width:84ch}
+ol.whys li::before{content:counter(w);font:600 20px var(--serif);color:var(--accent);grid-row:span 2}
+ol.whys .qq{font:500 16.5px/1.45 var(--serif)}
+ol.whys .hint{font-size:13px;color:var(--muted)}
+.legend{display:flex;flex-wrap:wrap;gap:16px;font-size:12.5px;color:var(--muted)}
+.legend i{display:inline-block;width:22px;height:12px;border-radius:3px;vertical-align:-1px;margin-right:6px}
+.lg-key{background:var(--accent-soft);border:2px solid var(--accent)}
+.lg-obs{background:var(--panel);border:1.5px solid var(--ink)}
+.lg-drug{background:var(--drug-soft);border:1px solid var(--drug)}
+.lg-fb{border-top:2px solid var(--accent);height:0!important;border-radius:0!important;vertical-align:3px!important}
+@media (max-width:560px){ h2{font-size:22px} .question .q{font-size:18px} figure{padding:12px} }
+</style>
+
+<div class="wrap">
+
+<header>
+  <div class="eyebrow">Neuromodulators of perception · synthesis layer</div>
+  <h1>Computational Psychiatry Synthesis</h1>
+  <div class="question">
+    <div class="q">Which hidden mechanism produces this person's data, and can it be told apart from the alternatives?</div>
+    <div class="why">Starting problem: one diagnosis (a spectrum disease) can rest on different mechanisms, and symptoms alone cannot say which.</div>
+  </div>
+</header>
+
+<!-- 1 OVERVIEW -->
+<section id="map">
+  <h2><span class="n">1</span>Overview map</h2>
+  <figure>
+    <div class="scroll">
+    <svg class="dg" viewBox="0 0 1000 600" role="img" aria-label="Generative models drive the computational assay; neuromodulators are its main target. Learning models infer what a transmitter encodes, circuit models infer how it changes coupling; model selection and the four-stage workflow decide whether the inferences can be trusted; the two application studies apply each model family.">
+      <defs>
+        <marker id="m1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah" d="M0,0 L10,5 L0,10 z"/></marker>
+      </defs>
+      <!-- edges -->
+      <path class="e" d="M230 180 L388 74" marker-end="url(#m1)"/>
+      <path class="e" d="M770 180 L612 74" marker-end="url(#m1)"/>
+      <path class="e" d="M500 88 L500 178" marker-end="url(#m1)"/>
+      <path class="e" d="M500 330 L500 240" marker-end="url(#m1)"/>
+      <path class="e" d="M270 226 L388 352" marker-end="url(#m1)"/>
+      <path class="e" d="M730 226 L612 352" marker-end="url(#m1)"/>
+      <path class="e" d="M90 180 V14 H910 V178" marker-end="url(#m1)"/>
+      <path class="e" d="M120 490 L120 240" marker-end="url(#m1)"/>
+      <path class="e" d="M330 490 L240 240" marker-end="url(#m1)"/>
+      <path class="e" d="M680 490 L770 240" marker-end="url(#m1)"/>
+      <path class="e" d="M880 490 L880 240" marker-end="url(#m1)"/>
+      <path class="e" d="M360 548 V578 H640 V550" marker-end="url(#m1)"/>
+      <!-- edge labels -->
+      <text class="el" x="309" y="131" text-anchor="middle">special case of</text>
+      <text class="el" x="691" y="131" text-anchor="middle">special case of</text>
+      <text class="el" x="500" y="137" text-anchor="middle">is the engine of</text>
+      <text class="el" x="500" y="289" text-anchor="middle">is the main target of</text>
+      <text class="el" x="322" y="282" text-anchor="middle"><tspan x="322">infers WHAT a</tspan><tspan x="322" dy="13">transmitter encodes</tspan></text>
+      <text class="el" x="678" y="282" text-anchor="middle"><tspan x="678">infers HOW it</tspan><tspan x="678" dy="13">changes coupling</tspan></text>
+      <text class="el" x="760" y="18" text-anchor="middle">sends PE trajectories as regressors / inputs</text>
+      <text class="el" x="120" y="360" text-anchor="middle"><tspan x="120">applies</tspan><tspan x="120" dy="13">(3 antagonists)</tspan></text>
+      <text class="el" x="288" y="360" text-anchor="middle"><tspan x="288">makes it</tspan><tspan x="288" dy="13">interpretable</tspan></text>
+      <text class="el" x="724" y="360" text-anchor="middle"><tspan x="724">chooses between</tspan><tspan x="724" dy="13">candidate circuits</tspan></text>
+      <text class="el" x="880" y="360" text-anchor="middle"><tspan x="880">applies</tspan><tspan x="880" dy="13">(psilocybin)</tspan></text>
+      <text class="el" x="500" y="582" text-anchor="middle">tests it (model recovery)</text>
+      <!-- nodes -->
+      <rect class="box" x="390" y="30" width="220" height="58" rx="8"/>
+      <text class="t" x="500" y="54" text-anchor="middle">Generative model</text>
+      <text class="s" x="500" y="72" text-anchor="middle">prior × likelihood, then inverted</text>
+
+      <rect class="box" x="30" y="180" width="240" height="58" rx="8"/>
+      <text class="t" x="150" y="204" text-anchor="middle">Learning model</text>
+      <text class="s" x="150" y="222" text-anchor="middle">RW → TD / Q → HGF · from behaviour</text>
+
+      <rect class="box key" x="390" y="180" width="220" height="58" rx="8"/>
+      <text class="t" x="500" y="204" text-anchor="middle">Computational assay</text>
+      <text class="s" x="500" y="222" text-anchor="middle">this patient's mechanism</text>
+
+      <rect class="box" x="730" y="180" width="240" height="58" rx="8"/>
+      <text class="t" x="850" y="204" text-anchor="middle">Circuit model (DCM)</text>
+      <text class="s" x="850" y="222" text-anchor="middle">effective connectivity · fMRI, M/EEG</text>
+
+      <rect class="box" x="390" y="330" width="220" height="58" rx="8"/>
+      <text class="t" x="500" y="354" text-anchor="middle">Neuromodulators</text>
+      <text class="s" x="500" y="372" text-anchor="middle">DA · ACh · NA · 5-HT</text>
+
+      <rect class="box" x="30" y="490" width="180" height="58" rx="8"/>
+      <text class="t" x="120" y="514" text-anchor="middle">HGF application</text>
+      <text class="s" x="120" y="532" text-anchor="middle">NA−, ACh−, DA− in one task</text>
+
+      <rect class="box" x="250" y="490" width="220" height="58" rx="8"/>
+      <text class="t" x="360" y="514" text-anchor="middle">Four-stage workflow</text>
+      <text class="s" x="360" y="532" text-anchor="middle">simulate · recover · fit · validate</text>
+
+      <rect class="box" x="530" y="490" width="220" height="58" rx="8"/>
+      <text class="t" x="640" y="514" text-anchor="middle">Bayesian model selection</text>
+      <text class="s" x="640" y="532" text-anchor="middle">evidence = accuracy − complexity</text>
+
+      <rect class="box" x="790" y="490" width="180" height="58" rx="8"/>
+      <text class="t" x="880" y="514" text-anchor="middle">DCM application</text>
+      <text class="s" x="880" y="532" text-anchor="middle">psilocybin × threat network</text>
+    </svg>
+    </div>
+    <figcaption><b>Generative models are the engine of the computational assay and neuromodulators its main target:</b> learning models read what a transmitter encodes, circuit models read how it changes coupling, and model selection plus the four-stage checks decide whether either reading can be trusted.</figcaption>
+  </figure>
+</section>
+
+<!-- 2 RECURRING PRINCIPLES -->
+<section id="principles">
+  <h2><span class="n">2</span>Recurring principles</h2>
+
+  <div class="block">
+    <h3>A · Prediction errors drive belief updates</h3>
+    <div class="template"><span class="st">Predict</span><span class="ar">→ compare →</span><span class="st">Prediction error</span><span class="ar">→ scale by →</span><span class="st">Weight on the PE</span><span class="ar">→</span><span class="st">Updated belief</span></div>
+    <div class="tw"><table>
+      <thead><tr><th>Instance</th><th>What is predicted</th><th>Prediction error</th><th>Weight on the PE</th><th>What is updated</th><th>Key difference</th></tr></thead>
+      <tbody>
+        <tr><th>Rescorla–Wagner</th><td>Cue → outcome association <span class="m">V</span></td><td><span class="m">λ − V</span></td><td>Fixed <span class="m">α</span></td><td><span class="m">V</span></td><td class="diff">Trial-level only; no time within a trial</td></tr>
+        <tr><th>TD learning</th><td>Discounted sum of future rewards</td><td><span class="m">r + γV̂ₜ₊₁ − V̂ₜ</span></td><td>Fixed <span class="m">α</span></td><td><span class="m">V̂</span></td><td class="diff">PE at every time step; <span class="m">γ</span> sets how far ahead counts</td></tr>
+        <tr><th>Q-learning / SARSA</th><td>Action value <span class="m">Q(s,a)</span></td><td>Uses best next action (Q) or the chosen one (SARSA)</td><td>Fixed <span class="m">α</span></td><td><span class="m">Q</span></td><td class="diff">Values belong to actions; softmax <span class="m">β</span> turns them into choices</td></tr>
+        <tr><th>HGF, level 2</th><td>Transition contingency <span class="m">μ₂</span></td><td>Sensory PE <span class="m">δ₁</span></td><td><span class="m">ψ₂</span> = input precision ÷ belief precision, changes every trial</td><td><span class="m">μ₂</span></td><td class="diff">Weight = reliability of input relative to confidence in the belief</td></tr>
+        <tr><th>HGF, level 3</th><td>Volatility <span class="m">μ₃</span></td><td>Contingency PE <span class="m">δ₂</span></td><td><span class="m">ψ₃</span></td><td><span class="m">μ₃</span></td><td class="diff">The belief updated here sets the weight one level down</td></tr>
+        <tr><th>Midbrain DA neuron</th><td>Reward given the cue</td><td>Phasic burst (better) or dip (worse)</td><td>Gates NMDA-dependent plasticity</td><td>Synapses in task circuits</td><td class="diff">The PE is physically broadcast as a teaching signal</td></tr>
+      </tbody>
+    </table></div>
+    <p class="takeaway"><b>Takeaway:</b> the models differ only in what they predict and in whether the weight on the PE is a fixed number (<span class="m">α</span>) or is itself inferred (<span class="m">ψ</span>). In the HGF the learning rate is a belief, not a constant.</p>
+  </div>
+
+  <div class="block">
+    <h3>B · Hypothesis as model → invert → compare → interpret</h3>
+    <div class="template"><span class="st">Hypotheses as generative models</span><span class="ar">→</span><span class="st">Invert on data</span><span class="ar">→</span><span class="st">Compare by evidence</span><span class="ar">→</span><span class="st">Interpret parameters / latent variables</span></div>
+    <div class="tw"><table>
+      <thead><tr><th>Instance</th><th>Candidate models</th><th>Inversion</th><th>Comparison</th><th>Interpretation</th><th>Key difference</th></tr></thead>
+      <tbody>
+        <tr><th>Bandit example (four-stage guide)</th><td>Random, WSLS, RW, choice kernel, RW + kernel</td><td>Maximum likelihood, many start points</td><td>BIC, checked by a confusion matrix</td><td>Parameters and yoked latent variables of the validated winner</td><td class="diff">Only the winner is interpreted, and only after simulation shows it reproduces the data</td></tr>
+        <tr><th>HGF pharmacology study</th><td>One perceptual HGF; several candidate response models</td><td>Per participant, from RTs</td><td>RFX BMS over response models in each group</td><td><span class="m">ω, ϑ, β</span> compared drug vs placebo</td><td class="diff">Groups share one model, so differences sit in parameters</td></tr>
+        <tr><th>DCM psilocybin study</th><td>Bottom-up, top-down, full modulation by threat</td><td>Per participant and session, from BOLD</td><td>RFX BMS → full model wins in both conditions</td><td>BMA over all three models → ANOVA drug × connection</td><td class="diff">Parameters averaged across models so a drug effect can appear in any connection</td></tr>
+        <tr><th>Computational assay</th><td>Models of disease mechanisms</td><td>From a single patient's imaging or behaviour</td><td>Model selection and averaging</td><td>Subgroup → treatment prediction</td><td class="diff">The comparison outcome is the clinical result</td></tr>
+      </tbody>
+    </table></div>
+    <p class="takeaway"><b>Takeaway:</b> the same four moves run from a toy bandit to a clinical assay. The main choice is where parameters come from: the bandit guide uses only the validated winner, while the DCM study averaged over models.</p>
+  </div>
+
+  <div class="block">
+    <h3>C · One observation, several hidden causes</h3>
+    <div class="template"><span class="st">Observation</span><span class="ar">← could come from →</span><span class="st">Competing mechanisms</span><span class="ar">→ separated by →</span><span class="st">Model + design</span><span class="ar">→</span><span class="st">Verdict</span></div>
+    <div class="tw"><table>
+      <thead><tr><th>Observation</th><th>Competing mechanisms</th><th>What separates them</th><th>Verdict</th></tr></thead>
+      <tbody>
+        <tr><th>Same psychiatric diagnosis</th><td>Different underlying disease processes</td><td>Computational assay per patient</td><td>Mechanistic subgroups (the aim)</td></tr>
+        <tr><th>Weaker amygdala response to threat under psilocybin</th><td>↑ LPFC → AMG control · ↓ V1 → AMG input · ↓ AMG → V1 feedback</td><td>DCM model space + BMS + BMA</td><td>↓ threat modulation of AMG → V1</td></tr>
+        <tr><th>A drug changes reaction times</th><td>Altered learning (<span class="m">ω, ϑ</span>) vs altered use of beliefs (<span class="m">β</span>)</td><td>Separate perceptual and response models</td><td>NA−: learning · DA−: response · ACh−: both</td></tr>
+        <tr><th>An unexpected stimulus (the brain's own problem)</th><td>Chance fluctuation within a context vs a switch of context</td><td>Quality of contingency learning (<span class="m">ω</span>) vs volatility updating (<span class="m">ϑ</span>)</td><td>ACh−: surprises misattributed to switches</td></tr>
+        <tr><th>Slow learning curve in a bandit</th><td>Low learning rate <span class="m">α</span> vs low inverse temperature <span class="m">β</span></td><td>Simulation across the parameter range; parameter recovery</td><td>Separable only if recovered parameters don't trade off</td></tr>
+        <tr><th>Choices repeat past choices</th><td>Choice kernel vs RL learning from reward</td><td>Simulating the winner with fitted parameters</td><td>Kernel wins on fit, cannot reverse → RL generated the data</td></tr>
+      </tbody>
+    </table></div>
+    <p class="takeaway"><b>Takeaway:</b> models are needed because an observation underdetermines its cause. Each candidate mechanism has to make a different prediction that the data can then decide between.</p>
+    <div class="analogy"><span class="lab">Analogy</span><span>Fever is one sign with many causes; the thermometer reading alone cannot choose the treatment.</span><span class="brk">Where it breaks down: the causes of fever are known and testable. Here the candidate mechanisms are themselves hypotheses that must first be formalised as models.</span></div>
+  </div>
+
+  <div class="block">
+    <h3>D · Top-down prediction vs bottom-up input</h3>
+    <div class="template"><span class="st">Top-down prediction</span><span class="ar">vs</span><span class="st">Bottom-up input</span><span class="ar">→ weighted by →</span><span class="st">Precision / gain</span><span class="ar">→</span><span class="st">What perception or learning does</span></div>
+    <div class="tw"><table>
+      <thead><tr><th>Instance</th><th>Top-down side</th><th>Bottom-up side</th><th>What sets the balance</th><th>Consequence</th><th>Level of description</th></tr></thead>
+      <tbody>
+        <tr><th>HGF belief update</th><td>Belief <span class="m">μ₂</span> and its precision</td><td>Stimulus and its expected precision</td><td>Ratio <span class="m">ψ₂</span></td><td>Size of the update</td><td class="diff">Belief precision</td></tr>
+        <tr><th>Acetylcholine</th><td>Prior expectations</td><td>Sensory / thalamic input</td><td>↑ gain of forward over backward connections</td><td>Learn about the current context (expected uncertainty)</td><td class="diff">Synaptic gain ↔ precision</td></tr>
+        <tr><th>Hallucinations</th><td>Predictions overweighted</td><td>Too little cholinergic gain on input</td><td>Prediction dominates</td><td>Percept without a stimulus</td><td class="diff">Precision imbalance</td></tr>
+        <tr><th>Aberrant salience (schizophrenia)</th><td>High-level beliefs: too little precision, later hyper-precise delusion</td><td>Low-level PEs: too much precision</td><td>Imbalance across levels</td><td>Irrelevant events feel salient; delusion explains them away</td><td class="diff">Precision imbalance</td></tr>
+        <tr><th>Autism</th><td>Regularising abstractions too weak</td><td>Sensory detail</td><td>Putative precision deficit</td><td>Perception dominated by detail</td><td class="diff">Precision imbalance</td></tr>
+        <tr><th>Psilocybin threat network</th><td>AMG → V1 feedback tunes vision toward threat</td><td>V1 → AMG input</td><td>Threat modulation of AMG → V1 ↓</td><td>Vision less captured by threat</td><td class="diff">Connection strength (DCM), not framed as precision</td></tr>
+      </tbody>
+    </table></div>
+    <p class="takeaway"><b>Takeaway:</b> learning, perception and several disorders are described as one dial, how far to trust input over prior. Learning models read the dial as belief precision; circuit models read it as connection gain.</p>
+  </div>
+</section>
+
+<!-- 3 CONTRASTS -->
+<section id="contrasts">
+  <h2><span class="n">3</span>Contrast tables</h2>
+
+  <div class="block">
+    <h3>Kinds of uncertainty</h3>
+    <div class="tw"><table>
+      <thead><tr><th>Term</th><th>Uncertainty about</th><th>Shrinks with learning?</th><th>Where in the HGF</th><th>Linked transmitter</th><th>Commuter example</th></tr></thead>
+      <tbody>
+        <tr><th>Irreducible</th><td>Randomness of outcomes (max. at p = 0.5)</td><td>No</td><td>Level 1 → sensory PE <span class="m">δ₁</span></td><td>—</td><td>Random station closure</td></tr>
+        <tr><th>Estimation</th><td>Current probabilities, imperfectly known</td><td>Yes</td><td>Variance <span class="m">σ₂</span> of the level-2 belief</td><td>—</td><td>New route, learned gradually</td></tr>
+        <tr><th>Volatility</th><td>How fast the probabilities change</td><td>Estimated, not removed</td><td>Level 3 <span class="m">μ₃</span>; speed set by <span class="m">ω, ϑ</span></td><td>NA (<span class="m">ϑ</span>), ACh (<span class="m">ω, ϑ</span>)</td><td>Olympics change the crowds</td></tr>
+        <tr><th>Expected uncertainty</th><td>Known unreliability inside a familiar context</td><td>—</td><td>≈ precision-weighted PE about outcome probability</td><td>ACh</td><td>—</td></tr>
+        <tr><th>Unexpected uncertainty</th><td>The context itself has changed</td><td>—</td><td>Context switches → volatility updating</td><td>NA</td><td>—</td></tr>
+      </tbody>
+    </table></div>
+    <p class="takeaway">The first three name what is uncertain; the last two name which transmitter is proposed to signal it.</p>
+  </div>
+
+  <div class="block">
+    <h3>Parameters that are easy to mix up</h3>
+    <div class="tw"><table>
+      <thead><tr><th>Parameter</th><th>Model part</th><th>Controls</th><th>High value means</th><th>Antagonist effect</th></tr></thead>
+      <tbody>
+        <tr><th><span class="m">ω</span></th><td>HGF perceptual, level 2</td><td>Tonic speed of contingency learning</td><td>Learns fast what follows what</td><td>ACh− ↓</td></tr>
+        <tr><th><span class="m">ϑ</span></th><td>HGF perceptual, level 3</td><td>Speed of volatility updating (metavolatility)</td><td>World seen as unstable; learning rate swings more (phasic)</td><td>NA− ↑, ACh− ↑</td></tr>
+        <tr><th><span class="m">β₁–β₃</span></th><td>HGF response model</td><td>How much <span class="m">δ₁, ε₃, μ₃</span> slow responses</td><td>Beliefs strongly shape action</td><td>ACh− ↓ all; DA− ↓ <span class="m">β₃</span></td></tr>
+        <tr><th><span class="m">β₀</span></th><td>HGF response model</td><td>Constant response speed</td><td>Generally slower</td><td>DA−, ACh− ↑</td></tr>
+        <tr><th>softmax <span class="m">β</span></th><td>Choice rule (RW, Q-learning)</td><td>Determinism of choice</td><td>Almost always picks the highest value</td><td>—</td></tr>
+      </tbody>
+    </table></div>
+    <p class="takeaway">Same letter, different job: softmax <span class="m">β</span> turns values into choices, while response <span class="m">β</span>s turn beliefs into reaction times.</p>
+  </div>
+
+  <div class="block">
+    <h3>Three ways to analyse fMRI</h3>
+    <div class="tw"><table>
+      <thead><tr><th>Approach</th><th>Question</th><th>What is modelled</th><th>Output</th><th>Cannot tell you</th></tr></thead>
+      <tbody>
+        <tr><th>Conventional GLM</th><td>Does a region respond to a condition?</td><td>BOLD as a function of conditions</td><td>Activation map</td><td>How the response comes about</td></tr>
+        <tr><th>Model-based fMRI</th><td>Where does BOLD track a hidden computational quantity?</td><td>Trial-wise trajectories from a learning model, used as regressors</td><td>Map of regions tracking, e.g., a PE</td><td>Which transmitter or cell type produces the signal; direction of influence</td></tr>
+        <tr><th>DCM</th><td>Which directed coupling, and which change in it, generates the responses?</td><td>Hidden neuronal states + region-specific hemodynamics</td><td>Effective connectivity, modulation, model evidence</td><td>Anything about regions left out of the model</td></tr>
+      </tbody>
+    </table></div>
+    <p class="takeaway">The psilocybin study used the first to find the regions and the third to decide between mechanisms; the HGF line of work uses the second to place PEs in the midbrain and basal forebrain.</p>
+  </div>
+
+  <div class="block">
+    <h3>Checks on a model</h3>
+    <div class="tw"><table>
+      <thead><tr><th>Check</th><th>Question</th><th>Data</th><th>Fitted with</th><th>Output</th><th>Failure means</th></tr></thead>
+      <tbody>
+        <tr><th>Parameter recovery</th><td>Can I find the true parameters?</td><td>Simulated, known parameters</td><td>The same model</td><td>Simulated vs recovered; parameter correlations</td><td>Bug, weak design, or parameters trade off</td></tr>
+        <tr><th>Model recovery</th><td>Can my comparison tell the models apart?</td><td>Simulated from every model</td><td>Every model</td><td>Confusion matrix → inversion matrix</td><td>A "winning model" on real data says little</td></tr>
+        <tr><th>Model comparison</th><td>Which candidate explains the real data best?</td><td>Real</td><td>Every model</td><td>Evidence, BIC, exceedance probability</td><td>Only relative: best of those tested</td></tr>
+        <tr><th>Validation</th><td>Can the winner produce the behaviour?</td><td>Simulated from the winner with fitted parameters</td><td>— (compared with real data)</td><td>Model-independent signatures reproduced or not</td><td>Model misses the mechanism → revise model or task</td></tr>
+      </tbody>
+    </table></div>
+    <p class="takeaway">Recovery checks run on simulated data and ask whether the method can work at all; comparison and validation run on real data and ask whether it did.</p>
+    <div class="analogy"><span class="lab">Analogy</span><span>Model recovery is like validating a diagnostic test on cases with known diagnoses before using it on patients; the confusion matrix plays the role of sensitivity and specificity.</span><span class="brk">Where it breaks down: the known cases are generated by the models themselves, so the result is a best case. Real behaviour is produced by none of the candidate models exactly.</span></div>
+  </div>
+</section>
+
+<!-- 4 FUNCTIONAL DIAGRAMS -->
+<section id="functional">
+  <h2><span class="n">4</span>Functional diagrams</h2>
+
+  <figure>
+    <div class="problem"><span>Problem</span>How much should one surprise change a belief when the world itself may have just changed?</div>
+    <div class="scroll">
+    <svg class="dg" viewBox="0 0 1000 370" role="img" aria-label="HGF change-detection loop: surprises that keep forcing the contingency belief to move raise the volatility belief, which raises the learning rate for the next surprises; response weights read beliefs out into reaction time; antagonists act at different points.">
+      <defs>
+        <marker id="m2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah" d="M0,0 L10,5 L0,10 z"/></marker>
+        <marker id="m2a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ahA" d="M0,0 L10,5 L0,10 z"/></marker>
+      </defs>
+      <!-- forward chain -->
+      <path class="e" d="M150 143 H218" marker-end="url(#m2)"/>
+      <path class="e" d="M350 143 H418" marker-end="url(#m2)"/>
+      <path class="e" d="M550 143 H618" marker-end="url(#m2)"/>
+      <path class="e" d="M750 143 H818" marker-end="url(#m2)"/>
+      <text class="el" x="185" y="166" text-anchor="middle"><tspan x="185">vs.</tspan><tspan x="185" dy="13">prediction</tspan></text>
+      <text class="el" x="385" y="166" text-anchor="middle"><tspan x="385">× ψ₂ = ε₂</tspan><tspan x="385" dy="13">updates</tspan></text>
+      <text class="el" x="585" y="166" text-anchor="middle"><tspan x="585">its change</tspan><tspan x="585" dy="13">is a PE</tspan></text>
+      <text class="el" x="785" y="166" text-anchor="middle"><tspan x="785">× ψ₃ = ε₃</tspan><tspan x="785" dy="13">updates</tspan></text>
+      <!-- feedback loop -->
+      <path class="e fb" d="M885 110 V37 H672" marker-end="url(#m2a)"/>
+      <path class="e fb" d="M408 37 H385 V137" marker-end="url(#m2a)"/>
+      <text class="el a" x="778" y="31" text-anchor="middle">more volatile → raises</text>
+      <text class="el a" x="378" y="84" text-anchor="end">scales ε₂</text>
+      <!-- readouts -->
+      <path class="e" d="M285 176 V298" marker-end="url(#m2)"/>
+      <path class="e" d="M685 176 V298" marker-end="url(#m2)"/>
+      <path class="e" d="M885 176 V298" marker-end="url(#m2)"/>
+      <text class="el" x="292" y="250">β₁ slows</text>
+      <text class="el" x="692" y="250">β₂ (via ε₃) slows</text>
+      <text class="el" x="892" y="240">β₃ slows</text>
+      <!-- nodes -->
+      <rect class="box key" x="410" y="12" width="260" height="50" rx="8"/>
+      <text class="mt" x="540" y="33" text-anchor="middle">learning rate ψ₂</text>
+      <text class="s" x="540" y="51" text-anchor="middle">input precision ÷ belief precision</text>
+
+      <rect class="box obs" x="20" y="110" width="130" height="66" rx="8"/>
+      <text class="t" x="85" y="138" text-anchor="middle">stimulus</text>
+      <text class="s" x="85" y="156" text-anchor="middle">what just happened</text>
+
+      <rect class="box" x="220" y="110" width="130" height="66" rx="8"/>
+      <text class="mt" x="285" y="138" text-anchor="middle">δ₁ sensory PE</text>
+      <text class="s" x="285" y="156" text-anchor="middle">surprise now</text>
+
+      <rect class="box" x="420" y="110" width="130" height="66" rx="8"/>
+      <text class="mt" x="485" y="138" text-anchor="middle">μ₂ contingency</text>
+      <text class="s" x="485" y="156" text-anchor="middle">what follows what</text>
+
+      <rect class="box" x="620" y="110" width="130" height="66" rx="8"/>
+      <text class="mt" x="685" y="138" text-anchor="middle">δ₂ contingency PE</text>
+      <text class="s" x="685" y="156" text-anchor="middle">belief had to move</text>
+
+      <rect class="box" x="820" y="110" width="130" height="66" rx="8"/>
+      <text class="mt" x="885" y="138" text-anchor="middle">μ₃ volatility</text>
+      <text class="s" x="885" y="156" text-anchor="middle">how unstable now?</text>
+
+      <rect class="box obs" x="220" y="300" width="730" height="52" rx="8"/>
+      <text class="t" x="236" y="322">response model → log RT</text>
+      <text class="s" x="236" y="340">= β₀ + β₁δ₁ + β₂ε₃ + β₃μ₃ + β₄·post-error + noise · splits learning from acting</text>
+
+      <!-- drug sites -->
+      <rect class="pill" x="420" y="196" width="130" height="22" rx="11"/>
+      <text class="pt" x="485" y="211" text-anchor="middle">ACh−: ω ↓</text>
+      <rect class="pill" x="706" y="196" width="160" height="22" rx="11"/>
+      <text class="pt" x="786" y="211" text-anchor="middle">NA−, ACh−: ϑ ↑</text>
+      <rect class="pill" x="896" y="254" width="96" height="22" rx="11"/>
+      <text class="pt" x="944" y="269" text-anchor="middle">DA−: β₃ ↓</text>
+      <rect class="pill" x="20" y="315" width="180" height="22" rx="11"/>
+      <text class="pt" x="110" y="330" text-anchor="middle">ACh−: β₁, β₂, β₃ ↓</text>
+    </svg>
+    </div>
+    <div class="legend"><span><i class="lg-obs"></i>observed (stimulus in, RT out)</span><span><i class="lg-key"></i>the inferred learning rate</span><span><i class="lg-fb"></i>feedback that adapts the learning rate</span><span><i class="lg-drug"></i>antagonist effect vs placebo</span></div>
+    <figcaption><b>One loop does change detection:</b> surprises that keep forcing the contingency belief to move raise volatility, volatility raises the learning rate, and the next surprises are absorbed faster; each antagonist acted on a different part of this loop. Structure of the levels: Marshall et al. Fig 3.</figcaption>
+    <div class="analogy"><span class="lab">Analogy</span><span>A reader weighs a news report by how reliable the source is relative to how sure they already are. After several shocking reports in a row they start revising faster.</span><span class="brk">Where it breaks down: the reader rarely tracks how fast the world changes as a separate quantity, and nothing sets their reaction speed. In the HGF, volatility is its own belief, with its own update speed (<span class="m">ϑ</span>), and responses are a separate readout.</span></div>
+  </figure>
+
+  <figure>
+    <div class="problem"><span>Problem</span>A transmitter cannot be seen at work directly. Each model reads its effect at a different level, and together they constrain it.</div>
+    <div class="scroll">
+    <svg class="dg" viewBox="0 64 1000 252" role="img" aria-label="Acetylcholine's effect runs from release through synaptic gain and circuit balance to precision on evidence and the learning rate; DCM infers the synaptic and circuit levels, the HGF infers the computational and behavioural levels.">
+      <defs>
+        <marker id="m3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah" d="M0,0 L10,5 L0,10 z"/></marker>
+      </defs>
+      <path class="e" d="M170 143 H218" marker-end="url(#m3)"/>
+      <path class="e" d="M370 143 H418" marker-end="url(#m3)"/>
+      <path class="e" d="M570 143 H618" marker-end="url(#m3)"/>
+      <path class="e" d="M770 143 H818" marker-end="url(#m3)"/>
+      <text class="el" x="194" y="164" text-anchor="middle">acts on</text>
+      <text class="el" x="394" y="164" text-anchor="middle">shifts</text>
+      <text class="el" x="594" y="164" text-anchor="middle">encodes</text>
+      <text class="el" x="794" y="164" text-anchor="middle">sets</text>
+
+      <rect class="box" x="20" y="110" width="150" height="66" rx="8"/>
+      <text class="t" x="95" y="138" text-anchor="middle">ACh release</text>
+      <text class="s" x="95" y="156" text-anchor="middle">broadcast, basal forebrain</text>
+      <rect class="box" x="220" y="110" width="150" height="66" rx="8"/>
+      <text class="t" x="295" y="138" text-anchor="middle">synaptic gain</text>
+      <text class="s" x="295" y="156" text-anchor="middle">forward links ↑</text>
+      <rect class="box" x="420" y="110" width="150" height="66" rx="8"/>
+      <text class="t" x="495" y="138" text-anchor="middle">circuit balance</text>
+      <text class="s" x="495" y="156" text-anchor="middle">input over prediction</text>
+      <rect class="box" x="620" y="110" width="150" height="66" rx="8"/>
+      <text class="t" x="695" y="138" text-anchor="middle">computation</text>
+      <text class="s" x="695" y="156" text-anchor="middle">expected uncertainty</text>
+      <rect class="box obs" x="820" y="110" width="150" height="66" rx="8"/>
+      <text class="t" x="895" y="138" text-anchor="middle">behaviour</text>
+      <text class="s" x="895" y="156" text-anchor="middle">learning rate ω, RT</text>
+
+      <rect class="pill" x="820" y="78" width="150" height="22" rx="11"/>
+      <text class="pt" x="895" y="93" text-anchor="middle">ACh−: ω ↓, ϑ ↑</text>
+
+      <!-- readout brackets -->
+      <path class="br" d="M230 190 V198 H560 V190"/>
+      <path class="br" d="M630 190 V198 H960 V190"/>
+      <path class="e" d="M395 250 V202" marker-end="url(#m3)"/>
+      <path class="e" d="M795 250 V202" marker-end="url(#m3)"/>
+      <text class="el" x="402" y="230">infers</text>
+      <text class="el" x="802" y="230">infers</text>
+      <rect class="box key" x="220" y="250" width="350" height="54" rx="8"/>
+      <text class="t" x="395" y="273" text-anchor="middle">DCM of M/EEG (e.g. mismatch negativity)</text>
+      <text class="s" x="395" y="291" text-anchor="middle">connection gain, short-term plasticity</text>
+      <rect class="box key" x="620" y="250" width="350" height="54" rx="8"/>
+      <text class="t" x="795" y="273" text-anchor="middle">HGF fitted to behaviour</text>
+      <text class="s" x="795" y="291" text-anchor="middle">ω, ϑ, precision-weighted PEs</text>
+    </svg>
+    </div>
+    <figcaption><b>Acetylcholine's effect runs from synaptic gain to learning rate:</b> circuit models read the lower rungs and learning models the upper ones. Combining both is the proposed way to separate transmitters whose effects overlap.</figcaption>
+  </figure>
+
+  <div class="block">
+    <h3>Source figures that already show the structure</h3>
+    <p class="lead">Each figure below is read with the roles it does not label.</p>
+    <div class="refs">
+      <div class="ref"><div class="src">Iglesias et al. · Fig 1</div><div class="what">Computational assay pipeline</div><div class="notes">notes §1</div>
+        <ul><li><b>Model</b> = defines what can be measured</li><li><b>Application to one patient</b> = the measurement itself (inversion)</li><li><b>Subgroups</b> = replace symptom categories with mechanisms</li><li><b>Treatment prediction</b> = the clinical payoff</li></ul></div>
+      <div class="ref"><div class="src">Iglesias et al. · Fig 2</div><div class="what">Anatomy of the DA, ACh, 5-HT and NA systems</div><div class="notes">notes §2</div>
+        <ul><li><b>Few source nuclei</b> = one sender per system</li><li><b>Widespread projections + volume transmission</b> = broadcast to many targets</li><li>Together = suited to carry global variables such as precision or PE</li></ul></div>
+      <div class="ref"><div class="src">Iglesias et al. · Fig 3</div><div class="what">Model-based fMRI steps</div><div class="notes">notes §3</div>
+        <ul><li><b>Green precision weight</b> = the learning-rate part of the PE</li><li><b>Purple PE</b> = the surprise part</li><li><b>Parametric modulators</b> = tell the GLM how much of the quantity each trial carries</li><li>Output = <b>where</b> a quantity is tracked, not which transmitter carries it</li></ul></div>
+      <div class="ref"><div class="src">Iglesias et al. · Fig 4</div><div class="what">BOLD correlates of computational quantities</div><div class="notes">notes §6</div>
+        <ul><li><b>Midbrain panels</b> = DA candidates: reward PE, sensory PE, precision</li><li><b>Septum</b> = ACh ↔ higher-level PE about outcome probability (expected uncertainty)</li><li><b>Locus coeruleus</b> = NA ↔ unexpected uncertainty</li><li>Hierarchy of uncertainty mapped onto separate systems, which the HGF drug study then tested causally</li></ul></div>
+      <div class="ref"><div class="src">Iglesias et al. · Box 1</div><div class="what">Equations: RW, TD, Q-learning, SARSA, softmax, HGF</div><div class="notes">notes §4–5</div>
+        <ul><li>Every update equation = an instance of Principle A</li><li><b>ψ</b> in the HGF = the slot where RW has a fixed <b>α</b></li></ul></div>
+      <div class="ref"><div class="src">Marshall et al. · Fig 1</div><div class="what">Probabilistic serial reaction time task</div><div class="notes">notes §10</div>
+        <ul><li><b>Probabilistic transitions</b> = create irreducible uncertainty</li><li><b>Learning the current matrix</b> = estimation uncertainty</li><li><b>Unsignalled matrix switches</b> = volatility</li><li><b>Faster RT to likely stimuli</b> = the behavioural readout of learning</li></ul></div>
+      <div class="ref"><div class="src">Marshall et al. · Fig 3</div><div class="what">HGF levels and trajectories</div><div class="notes">notes §5</div>
+        <ul><li><b>ω</b> = tonic learning-rate knob for contingencies</li><li><b>ϑ</b> = how quickly the volatility belief moves</li><li><b>Response model</b> = the bridge from beliefs to speed</li><li><b>Panel B, μ₃ rising after true switches</b> = change detection at work</li></ul></div>
+      <div class="ref"><div class="src">Marshall et al. · Fig 6</div><div class="what">Drug − placebo for every parameter</div><div class="notes">notes §10</div>
+        <ul><li><b>ω, ϑ panels</b> = effects on learning</li><li><b>β panels</b> = effects on using beliefs to respond</li><li>Pattern across panels = each transmitter's fingerprint</li></ul></div>
+      <div class="ref"><div class="src">Kraehenmann et al. · Fig 2</div><div class="what">DCM model space: base, bottom-up, top-down, full</div><div class="notes">notes §11</div>
+        <ul><li><b>V1</b> = entry point of the picture</li><li><b>AMG</b> = tags threat</li><li><b>LPFC</b> = regulator; LPFC → AMG is where an SSRI increased prefrontal down-regulation</li><li><b>AMG → V1</b> = tunes vision toward threat; weakened by psilocybin</li><li><b>Models B–D</b> = three competing causes of one GLM finding</li></ul></div>
+      <div class="ref"><div class="src">Kraehenmann et al. · Fig 3</div><div class="what">Expected and exceedance probabilities</div><div class="notes">notes §8, §11</div>
+        <ul><li><b>Expected probability</b> = how common each model is in the population</li><li><b>Exceedance probability</b> = confidence that it beats all others</li><li><b>Same winner in both sessions</b> = the drug changes connection strength, not architecture</li></ul></div>
+      <div class="ref"><div class="src">Stephan et al. · Fig 1</div><div class="what">Sequence of DCM analysis by question</div><div class="notes">notes §8</div>
+        <ul><li><b>Question about structure</b> → BMS: FFX if one mechanism in all subjects, RFX if it may differ</li><li><b>Question about parameters</b> → BPA or summary statistics</li><li><b>BMA</b> = escape route when no single model should be trusted alone</li><li>The psilocybin study took the RFX BMS → BMA → ANOVA path</li></ul></div>
+      <div class="ref"><div class="src">Wilson &amp; Collins · Fig 1</div><div class="what">The ten rules as a process</div><div class="notes">notes §9</div>
+        <ul><li><b>First "no" loop</b> = the design cannot answer the question even in theory, so redesign before collecting data</li><li><b>Second "no" loop</b> = the winning model cannot produce the data, so revise the model</li><li>Box 4, 5 and 7 figures = the parameter recovery, model recovery and validation checks in the contrast table above</li></ul></div>
+    </div>
+  </div>
+</section>
+
+<!-- 5 WHY QUESTIONS -->
+<section id="why">
+  <h2><span class="n">5</span>Why questions</h2>
+  <ol class="whys">
+    <li><span class="qq">Why does blocking acetylcholine speed up volatility updating (ϑ ↑), although acetylcholine is proposed to signal expected uncertainty within a context, not change between contexts?</span><span class="hint">Connect: HGF loop · uncertainty contrast · Principle C, the unexpected-stimulus row.</span></li>
+    <li><span class="qq">Why could the conventional analysis of the psilocybin data not decide whether the drug works like an SSRI, and what in the DCM design made that decision possible?</span><span class="hint">Connect: Principle C · fMRI contrast · Principle B, DCM row.</span></li>
+    <li><span class="qq">Why is a model that wins a model comparison still not enough to interpret its parameters, and which two checks guard against the two different ways this can fail?</span><span class="hint">Connect: checks contrast · Principle B · Wilson &amp; Collins Fig 1 loops.</span></li>
+    <li><span class="qq">Why are neuromodulators, rather than glutamate or GABA, plausible carriers of variables such as precision or volatility, and why does the same property make one transmitter's contribution hard to isolate?</span><span class="hint">Connect: overview map · Iglesias Fig 2 roles · acetylcholine ladder.</span></li>
+    <li><span class="qq">Why would a learner with a fixed learning rate do badly in the serial reaction time task, and what in the HGF fixes this?</span><span class="hint">Connect: Principle A · HGF loop · Marshall Fig 1 roles.</span></li>
+  </ol>
+</section>
+
+</div>
+
+</body></html>
