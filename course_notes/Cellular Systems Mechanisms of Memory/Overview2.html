@@ -16,6 +16,8 @@
   --violet-tint: #ece6f6;
   --green: #2d7a4c;
   --green-tint: #e2f1e8;
+  --amber: #93550f;
+  --amber-tint: #f8ecd9;
   --mark: #fff3c4;
   --f-display: "Bricolage Grotesque", "Avenir Next", "Segoe UI", sans-serif;
   --f-body: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
@@ -24,13 +26,13 @@
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     --paper: #14121a; --surface: #1c1924; --ink: #ebe8f1; --muted: #a49eb2; --line: #8d869c; --rule: #322e3d;
-    --violet: #b79bf0; --violet-tint: #2a2239; --green: #6fca95; --green-tint: #1a2d22; --mark: #3b3420;
+    --violet: #b79bf0; --violet-tint: #2a2239; --green: #6fca95; --green-tint: #1a2d22; --amber: #e3a961; --amber-tint: #33281a; --mark: #3b3420;
     color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
   --paper: #14121a; --surface: #1c1924; --ink: #ebe8f1; --muted: #a49eb2; --line: #8d869c; --rule: #322e3d;
-  --violet: #b79bf0; --violet-tint: #2a2239; --green: #6fca95; --green-tint: #1a2d22; --mark: #3b3420;
+  --violet: #b79bf0; --violet-tint: #2a2239; --green: #6fca95; --green-tint: #1a2d22; --amber: #e3a961; --amber-tint: #33281a; --mark: #3b3420;
   color-scheme: dark;
 }
 body {
@@ -59,6 +61,7 @@ p { margin: 0; max-width: 68ch; }
 .caption b { font-weight: 700; }
 .takeaway { font-size: 15px; padding-left: 14px; border-left: 3px solid var(--violet); max-width: 72ch; }
 .takeaway.g { border-left-color: var(--green); }
+.takeaway.a { border-left-color: var(--amber); }
 .template { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 8px; counter-reset: st; }
 .template li { counter-increment: st; font-size: 14px; background: var(--surface); border: 1px solid var(--rule); border-radius: 6px; padding: 6px 10px; display: flex; gap: 8px; align-items: baseline; }
 .template li::before { content: counter(st); font-family: var(--f-mono); font-size: 12px; color: var(--muted); }
@@ -90,6 +93,9 @@ td.k { color: var(--muted); font-style: italic; }
 .n-g { fill: var(--green-tint); stroke: var(--green); stroke-width: 1.5; }
 .n-q1 { fill: var(--surface); stroke: var(--violet); stroke-width: 2.25; }
 .n-q2 { fill: var(--surface); stroke: var(--green); stroke-width: 2.25; }
+.n-a { fill: var(--amber-tint); stroke: var(--amber); stroke-width: 1.5; }
+.n-q3 { fill: var(--surface); stroke: var(--amber); stroke-width: 2.25; }
+.sw-a { fill: var(--amber-tint); stroke: var(--amber); }
 .t-name { fill: var(--ink); font-family: var(--f-body); font-weight: 700; font-size: 13.5px; }
 .t-role { fill: var(--muted); font-family: var(--f-body); font-size: 12px; }
 .t-q { fill: var(--ink); font-family: var(--f-display); font-weight: 700; font-size: 15px; }
@@ -106,9 +112,9 @@ td.k { color: var(--muted); font-style: italic; }
 
 <div class="wrap">
 <header>
-  <span class="eyebrow">Synthesis layer · Kandel Ch. 54 · Alam et al. 2018 · Bruel-Jungerman et al. 2006</span>
-  <h1>How the hippocampus writes memories and keeps room for more</h1>
-  <p class="lede">Connections, comparisons and functional meaning across the three sources. Mechanism details live in the study notes; circuit and pathway drawings live in the source figures referenced below.</p>
+  <span class="eyebrow">Synthesis layer · Kandel Ch. 53, 54, 57 · Alam et al. 2018 · Bruel-Jungerman et al. 2006</span>
+  <h1>How the brain writes memories, renews its neurons and tries to repair itself</h1>
+  <p class="lede">Connections, comparisons and functional meaning across the five sources. Mechanism details live in the study notes; circuit and pathway drawings live in the source figures referenced below.</p>
   <nav aria-label="Sections"><ol>
     <li><a href="#map">1 Overview map</a></li>
     <li><a href="#principles">2 Recurring principles</a></li>
@@ -122,9 +128,9 @@ td.k { color: var(--muted); font-style: italic; }
 <!-- 1 OVERVIEW MAP -->
 <section id="map">
   <h2><span class="n">1</span>Overview map</h2>
-  <p class="caption"><b>Every topic answers one of two questions:</b> how a memory is written and recalled (violet) or how the hippocampus keeps room to write the next one (green). NMDA-dependent LTP and adult neurogenesis are the two hinges that feed both sides.</p>
+  <p class="caption"><b>Every topic answers one of three questions:</b> how a memory is written and recalled (violet), how the hippocampus keeps room for the next one (green), and how neurons are made, kept alive and replaced (amber). Adult neurogenesis is the hub: it reruns the developmental program, renews memory capacity, and shows that repair by new neurons is possible.</p>
   <div class="frame">
-  <svg viewBox="0 0 1100 560" role="img" aria-label="Overview map linking LTP, assemblies, pattern separation and completion, saturation, sleep, LTD, neurogenesis and neocortex to two central questions">
+  <svg viewBox="0 0 1100 830" role="img" aria-label="Overview map linking memory mechanisms, capacity mechanisms, neuron development, survival, axon injury and cell replacement to three central questions">
     <defs>
       <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="arrowhead" d="M0 0L10 5L0 10z"/></marker>
     </defs>
@@ -214,11 +220,49 @@ td.k { color: var(--muted); font-style: italic; }
     <rect class="n-g" x="895" y="440" width="180" height="60" rx="8"/>
     <text class="t-name" x="985" y="465" text-anchor="middle">Neocortex</text>
     <text class="t-role" x="985" y="484" text-anchor="middle">long-term store</text>
+    <!-- Q3 edges -->
+    <path class="e" d="M130 580V530H640V502" marker-end="url(#ah)"/>
+    <text class="t-edge" x="140" y="522">rerun in adult niches as</text>
+    <path class="e" d="M455 580V556H700V502" marker-end="url(#ah)"/>
+    <text class="t-edge" x="465" y="549">selects which newborn cells survive</text>
+    <path class="e" d="M750 502V578" marker-end="url(#ah)"/>
+    <text class="t-edge" x="758" y="536">proof that new</text>
+    <text class="t-edge" x="758" y="550">neurons can integrate</text>
+    <path class="e" d="M230 610H303" marker-end="url(#ah)"/>
+    <text class="t-edge" x="267" y="602" text-anchor="middle">ends in a</text>
+    <text class="t-edge" x="267" y="628" text-anchor="middle">survival test</text>
+    <path class="e" d="M895 610H792" marker-end="url(#ah)"/>
+    <text class="t-edge" x="843" y="602" text-anchor="middle">neuron loss</text>
+    <text class="t-edge" x="843" y="628" text-anchor="middle">creates need for</text>
+    <path class="e" d="M960 640V680H405V642" marker-end="url(#ah)"/>
+    <text class="t-edge" x="680" y="672" text-anchor="middle">cut axon loses its target factor → apoptosis</text>
+    <path class="e" d="M130 640V718" marker-end="url(#ah)"/>
+    <text class="t-edge" x="138" y="704">answers: how neurons are made</text>
+    <path class="e" d="M1040 640V718" marker-end="url(#ah)"/>
+    <text class="t-edge" x="1032" y="704" text-anchor="end">answers: why repair fails</text>
+    <!-- row 4 -->
+    <rect class="n-a" x="30" y="580" width="200" height="60" rx="8"/>
+    <text class="t-name" x="130" y="605" text-anchor="middle">Neuron development</text>
+    <text class="t-role" x="130" y="624" text-anchor="middle">divide → Notch fate → migrate</text>
+    <rect class="n-a" x="305" y="580" width="200" height="60" rx="8"/>
+    <text class="t-name" x="405" y="605" text-anchor="middle">Trophic survival</text>
+    <text class="t-role" x="405" y="624" text-anchor="middle">neurotrophins block apoptosis</text>
+    <rect class="n-a" x="590" y="580" width="200" height="60" rx="8"/>
+    <text class="t-name" x="690" y="605" text-anchor="middle">Cell replacement</text>
+    <text class="t-role" x="690" y="624" text-anchor="middle">grafts, ES/iPS, precursors</text>
+    <rect class="n-a" x="895" y="580" width="180" height="60" rx="8"/>
+    <text class="t-name" x="985" y="605" text-anchor="middle">Axon injury</text>
+    <text class="t-role" x="985" y="624" text-anchor="middle">CNS axons fail to regrow</text>
+    <rect class="n-q3" x="30" y="720" width="1045" height="56" rx="8"/>
+    <text class="t-small" x="552" y="740" text-anchor="middle">Q3 · NEURONS</text>
+    <text class="t-q" x="552" y="762" text-anchor="middle">How are neurons made, kept alive, and replaced after injury?</text>
     <!-- legend -->
-    <rect class="sw-v" x="30" y="528" width="14" height="14" rx="3"/>
-    <text class="t-role" x="52" y="540">storing and recalling (Q1)</text>
-    <rect class="sw-g" x="240" y="528" width="14" height="14" rx="3"/>
-    <text class="t-role" x="262" y="540">keeping capacity (Q2)</text>
+    <rect class="sw-v" x="30" y="800" width="14" height="14" rx="3"/>
+    <text class="t-role" x="52" y="812">storing and recalling (Q1)</text>
+    <rect class="sw-g" x="240" y="800" width="14" height="14" rx="3"/>
+    <text class="t-role" x="262" y="812">keeping capacity (Q2)</text>
+    <rect class="sw-a" x="440" y="800" width="14" height="14" rx="3"/>
+    <text class="t-role" x="462" y="812">making, keeping and replacing neurons (Q3)</text>
   </svg>
   </div>
 </section>
@@ -250,7 +294,7 @@ td.k { color: var(--muted); font-style: italic; }
   </div>
 
   <div class="block">
-    <h3>B. One cAMP–PKA route for short and long persistence</h3>
+    <h3>B. One cAMP route for persistence and for growth</h3>
     <ol class="template" aria-label="Template">
       <li>Trigger raises cAMP</li>
       <li>PKA activated</li>
@@ -264,9 +308,10 @@ td.k { color: var(--muted); font-style: italic; }
         <tr><th>Late LTP, Schaffer and mossy fiber</th><td>Repeated tetani → prolonged Ca²⁺ → adenylyl cyclase</td><td>PKA → MAPK</td><td>CREB-1 → CRE genes</td><td>New synapses</td><td>Same late route although early mechanisms differ</td></tr>
         <tr><th>Place-field stability</th><td>Attention → dopamine at D1/D5 receptors</td><td>PKA</td><td>Late LTP</td><td>Map stable for days</td><td>Links attention to explicit memory</td></tr>
         <tr><th>Aplysia long-term facilitation (Ch. 54 cross-reference)</th><td>cAMP</td><td>PKA</td><td>CREB</td><td>Synapse growth</td><td>Same logic serves implicit memory</td></tr>
+        <tr><th>Conditioning lesion (Ch. 57)</th><td>Peripheral branch cut → cAMP rises</td><td class="k">cAMP-activated enzymes, not named</td><td>Neurite-outgrowth program (with GAP-43)</td><td>Central branch regrows past a lesion</td><td>cAMP falls postnatally in central neurons only</td></tr>
       </tbody>
     </table></div>
-    <p class="takeaway">PKA acting locally gives hours; PKA reaching CREB gives days. Attention plugs into this same route through dopamine, which is why an ignored environment leaves only an unstable map.</p>
+    <p class="takeaway">PKA acting locally gives hours; PKA reaching CREB gives days of new synaptic growth. Attention plugs into this route through dopamine. In repair the same messenger drives axon regrowth, and its postnatal fall in central neurons is one reason they regrow poorly.</p>
   </div>
 
   <div class="block">
@@ -330,6 +375,49 @@ td.k { color: var(--muted); font-style: italic; }
       </tbody>
     </table></div>
     <p class="takeaway g">Run in four orders, the same finite-capacity logic shows that learning uses LTP, a memory is a pattern of weights, new learning needs free capacity, and neurogenesis refills it.</p>
+  </div>
+
+  <div class="block">
+    <h3>F. Overproduce, then let a limited signal decide what stays</h3>
+    <ol class="template" aria-label="Template">
+      <li>More cells or synapses are made than can be kept</li>
+      <li>They compete for a limited signal</li>
+      <li>The signal suppresses a default removal</li>
+      <li>Winners integrate, losers are removed</li>
+    </ol>
+    <div class="tblwrap"><table>
+      <thead><tr><th>Instance</th><th>1 Surplus</th><th>2 Limited signal</th><th>3 Default without it</th><th>4 Result</th><th>Source</th></tr></thead>
+      <tbody>
+        <tr><th>Developmental neuron death</th><td>About half of neurons generated</td><td>Target-derived neurotrophic factor</td><td>Apoptosis (Bcl-2 balance → caspases)</td><td>Neuron number matches target size</td><td>Ch. 53</td></tr>
+        <tr><th>Adult-born granule cells</th><td>Many newborn cells</td><td>Activity, LTP; BDNF proposed</td><td>Death in the 1–2-week window</td><td>More survive after LTP or learning</td><td>Bruel-Jungerman, Ch. 57</td></tr>
+        <tr><th>New vs old DG neurons</th><td>New neurons added to a full circuit</td><td>Synaptic inputs and outputs</td><td>Older connections replaced</td><td>Rewiring; old LTP decays</td><td>Alam</td></tr>
+        <tr><th>Synaptic tagging and capture</th><td>Many tagged synapses</td><td>Newly made plasticity proteins</td><td>Early LTP fades</td><td>Only tagged synapses get late LTP</td><td>Ch. 54</td></tr>
+        <tr><th>Axotomized neuron</th><td class="k">—</td><td>Target factor no longer reaches the soma</td><td>Apoptosis</td><td>Injury kills cells it never touched directly</td><td>Ch. 57</td></tr>
+      </tbody>
+    </table></div>
+    <p class="takeaway a">The nervous system rarely builds to measure. It makes a surplus and lets a scarce signal pick what stays. That one rule sizes neuron populations in the embryo, picks which adult-born neurons survive, and explains why a neuron dies when injury cuts it off from its target.</p>
+  </div>
+
+  <div class="block">
+    <h3>G. Development reused: adult neurogenesis continues it, repair tries to restart it</h3>
+    <ol class="template" aria-label="Template">
+      <li>A developmental step</li>
+      <li>Kept running in adult niches</li>
+      <li>Borrowed or restarted for repair</li>
+      <li>What limits it in the adult</li>
+    </ol>
+    <div class="tblwrap"><table>
+      <thead><tr><th>Developmental step (Ch. 53)</th><th>In adult neurogenesis</th><th>In repair (Ch. 57)</th><th>Adult limit</th></tr></thead>
+      <tbody>
+        <tr><th>Self-renewing progenitors (radial glia)</th><td>Astrocytic stem cells in SGZ and SVZ niches; transit-amplifying cells expand</td><td>Precursors elsewhere make neurons in culture; injury triggers some neurogenesis</td><td>Neurogenesis confined to niches; injury-induced output too small</td></tr>
+        <tr><th>Fate decision (low Notch + proneural bHLH → neuron)</th><td>Committed early (Prox-1, NeuN); LTP leaves the neuron share unchanged</td><td>ES/iPS cells steered with developmental signals (retinoic acid + hedgehog → motor neurons); grafted precursors adopt site-typical identity</td><td>Precursor plasticity limited, so fate is started in culture</td></tr>
+        <tr><th>Migration (radial glia; chain migration)</th><td>SVZ → rostral migratory stream by chain migration; DG cells stay local</td><td>Grafted cells must reach and enter adult neuropil</td><td>Mature grafted neurons often fail to integrate</td></tr>
+        <tr><th>Axon growth (chemotropic, adhesion, trophic cues)</th><td>New granule cell axons reach CA3</td><td>PNS regeneration reuses these cues via Schwann cells</td><td>CNS: few promoters, myelin inhibitors, scar, low cAMP/GAP-43</td></tr>
+        <tr><th>Trophic selection</th><td>Survival window; LTP and BDNF raise survival</td><td>Axotomy removes the target supply; neurotrophins infused or combined with other treatments</td><td>Infused factors alone give little functional recovery</td></tr>
+        <tr><th>Critical-period remodeling, then stabilization</th><td>Ongoing integration keeps renewing the DG circuit</td><td>Injury reawakens sprouting and detours</td><td>Stabilizers (myelin, astrocyte proteoglycans) block large-scale regrowth</td></tr>
+      </tbody>
+    </table></div>
+    <p class="takeaway a">Adult neurogenesis is development kept running in protected niches. Repair tries to restart development where the adult CNS has switched it off. That is why repair borrows developmental signals, and why the features that stabilize mature wiring are the same ones that block repair.</p>
   </div>
 </section>
 
@@ -408,6 +496,72 @@ td.k { color: var(--muted); font-style: italic; }
         <tr><th>Functional meaning</th><td>Learning-induced LTP may signal more new neurons</td><td>New neurons restore capacity to learn</td></tr>
       </tbody>
     </table></div>
+  </div>
+
+  <div class="block">
+    <h3>Embryonic vs adult neurogenesis</h3>
+    <p class="caption">Adult neurogenesis keeps the <b>embryonic logic</b> (multipotent glial stem cells, fate decision, migration, trophic selection) but runs it in <b>two small niches</b>, for different jobs.</p>
+    <div class="tblwrap"><table>
+      <thead><tr><th>Dimension</th><th>Embryonic (Ch. 53)</th><th>Adult (Ch. 54, 57, Alam, Bruel-Jungerman)</th></tr></thead>
+      <tbody>
+        <tr><th>Where</th><td>Ventricular zones along the whole neural tube</td><td>Only the SGZ of the dentate gyrus and the SVZ</td></tr>
+        <tr><th>Stem cell</th><td>Radial glia: progenitor and migration scaffold</td><td>Astrocytic stem cells in a niche beside blood vessels</td></tr>
+        <tr><th>Output</th><td>All neuron types, astrocytes, oligodendrocytes</td><td>DG granule cells; olfactory bulb granule and periglomerular interneurons; some glia</td></tr>
+        <tr><th>Migration</th><td>Radial along glia; tangential along axons; chain</td><td>SVZ: chain migration along astrocytes to the olfactory bulb; DG: local</td></tr>
+        <tr><th>Fate</th><td>Set by Notch level and bHLH code</td><td>Fixed early; LTP does not change the neuron share</td></tr>
+        <tr><th>Selection</th><td>Target neurotrophic factors; about half die</td><td>Survival window at 1–2 weeks; activity, LTP and BDNF raise survival</td></tr>
+        <tr><th>Regulated by</th><td>Local inductive signals</td><td>Up: running, enrichment, learning, LTP. Down: stress, depression models, aging</td></tr>
+        <tr><th>Job</th><td>Build circuits</td><td>Replace older neurons at constant number; renew memory capacity; pattern separation</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <div class="block">
+    <h3>Instructive vs selective signals</h3>
+    <p class="caption">An instructive signal changes <b>which fate</b> a cell takes; a selective signal changes <b>which cells survive</b>. The signature in an experiment is whether the proportions of fates change or only the numbers. By that test, LTP acts on adult neurogenesis selectively.</p>
+    <div class="tblwrap"><table>
+      <thead><tr><th>Dimension</th><th>Instructive</th><th>Selective</th></tr></thead>
+      <tbody>
+        <tr><th>Acts on</th><td>Fate choice of a dividing or differentiating cell</td><td>Survival and maturation of cells already made</td></tr>
+        <tr><th>In development</th><td>Notch/bHLH; BMPs → sympathetic identity; sweat-gland gp130 cytokines switch noradrenergic → cholinergic</td><td>Target neurotrophins via Trk → PI3K → Akt</td></tr>
+        <tr><th>In adult and repair</th><td>Transplant site sets the type of neuron a grafted precursor becomes</td><td>LTP raises survival of 1–2-week-old granule cells</td></tr>
+        <tr><th>Experimental signature</th><td>Proportions of fates shift</td><td>Numbers change, proportions stay</td></tr>
+        <tr><th>LTP → adult neurogenesis</th><td>No: same share of new cells become neurons</td><td>Yes: more young cells survive (plus more proliferation)</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <div class="block">
+    <h3>Apoptosis, necrosis, Wallerian degeneration</h3>
+    <p class="caption">Two of the three ways neural tissue dies are <b>active programs</b> that can be slowed or blocked, which is why they are therapeutic targets; necrosis is not.</p>
+    <div class="tblwrap"><table>
+      <thead><tr><th>Dimension</th><th>Apoptosis</th><th>Necrosis</th><th>Wallerian degeneration</th></tr></thead>
+      <tbody>
+        <tr><th>What is lost</th><td>Whole cell</td><td>Whole cell</td><td>Distal axon segment</td></tr>
+        <tr><th>Trigger</th><td>Trophic withdrawal, DNA damage, anoxia, death receptors</td><td>Acute traumatic injury</td><td>Separation from the cell body (axotomy)</td></tr>
+        <tr><th>Program</th><td>Bcl-2 balance → cytochrome c → Apaf-1 → caspases</td><td>None: rapid membrane lysis</td><td>Active, regulated; slowed in Wlds mice</td></tr>
+        <tr><th>Where it appears</th><td>Developmental sizing; adult-born cell selection; axotomized neurons</td><td>Injury sites</td><td>After axotomy; resembles axon loss in neurodegenerative disease</td></tr>
+        <tr><th>Therapeutic angle</th><td>Caspase inhibitors under investigation</td><td class="k">—</td><td>Wlds-like protection for neurodegenerative disease</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <div class="block">
+    <h3>Peripheral vs central regeneration</h3>
+    <p class="caption">The same axon can regrow or stall depending on <b>where</b> it is, but central axons are also <b>intrinsically</b> weaker growers. Both differences have to be fixed.</p>
+    <div class="tblwrap"><table>
+      <thead><tr><th>Dimension</th><th>Peripheral nerve</th><th>Adult CNS</th></tr></thead>
+      <tbody>
+        <tr><th>Myelinating glia after injury</th><td>Schwann cells clear myelin, divide, secrete growth factors</td><td>Oligodendrocytes cannot clear myelin; debris exposes Nogo, MAG, OMgp</td></tr>
+        <tr><th>Debris removal</th><td>Blood macrophages recruited → fast</td><td>Microglia only, behind the blood–brain barrier → slow</td></tr>
+        <tr><th>Growth substrate</th><td>Laminin, adhesion molecules, neurotrophins</td><td>Little laminin, low trophic factors</td></tr>
+        <tr><th>Inhibitors</th><td>Perineural sheath keeps axons on route</td><td>Myelin proteins via NogoR (with p75) and PirB; CSPGs in the glial scar</td></tr>
+        <tr><th>Intrinsic program</th><td>GAP-43 stays high and rises after axotomy</td><td>GAP-43 and cAMP fall during development</td></tr>
+        <tr><th>Outcome</th><td>Regrowth, new endings, remyelination</td><td>Short sprouts ending in retraction bulbs</td></tr>
+        <tr><th>Swap test (grafts)</th><td>Optic nerve segment stops peripheral axons</td><td>Peripheral nerve segment lets central axons grow</td></tr>
+      </tbody>
+    </table></div>
+    <p class="takeaway a">p75 shows up twice: as the neurotrophin receptor that decides survival or death, and as a protein that can associate with NogoR, the receptor for myelin's growth inhibitors.</p>
   </div>
 </section>
 
@@ -511,6 +665,58 @@ td.k { color: var(--muted); font-style: italic; }
   </div>
 
   <div class="block">
+    <h3>Stability vs renewal</h3>
+    <p><b>Problem:</b> circuits must stay stable to keep what was learned, yet stay changeable to learn more and to recover from injury.</p>
+    <div class="frame">
+    <svg viewBox="0 0 760 520" role="img" aria-label="Stabilizers that lock adult wiring also block regeneration; adult neurogenic niches keep part of the hippocampus renewable">
+      <defs><marker id="ah4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="arrowhead" d="M0 0L10 5L0 10z"/></marker></defs>
+      <rect class="n-box" x="230" y="20" width="300" height="56" rx="8"/>
+      <text class="t-name" x="380" y="44" text-anchor="middle">Critical-period remodeling</text>
+      <text class="t-role" x="380" y="62" text-anchor="middle">experience optimizes wiring early in life</text>
+      <rect class="n-box" x="200" y="120" width="360" height="72" rx="8"/>
+      <text class="t-name" x="380" y="144" text-anchor="middle">Stabilizers</text>
+      <text class="t-role" x="380" y="162" text-anchor="middle">myelin (Nogo, MAG, OMgp) and astrocyte</text>
+      <text class="t-role" x="380" y="178" text-anchor="middle">proteoglycans lock the wiring in place</text>
+      <rect class="n-v" x="30" y="250" width="300" height="72" rx="8"/>
+      <text class="t-name" x="180" y="274" text-anchor="middle">Precise, stable circuits</text>
+      <text class="t-role" x="180" y="292" text-anchor="middle">learned wiring is protected</text>
+      <text class="t-role" x="180" y="308" text-anchor="middle">against brief perturbations</text>
+      <rect class="n-a" x="430" y="250" width="300" height="72" rx="8"/>
+      <text class="t-name" x="580" y="274" text-anchor="middle">Poor central regeneration</text>
+      <text class="t-role" x="580" y="292" text-anchor="middle">myelin inhibitors, scar,</text>
+      <text class="t-role" x="580" y="308" text-anchor="middle">weak intrinsic growth program</text>
+      <rect class="n-g" x="30" y="400" width="300" height="88" rx="8"/>
+      <text class="t-name" x="180" y="424" text-anchor="middle">Adult neurogenic niches (DG, SVZ)</text>
+      <text class="t-role" x="180" y="442" text-anchor="middle">new neurons keep the DG rewirable;</text>
+      <text class="t-role" x="180" y="458" text-anchor="middle">blocking their integration stabilizes</text>
+      <text class="t-role" x="180" y="474" text-anchor="middle">old traces and slows capacity recovery</text>
+      <rect class="n-a" x="430" y="400" width="300" height="88" rx="8"/>
+      <text class="t-name" x="580" y="424" text-anchor="middle">Repair strategies</text>
+      <text class="t-role" x="580" y="442" text-anchor="middle">release brakes (chondroitinase, PirB loss),</text>
+      <text class="t-role" x="580" y="458" text-anchor="middle">raise cAMP, add cells (ES/iPS, precursors),</text>
+      <text class="t-role" x="580" y="474" text-anchor="middle">combine with training to steer rewiring</text>
+
+      <path class="e" d="M380 76V118" marker-end="url(#ah4)"/>
+      <text class="t-edge" x="390" y="102">ends with</text>
+      <path class="e" d="M290 192V220H180V248" marker-end="url(#ah4)"/>
+      <text class="t-edge" x="172" y="238" text-anchor="end">gives</text>
+      <path class="e" d="M470 192V220H580V248" marker-end="url(#ah4)"/>
+      <text class="t-edge" x="588" y="238">also causes</text>
+      <path class="e" d="M180 400V324" marker-end="url(#ah4)"/>
+      <text class="t-edge" x="188" y="358">exception inside:</text>
+      <text class="t-edge" x="188" y="372">a renewable zone</text>
+      <path class="e" d="M580 400V324" marker-end="url(#ah4)"/>
+      <text class="t-edge" x="588" y="364">work against</text>
+      <path class="e" d="M330 444H428" marker-end="url(#ah4)"/>
+      <text class="t-edge" x="379" y="436" text-anchor="middle">proof that</text>
+      <text class="t-edge" x="379" y="462" text-anchor="middle">integration works</text>
+      <text class="t-small" x="30" y="510">violet = memory · green = capacity · amber = neurons and repair</text>
+    </svg>
+    </div>
+    <p class="caption"><b>The sources describe the same trade-off in two places:</b> Ch. 57 says the stabilizers of mature wiring are why central axons regenerate poorly, and Alam shows that the DG keeps ongoing integration of new neurons; blocking that integration stabilizes old traces at the cost of new learning.</p>
+  </div>
+
+  <div class="block">
     <h3>Covered by source figures</h3>
     <p class="caption">These figures already draw the structure; the lists add only the roles they leave unlabeled.</p>
     <div class="figref">
@@ -572,6 +778,90 @@ td.k { color: var(--muted); font-style: italic; }
         </ul>
       </article>
       <article>
+        <span class="src">Kandel Fig. 53–3</span>
+        <span class="to">Notes §16</span>
+        <ul>
+          <li>Delta: signal a cell sends to its neighbours</li>
+          <li>Notch: receiver that pushes a cell away from the neuronal fate</li>
+          <li>Notch-intra: messenger to the nucleus</li>
+          <li>Enhancer of split: brake on the proneural gene</li>
+          <li>Achaete-scute: proneural driver that also raises Delta, which closes the amplifying loop</li>
+        </ul>
+      </article>
+      <article>
+        <span class="src">Kandel Fig. 53–4</span>
+        <span class="to">Notes §16</span>
+        <ul>
+          <li>Read it as a switchboard: high Notch keeps cells away from neuron and oligodendrocyte fates and, in glial progenitors, toward astrocytes</li>
+        </ul>
+      </article>
+      <article>
+        <span class="src">Kandel Figs. 53–5, 53–7</span>
+        <span class="to">Notes §17</span>
+        <ul>
+          <li>Radial glial fiber: the guide rail</li>
+          <li>Centrosome: leads the way into the leading process</li>
+          <li>Dynein with Lis1/Ndel1: the motor that pulls the nucleus</li>
+          <li>Doublecortin: keeps the microtubule track stable</li>
+        </ul>
+      </article>
+      <article>
+        <span class="src">Kandel Fig. 53–13</span>
+        <span class="to">Notes §19</span>
+        <ul>
+          <li>The limb is the trophic supply; the count of surviving motor neurons reads out how much supply there is</li>
+          <li>Curare (paralysis) rescues neurons, possibly because inactive muscle releases more trophic factor</li>
+        </ul>
+      </article>
+      <article>
+        <span class="src">Kandel Figs. 53–17, 53–19</span>
+        <span class="to">Notes §19</span>
+        <ul>
+          <li>FRS2 branch (Ras → MAPK): differentiation output</li>
+          <li>PI3K → Akt branch: survival output, the brake on caspase-9</li>
+          <li>Bcl-2 family balance: the decision point</li>
+          <li>Caspase-9: initiator; caspase-3: executioner</li>
+        </ul>
+      </article>
+      <article>
+        <span class="src">Kandel Figs. 57–3, 57–8</span>
+        <span class="to">Notes §25</span>
+        <ul>
+          <li>Schwann cells: guide and supply line for regrowing axons</li>
+          <li>Glial scar: physical and chemical barrier that also seals the injury</li>
+          <li>Nogo, MAG, OMgp: stop signals exposed when myelin breaks down</li>
+          <li>NogoR and PirB: shared receptors, one target for many inhibitors</li>
+          <li>CSPG → PTPσ → Rho/ROCK: the scar's stop signal</li>
+        </ul>
+      </article>
+      <article>
+        <span class="src">Kandel Figs. 57–9, 57–10</span>
+        <span class="to">Notes §25, §26</span>
+        <ul>
+          <li>Peripheral cut: primer that switches the growth program on (cAMP, GAP-43)</li>
+          <li>Propriospinal interneurons: the detour around a spinal lesion</li>
+        </ul>
+      </article>
+      <article>
+        <span class="src">Kandel Figs. 57–12, 57–13</span>
+        <span class="to">Notes §20</span>
+        <ul>
+          <li>Astrocytic stem cell: adult counterpart of radial glia</li>
+          <li>Transit-amplifying cells: the expansion step</li>
+          <li>Chain migration along astrocytes: the embryonic rostral migratory stream, still running</li>
+          <li>Integrated granule cell: the cell whose survival window LTP regulates</li>
+        </ul>
+      </article>
+      <article>
+        <span class="src">Kandel Figs. 57–14, 57–15, 57–17</span>
+        <span class="to">Notes §27</span>
+        <ul>
+          <li>Dopaminergic graft: replaces the missing drive to the putamen</li>
+          <li>Retinoic acid + hedgehog: developmental fate signals reused on iPS cells</li>
+          <li>Light-evoked collicular spikes: proof that regenerated axons made working synapses</li>
+        </ul>
+      </article>
+      <article>
         <span class="src">Kandel Fig. 54–10C</span>
         <span class="to">Notes §10</span>
         <ul>
@@ -603,9 +893,9 @@ td.k { color: var(--muted); font-style: italic; }
   <ol class="questions">
     <li>Running speeds recovery of contextual fear learning after LTP saturation, but irradiated runners do not recover faster. Why does this place neurogenesis between exercise and learning capacity, and where in that chain does LTP decay sit?</li>
     <li>Saturating LTP before training blocks new learning, while inducing LTP across the DG after training erases a memory. Why do both results support the same idea about how memories are stored?</li>
-    <li>Mice without NMDA-dependent LTD learn a platform location normally but keep searching at the old spot when it moves. Why is this a synapse-level version of the problem that adult neurogenesis solves for the whole circuit?</li>
-    <li>LTP increases survival of 1-week-old granule cells that show no Zif268 response. Why does that point to an indirect mechanism, and why does it matter for a loop in which learning-induced LTP supplies the neurons that later clear it?</li>
-    <li>Why would falling neurogenesis with age impair acquiring new memories more than recalling old ones?</li>
+    <li>LTP raises the survival of 1-week-old granule cells that have no glutamatergic input, yet leaves the share of new cells that become neurons unchanged. Using the instructive/selective distinction and what neurotrophins do in development, why is this the expected pattern?</li>
+    <li>Precursors that can make neurons exist in adult cortex and spinal cord, but neurogenesis normally happens only in the DG and SVZ, and injury-induced neurogenesis does not repair a stroke. What does this say about where the limit lies, and why might the features that keep adult wiring stable also stand in the way?</li>
+    <li>A central neuron can die after its axon is cut far from the cell body. Why, and why does this make trophic support and cell replacement complementary strategies rather than alternatives?</li>
   </ol>
 </section>
 </div>
