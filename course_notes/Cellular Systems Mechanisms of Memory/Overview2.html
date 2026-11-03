@@ -1,0 +1,613 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Hippocampal Memory Synthesis</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one reading column; wide figures scroll inside their own frames. Violet = storing/recalling (Q1), green = keeping capacity (Q2), echoing cresyl violet and BrdU stains. */
+:root {
+  --paper: #f6f5f9;
+  --surface: #ffffff;
+  --ink: #1e1a27;
+  --muted: #5d566b;
+  --line: #857e94;
+  --rule: #dad6e2;
+  --violet: #5a3d8c;
+  --violet-tint: #ece6f6;
+  --green: #2d7a4c;
+  --green-tint: #e2f1e8;
+  --mark: #fff3c4;
+  --f-display: "Bricolage Grotesque", "Avenir Next", "Segoe UI", sans-serif;
+  --f-body: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #14121a; --surface: #1c1924; --ink: #ebe8f1; --muted: #a49eb2; --line: #8d869c; --rule: #322e3d;
+    --violet: #b79bf0; --violet-tint: #2a2239; --green: #6fca95; --green-tint: #1a2d22; --mark: #3b3420;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #14121a; --surface: #1c1924; --ink: #ebe8f1; --muted: #a49eb2; --line: #8d869c; --rule: #322e3d;
+  --violet: #b79bf0; --violet-tint: #2a2239; --green: #6fca95; --green-tint: #1a2d22; --mark: #3b3420;
+  color-scheme: dark;
+}
+body {
+  background: var(--paper); color: var(--ink);
+  font-family: var(--f-body); font-size: 16px; line-height: 1.55;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 40px 72px;
+}
+.wrap { max-width: 980px; margin: 0 auto; display: flex; flex-direction: column; gap: 56px; }
+header { display: flex; flex-direction: column; gap: 12px; }
+.eyebrow { font-family: var(--f-mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+h1 { font-family: var(--f-display); font-weight: 700; font-size: clamp(30px, 5vw, 46px); line-height: 1.05; margin: 0; text-wrap: balance; letter-spacing: -0.01em; }
+.lede { max-width: 64ch; color: var(--muted); margin: 0; }
+nav ol { list-style: none; padding: 0; margin: 4px 0 0; display: flex; flex-wrap: wrap; gap: 8px 18px; font-size: 14px; }
+nav a { color: var(--violet); text-decoration: none; border-bottom: 1px solid var(--rule); }
+nav a:hover, nav a:focus-visible { border-bottom-color: var(--violet); }
+section { display: flex; flex-direction: column; gap: 20px; }
+h2 { font-family: var(--f-display); font-weight: 700; font-size: 26px; margin: 0; display: flex; gap: 12px; align-items: baseline; text-wrap: balance; }
+h2 .n { font-family: var(--f-mono); font-size: 14px; font-weight: 500; color: var(--muted); }
+h3 { font-family: var(--f-display); font-weight: 700; font-size: 19px; margin: 0; text-wrap: balance; }
+.block { display: flex; flex-direction: column; gap: 12px; }
+.block + .block { border-top: 1px solid var(--rule); padding-top: 28px; }
+p { margin: 0; max-width: 68ch; }
+.caption { font-size: 15px; color: var(--ink); max-width: 72ch; }
+.caption b { font-weight: 700; }
+.takeaway { font-size: 15px; padding-left: 14px; border-left: 3px solid var(--violet); max-width: 72ch; }
+.takeaway.g { border-left-color: var(--green); }
+.template { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 8px; counter-reset: st; }
+.template li { counter-increment: st; font-size: 14px; background: var(--surface); border: 1px solid var(--rule); border-radius: 6px; padding: 6px 10px; display: flex; gap: 8px; align-items: baseline; }
+.template li::before { content: counter(st); font-family: var(--f-mono); font-size: 12px; color: var(--muted); }
+.frame { overflow-x: auto; background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; }
+.frame svg { display: block; min-width: 720px; width: 100%; height: auto; }
+.tblwrap { overflow-x: auto; border: 1px solid var(--rule); border-radius: 8px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; min-width: 720px; font-size: 14px; line-height: 1.4; }
+th, td { text-align: left; vertical-align: top; padding: 9px 12px; border-bottom: 1px solid var(--rule); }
+thead th { font-family: var(--f-mono); font-size: 11.5px; font-weight: 500; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); background: var(--paper); }
+tbody tr:last-child td, tbody tr:last-child th { border-bottom: 0; }
+tbody th { font-weight: 700; width: 17%; }
+td.k { color: var(--muted); font-style: italic; }
+.tag { font-family: var(--f-mono); font-size: 11px; padding: 1px 6px; border-radius: 4px; white-space: nowrap; }
+.tag.sep { background: var(--violet-tint); color: var(--violet); }
+.tag.link { background: var(--green-tint); color: var(--green); }
+.tag.fix { background: var(--paper); color: var(--muted); border: 1px solid var(--rule); }
+.analogy { background: var(--surface); border: 1px dashed var(--line); border-radius: 8px; padding: 14px 16px; display: flex; flex-direction: column; gap: 6px; max-width: 76ch; font-size: 15px; }
+.analogy .lbl { font-family: var(--f-mono); font-size: 11.5px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.figref { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; }
+.figref article { background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; padding: 14px 16px; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.figref .src { font-family: var(--f-mono); font-size: 12.5px; color: var(--violet); }
+.figref .to { font-size: 13px; color: var(--muted); }
+.figref ul { margin: 0; padding-left: 18px; font-size: 14px; display: flex; flex-direction: column; gap: 3px; }
+.questions { margin: 0; padding-left: 22px; display: flex; flex-direction: column; gap: 14px; max-width: 72ch; }
+.questions li::marker { font-family: var(--f-mono); color: var(--muted); }
+/* SVG roles */
+.n-box { fill: var(--surface); stroke: var(--line); stroke-width: 1.25; }
+.n-v { fill: var(--violet-tint); stroke: var(--violet); stroke-width: 1.5; }
+.n-g { fill: var(--green-tint); stroke: var(--green); stroke-width: 1.5; }
+.n-q1 { fill: var(--surface); stroke: var(--violet); stroke-width: 2.25; }
+.n-q2 { fill: var(--surface); stroke: var(--green); stroke-width: 2.25; }
+.t-name { fill: var(--ink); font-family: var(--f-body); font-weight: 700; font-size: 13.5px; }
+.t-role { fill: var(--muted); font-family: var(--f-body); font-size: 12px; }
+.t-q { fill: var(--ink); font-family: var(--f-display); font-weight: 700; font-size: 15px; }
+.t-edge { fill: var(--muted); font-family: var(--f-body); font-size: 11.5px; font-style: italic; }
+.t-small { fill: var(--muted); font-family: var(--f-mono); font-size: 11px; }
+.e { fill: none; stroke: var(--line); stroke-width: 1.3; }
+.e-dash { fill: none; stroke: var(--line); stroke-width: 1.3; stroke-dasharray: 5 4; }
+.arrowhead { fill: var(--line); }
+.sw-v { fill: var(--violet-tint); stroke: var(--violet); }
+.sw-g { fill: var(--green-tint); stroke: var(--green); }
+@media (max-width: 520px) { body { font-size: 15px; padding-block: 24px 48px; } .wrap { gap: 44px; } h2 { font-size: 22px; } }
+@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
+</style>
+
+<div class="wrap">
+<header>
+  <span class="eyebrow">Synthesis layer · Kandel Ch. 54 · Alam et al. 2018 · Bruel-Jungerman et al. 2006</span>
+  <h1>How the hippocampus writes memories and keeps room for more</h1>
+  <p class="lede">Connections, comparisons and functional meaning across the three sources. Mechanism details live in the study notes; circuit and pathway drawings live in the source figures referenced below.</p>
+  <nav aria-label="Sections"><ol>
+    <li><a href="#map">1 Overview map</a></li>
+    <li><a href="#principles">2 Recurring principles</a></li>
+    <li><a href="#contrasts">3 Contrast tables</a></li>
+    <li><a href="#diagrams">4 Functional diagrams</a></li>
+    <li><a href="#analogies">5 Analogies</a></li>
+    <li><a href="#why">6 Why questions</a></li>
+  </ol></nav>
+</header>
+
+<!-- 1 OVERVIEW MAP -->
+<section id="map">
+  <h2><span class="n">1</span>Overview map</h2>
+  <p class="caption"><b>Every topic answers one of two questions:</b> how a memory is written and recalled (violet) or how the hippocampus keeps room to write the next one (green). NMDA-dependent LTP and adult neurogenesis are the two hinges that feed both sides.</p>
+  <div class="frame">
+  <svg viewBox="0 0 1100 560" role="img" aria-label="Overview map linking LTP, assemblies, pattern separation and completion, saturation, sleep, LTD, neurogenesis and neocortex to two central questions">
+    <defs>
+      <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="arrowhead" d="M0 0L10 5L0 10z"/></marker>
+    </defs>
+    <!-- questions -->
+    <rect class="n-q1" x="47" y="32" width="440" height="56" rx="8"/>
+    <text class="t-small" x="267" y="52" text-anchor="middle">Q1 · STORING</text>
+    <text class="t-q" x="267" y="74" text-anchor="middle">How is an explicit memory written and recalled?</text>
+    <rect class="n-q2" x="610" y="32" width="440" height="56" rx="8"/>
+    <text class="t-small" x="830" y="52" text-anchor="middle">Q2 · CAPACITY</text>
+    <text class="t-q" x="830" y="74" text-anchor="middle">How does the hippocampus stay able to learn?</text>
+
+    <!-- edges -->
+    <path class="e" d="M405 160V90" marker-end="url(#ah)"/>
+    <text class="t-edge" x="413" y="130">answers: memory = assembly</text>
+    <path class="e" d="M690 160V90" marker-end="url(#ah)"/>
+    <text class="t-edge" x="698" y="130">is the problem behind</text>
+    <path class="e" d="M895 182H792" marker-end="url(#ah)"/>
+    <text class="t-edge" x="843" y="174" text-anchor="middle">fast downscaling</text>
+    <path class="e" d="M760 440V420H842V206H792" marker-end="url(#ah)"/>
+    <text class="t-edge" x="850" y="318">slowly renormalizes</text>
+    <text class="t-edge" x="850" y="332">strong LTP</text>
+    <path class="e" d="M690 300V222" marker-end="url(#ah)"/>
+    <text class="t-edge" x="698" y="266">balances locally</text>
+    <path class="e" d="M405 300V222" marker-end="url(#ah)"/>
+    <text class="t-edge" x="397" y="266" text-anchor="end">binds cells into</text>
+    <path class="e" d="M505 305L598 222" marker-end="url(#ah)"/>
+    <text class="t-edge" x="562" y="284">accumulates into</text>
+    <path class="e" d="M505 330H590"/>
+    <text class="t-edge" x="547" y="322" text-anchor="middle">opposite of</text>
+    <text class="t-edge" x="547" y="350" text-anchor="middle">same receptor</text>
+    <path class="e" d="M505 355L598 438" marker-end="url(#ah)"/>
+    <text class="t-edge" x="522" y="394" text-anchor="end">promotes birth</text>
+    <text class="t-edge" x="522" y="408" text-anchor="end">and survival of</text>
+    <path class="e" d="M590 470H507" marker-end="url(#ah)"/>
+    <text class="t-edge" x="547" y="460" text-anchor="middle">supports</text>
+    <path class="e" d="M305 355L218 438" marker-end="url(#ah)"/>
+    <text class="t-edge" x="238" y="394" text-anchor="end">enables via</text>
+    <text class="t-edge" x="238" y="408" text-anchor="end">recurrent LTP</text>
+    <path class="e" d="M230 470H305"/>
+    <text class="t-edge" x="267" y="460" text-anchor="middle">opposite</text>
+    <text class="t-edge" x="267" y="490" text-anchor="middle">computation</text>
+    <path class="e" d="M230 330H303" marker-end="url(#ah)"/>
+    <text class="t-edge" x="267" y="320" text-anchor="middle">lasting</text>
+    <text class="t-edge" x="267" y="350" text-anchor="middle">phase of</text>
+    <path class="e" d="M130 300V222" marker-end="url(#ah)"/>
+    <text class="t-edge" x="138" y="266">stabilizes</text>
+    <path class="e" d="M230 190H303" marker-end="url(#ah)"/>
+    <text class="t-edge" x="267" y="180" text-anchor="middle">spatial</text>
+    <text class="t-edge" x="267" y="210" text-anchor="middle">case of</text>
+    <path class="e" d="M790 478H893" marker-end="url(#ah)"/>
+    <text class="t-edge" x="842" y="468" text-anchor="middle">memory becomes</text>
+    <text class="t-edge" x="842" y="496" text-anchor="middle">dependent on</text>
+
+    <!-- nodes row 1 -->
+    <rect class="n-v" x="30" y="160" width="200" height="60" rx="8"/>
+    <text class="t-name" x="130" y="185" text-anchor="middle">Place &amp; grid cells</text>
+    <text class="t-role" x="130" y="204" text-anchor="middle">the spatial code</text>
+    <rect class="n-v" x="305" y="160" width="200" height="60" rx="8"/>
+    <text class="t-name" x="405" y="185" text-anchor="middle">Cell assemblies</text>
+    <text class="t-role" x="405" y="204" text-anchor="middle">engram = the stored memory</text>
+    <rect class="n-g" x="590" y="160" width="200" height="60" rx="8"/>
+    <text class="t-name" x="690" y="185" text-anchor="middle">LTP saturation</text>
+    <text class="t-role" x="690" y="204" text-anchor="middle">no room left for new LTP</text>
+    <rect class="n-g" x="895" y="160" width="180" height="60" rx="8"/>
+    <text class="t-name" x="985" y="185" text-anchor="middle">Sleep</text>
+    <text class="t-role" x="985" y="204" text-anchor="middle">fast synaptic downscaling</text>
+    <!-- row 2 -->
+    <rect class="n-v" x="30" y="300" width="200" height="60" rx="8"/>
+    <text class="t-name" x="130" y="325" text-anchor="middle">Early → late LTP</text>
+    <text class="t-role" x="130" y="344" text-anchor="middle">makes a trace last</text>
+    <rect class="n-v" x="305" y="300" width="200" height="60" rx="8"/>
+    <text class="t-name" x="405" y="325" text-anchor="middle">NMDA-dependent LTP</text>
+    <text class="t-role" x="405" y="344" text-anchor="middle">writes the memory trace</text>
+    <rect class="n-g" x="590" y="300" width="200" height="60" rx="8"/>
+    <text class="t-name" x="690" y="325" text-anchor="middle">LTD</text>
+    <text class="t-role" x="690" y="344" text-anchor="middle">weakens single synapses</text>
+    <!-- row 3 -->
+    <rect class="n-v" x="30" y="440" width="200" height="60" rx="8"/>
+    <text class="t-name" x="130" y="465" text-anchor="middle">CA3 pattern completion</text>
+    <text class="t-role" x="130" y="484" text-anchor="middle">recall from a fragment</text>
+    <rect class="n-v" x="305" y="440" width="200" height="60" rx="8"/>
+    <text class="t-name" x="405" y="465" text-anchor="middle">DG pattern separation</text>
+    <text class="t-role" x="405" y="484" text-anchor="middle">keeps similar events apart</text>
+    <rect class="n-g" x="590" y="440" width="200" height="60" rx="8"/>
+    <text class="t-name" x="690" y="465" text-anchor="middle">Adult neurogenesis</text>
+    <text class="t-role" x="690" y="484" text-anchor="middle">slow downscaling, new cells</text>
+    <rect class="n-g" x="895" y="440" width="180" height="60" rx="8"/>
+    <text class="t-name" x="985" y="465" text-anchor="middle">Neocortex</text>
+    <text class="t-role" x="985" y="484" text-anchor="middle">long-term store</text>
+    <!-- legend -->
+    <rect class="sw-v" x="30" y="528" width="14" height="14" rx="3"/>
+    <text class="t-role" x="52" y="540">storing and recalling (Q1)</text>
+    <rect class="sw-g" x="240" y="528" width="14" height="14" rx="3"/>
+    <text class="t-role" x="262" y="540">keeping capacity (Q2)</text>
+  </svg>
+  </div>
+</section>
+
+<!-- 2 RECURRING PRINCIPLES -->
+<section id="principles">
+  <h2><span class="n">2</span>Recurring principles</h2>
+
+  <div class="block">
+    <h3>A. Calcium decides the outcome</h3>
+    <ol class="template" aria-label="Template">
+      <li>Activity pattern (often a coincidence)</li>
+      <li>Ca²⁺ enters by a specific route</li>
+      <li>Amount and site of Ca²⁺ select the enzyme</li>
+      <li>A lasting change</li>
+    </ol>
+    <div class="tblwrap"><table>
+      <thead><tr><th>Instance</th><th>1 Activity</th><th>2 Ca²⁺ route</th><th>3 Decoder</th><th>4 Lasting change</th><th>Key difference</th></tr></thead>
+      <tbody>
+        <tr><th>Schaffer collateral LTP</th><td>Glutamate + strong postsynaptic depolarization</td><td>Postsynaptic NMDA receptor</td><td>High Ca²⁺ → CaMKII, PKC</td><td>AMPA receptors inserted</td><td>Associative, Hebbian</td></tr>
+        <tr><th>NMDA-dependent LTD</th><td>Prolonged low-frequency input</td><td>Same NMDA receptor, weakly unblocked</td><td>Low Ca²⁺ → calcineurin, PP1</td><td>AMPA receptors removed</td><td>Same receptor, opposite sign</td></tr>
+        <tr><th>STDP</th><td>Pre spike just before / just after post spike</td><td>NMDA receptor</td><td>Spike order sets how much Ca²⁺ enters</td><td>LTP / LTD</td><td>Timing replaces frequency</td></tr>
+        <tr><th>Direct perforant path → CA1</th><td>Tetanus</td><td>NMDA receptor + L-type Ca²⁺ channels</td><td class="k">not specified</td><td>LTP</td><td>Two Ca²⁺ routes; APV blocks only part</td></tr>
+        <tr><th>Mossy fiber LTP</th><td>Tetanus</td><td>Presynaptic terminal</td><td>Ca²⁺/calmodulin → adenylyl cyclase → PKA</td><td>More glutamate release</td><td>Presynaptic, nonassociative</td></tr>
+        <tr><th>Progenitors after LTP</th><td>Strong depolarization / glutamate</td><td>NMDA-receptor-dependent L-type Ca²⁺ channels in precursors</td><td class="k">not identified</td><td>More dividing cells</td><td>Output is new neurons, not a stronger synapse</td></tr>
+      </tbody>
+    </table></div>
+    <p class="takeaway">Ca²⁺ is the common currency: where it enters and how much enters decide whether the result is a stronger synapse, a weaker one, more release, or more newborn cells.</p>
+  </div>
+
+  <div class="block">
+    <h3>B. One cAMP–PKA route for short and long persistence</h3>
+    <ol class="template" aria-label="Template">
+      <li>Trigger raises cAMP</li>
+      <li>PKA activated</li>
+      <li>PKA acts locally, or reaches CREB in the nucleus</li>
+      <li>Hours of change (local) or days (new proteins, synapses)</li>
+    </ol>
+    <div class="tblwrap"><table>
+      <thead><tr><th>Instance</th><th>1 Trigger</th><th>2 Kinase</th><th>3 Target</th><th>4 Output</th><th>Key difference</th></tr></thead>
+      <tbody>
+        <tr><th>Mossy fiber early LTP</th><td>Presynaptic Ca²⁺ → adenylyl cyclase</td><td>PKA</td><td>Presynaptic vesicle proteins (local)</td><td>More release</td><td>No transcription needed</td></tr>
+        <tr><th>Late LTP, Schaffer and mossy fiber</th><td>Repeated tetani → prolonged Ca²⁺ → adenylyl cyclase</td><td>PKA → MAPK</td><td>CREB-1 → CRE genes</td><td>New synapses</td><td>Same late route although early mechanisms differ</td></tr>
+        <tr><th>Place-field stability</th><td>Attention → dopamine at D1/D5 receptors</td><td>PKA</td><td>Late LTP</td><td>Map stable for days</td><td>Links attention to explicit memory</td></tr>
+        <tr><th>Aplysia long-term facilitation (Ch. 54 cross-reference)</th><td>cAMP</td><td>PKA</td><td>CREB</td><td>Synapse growth</td><td>Same logic serves implicit memory</td></tr>
+      </tbody>
+    </table></div>
+    <p class="takeaway">PKA acting locally gives hours; PKA reaching CREB gives days. Attention plugs into this same route through dopamine, which is why an ignored environment leaves only an unstable map.</p>
+  </div>
+
+  <div class="block">
+    <h3>C. Strengthening needs a matching weakening</h3>
+    <ol class="template" aria-label="Template">
+      <li>Potentiation accumulates</li>
+      <li>A counter-process weakens synapses</li>
+      <li>Room for new LTP returns</li>
+      <li>The weakened information is overwritten or stored elsewhere</li>
+    </ol>
+    <div class="tblwrap"><table>
+      <thead><tr><th>Process</th><th>Acts on</th><th>Speed</th><th>How it weakens</th><th>What it clears</th><th>Fate of the memory</th></tr></thead>
+      <tbody>
+        <tr><th>LTD</th><td>Single active synapses</td><td>Minutes (induction)</td><td>AMPA receptor endocytosis</td><td>Specific synapses; enables updating</td><td>Old association replaced (moved platform)</td></tr>
+        <tr><th>Sleep</th><td>Excitatory synapses broadly</td><td>Fast</td><td>Removes and down-sizes spines</td><td>Overall synaptic weight</td><td class="k">not addressed in these sources</td></tr>
+        <tr><th>Adult neurogenesis</th><td>The DG circuit</td><td>Slow (about two weeks)</td><td>New neurons compete; old connections rewired</td><td>Strong, long-lasting LTP that escapes sleep</td><td>Kept, but now neocortex-dependent</td></tr>
+      </tbody>
+    </table></div>
+    <p class="takeaway g">Three erasers at three scales: LTD edits single synapses, sleep trims broadly and fast, neurogenesis renews the circuit slowly. Only the last is linked in these sources to a memory moving to the cortex.</p>
+  </div>
+
+  <div class="block">
+    <h3>D. Pull apart to avoid interference, bind together to recall</h3>
+    <ol class="template" aria-label="Template">
+      <li>Input pattern</li>
+      <li>Recoding that pulls patterns apart or binds them</li>
+      <li>Stored representation</li>
+      <li>Payoff: discrimination or recall from cues</li>
+    </ol>
+    <div class="tblwrap"><table>
+      <thead><tr><th>Instance</th><th>Direction</th><th>How</th><th>Payoff</th><th>Source</th></tr></thead>
+      <tbody>
+        <tr><th>DG expansion recoding</th><td><span class="tag sep">separates</span></td><td>Few EC inputs diverge onto many granule cells</td><td>Similar contexts kept distinct</td><td>Kandel</td></tr>
+        <tr><th>Adult-born granule cells</th><td><span class="tag sep">separates</span></td><td>Young, plastic cells; naive synapses</td><td>Better discrimination of similar environments; capacity for new information</td><td>Kandel, Alam</td></tr>
+        <tr><th>Place-cell remapping</th><td><span class="tag sep">separates</span></td><td>Each environment gets an uncorrelated map</td><td>Less interference between memories</td><td>Kandel</td></tr>
+        <tr><th>Synapse specificity</th><td><span class="tag sep">separates</span></td><td>Only active synapses change</td><td>Far more storage than whole-cell changes</td><td>Kandel</td></tr>
+        <tr><th>CA3 recurrent collaterals</th><td><span class="tag link">binds</span></td><td>Strengthened recurrent synapses</td><td>Whole memory from a fragment</td><td>Kandel</td></tr>
+        <tr><th>LTP associativity</th><td><span class="tag link">binds</span></td><td>Weak input paired with strong input</td><td>Neutral event gains meaning (CS–US)</td><td>Kandel</td></tr>
+        <tr><th>Synaptic tagging and capture</th><td><span class="tag link">binds</span></td><td>New proteins shared within a time window</td><td>Events close in time share neurons</td><td>Kandel</td></tr>
+        <tr><th>Grid cells</th><td><span class="tag fix">fixed metric</span></td><td>Same firing relations in every environment</td><td>Fast, accurate position</td><td>Kandel</td></tr>
+      </tbody>
+    </table></div>
+    <p class="takeaway">The hippocampus needs both directions: DG, remapping and new neurons push similar experiences apart so they don't interfere; CA3 and associative LTP tie the parts of one experience together so it can be recalled. The entorhinal grid stays fixed as a common ruler.</p>
+  </div>
+
+  <div class="block">
+    <h3>E. Finite LTP capacity as an experimental lever</h3>
+    <ol class="template" aria-label="Template">
+      <li>LTP capacity is finite</li>
+      <li>Use it up, by learning or by stimulation</li>
+      <li>Test what is still possible</li>
+      <li>Infer how memory is stored</li>
+    </ol>
+    <div class="tblwrap"><table>
+      <thead><tr><th>Design</th><th>Order</th><th>Prediction if memory = LTP</th><th>Result</th><th>Conclusion</th><th>Source</th></tr></thead>
+      <tbody>
+        <tr><th>Occlusion</th><td>Learning, then tetanus</td><td>Less LTP left where learning acted</td><td>Smaller LTP at sites most enhanced by training</td><td>Learning induces LTP</td><td>Kandel</td></tr>
+        <tr><th>Erasure</th><td>Learning, then DG-wide LTP</td><td>Uniform potentiation wipes the weight pattern</td><td>Water-maze memory lost; NMDA block before stimulation protects it</td><td>Memory = pattern of strong vs weak synapses</td><td>Kandel</td></tr>
+        <tr><th>Saturation</th><td>rHFS or rMECS, then learning</td><td>No room to write</td><td>Contextual fear impaired; auditory fear intact</td><td>Hippocampal learning needs free LTP capacity</td><td>Alam Figs. 2, 5</td></tr>
+        <tr><th>Recovery</th><td>Saturation, then wait ± neurogenesis change</td><td>Capacity returns as LTP decays</td><td>Recovery tracks decay; irradiation delays, running speeds it</td><td>Neurogenesis sets the decay speed</td><td>Alam Figs. 3, 4</td></tr>
+      </tbody>
+    </table></div>
+    <p class="takeaway g">Run in four orders, the same finite-capacity logic shows that learning uses LTP, a memory is a pattern of weights, new learning needs free capacity, and neurogenesis refills it.</p>
+  </div>
+</section>
+
+<!-- 3 CONTRASTS -->
+<section id="contrasts">
+  <h2><span class="n">3</span>Contrast tables</h2>
+
+  <div class="block">
+    <h3>Induction, expression, maintenance</h3>
+    <p class="caption">The three stages of one LTP event answer different questions, use different molecules, and are separated experimentally by <b>when</b> a blocker is applied.</p>
+    <div class="tblwrap"><table>
+      <thead><tr><th>Stage</th><th>Question</th><th>Schaffer collateral</th><th>Mossy fiber</th><th>How the sources separate it</th></tr></thead>
+      <tbody>
+        <tr><th>Induction</th><td>What does the tetanus trigger?</td><td>NMDA Ca²⁺ → CaMKII, PKC</td><td>Presynaptic Ca²⁺ → cAMP → PKA</td><td>APV during the tetanus blocks LTP; APV after water-maze learning leaves recall intact</td></tr>
+        <tr><th>Expression</th><td>What makes transmission bigger?</td><td>AMPA insertion (plus more release with strong stimulation)</td><td>More glutamate release</td><td>Silent synapses gain AMPA responses</td></tr>
+        <tr><th>Maintenance</th><td>What keeps it there?</td><td>CaMKII autophosphorylation, PKMζ, new synapses</td><td>cAMP–PKA–CREB, new synapses</td><td>Anisomycin blocks only the late phase; PKMζ inhibitor given hours later reverses it</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <div class="block">
+    <h3>Proliferation, survival, differentiation</h3>
+    <p class="caption">The same BrdU label answers three different questions; <b>when it is given relative to LTP and when cells are counted</b> decides which one.</p>
+    <div class="tblwrap"><table>
+      <thead><tr><th>Measure</th><th>BrdU given</th><th>Counted</th><th>LTP effect</th><th>Meaning</th></tr></thead>
+      <tbody>
+        <tr><th>Proliferation</th><td>1 or 4 d after LTP</td><td>24 h later</td><td>More labeled cells, larger at 4 d</td><td>LTP makes progenitors divide, with a delay</td></tr>
+        <tr><th>Survival of cells born after LTP</th><td>4 d after LTP</td><td>4 weeks later</td><td>More cells</td><td>More survive because more were born</td></tr>
+        <tr><th>Survival of cells born before LTP</th><td>1 or 2 weeks before LTP</td><td>4 weeks after BrdU</td><td>More cells</td><td>Direct pro-survival effect in the death window</td></tr>
+        <tr><th>Differentiation</th><td>BrdU + Prox-1 / NeuN</td><td>Co-labeling</td><td>No change</td><td>Neuronal fate is set early</td></tr>
+        <tr><th>Direct activation</th><td>BrdU + Zif268</td><td>2 h after LTP</td><td>A fraction of 2-week cells; no 1-week cells</td><td>Which young cells are themselves potentiated</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <div class="block">
+    <h3>Memory capacity, retention, hippocampus-dependence</h3>
+    <p class="caption">Neurogenesis helps <b>capacity</b> while it ends a memory's <b>hippocampus-dependence</b>; the memory itself is not lost.</p>
+    <div class="tblwrap"><table>
+      <thead><tr><th>Concept</th><th>Question</th><th>How tested</th><th>What reduces it</th><th>Role of neurogenesis</th></tr></thead>
+      <tbody>
+        <tr><th>Memory capacity</th><td>Can a <em>new</em> event be stored?</td><td>New contextual fear training after LTP saturation</td><td>Saturated LTP (rHFS, rMECS)</td><td>Sets how fast capacity returns (more → faster)</td></tr>
+        <tr><th>Retention</th><td>Is an <em>old</em> memory still there?</td><td>Recall after a manipulation</td><td>Indiscriminate LTP after learning</td><td>Clears the hippocampal trace, but memory persists via neocortex</td></tr>
+        <tr><th>Hippocampus-dependent period</th><td>Does recall still need the hippocampus?</td><td>Contextual fear memory over time</td><td class="k">—</td><td>Less neurogenesis prolongs it, more shortens it</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <div class="block">
+    <h3>Pattern separation vs pattern completion</h3>
+    <p class="caption">DG and CA3 sit one synapse apart but do opposite jobs: one makes similar inputs <b>more different</b>, the other turns a partial input into the <b>whole</b> stored pattern.</p>
+    <div class="tblwrap"><table>
+      <thead><tr><th>Dimension</th><th>DG: pattern separation</th><th>CA3: pattern completion</th></tr></thead>
+      <tbody>
+        <tr><th>Problem</th><td>Similar experiences would be confused</td><td>A few cues must retrieve a complex memory</td></tr>
+        <tr><th>Input → output</th><td>Overlapping inputs → less overlapping outputs</td><td>Partial pattern → full stored pattern</td></tr>
+        <tr><th>Circuit feature</th><td>Divergence onto many granule cells (expansion recoding)</td><td>Strong recurrent collaterals</td></tr>
+        <tr><th>Plasticity link</th><td>Adult-born granule cells especially important</td><td>NMDA-dependent LTP at recurrent synapses</td></tr>
+        <tr><th>When it fails</th><td>Similar contexts no longer discriminated</td><td>Normal with all cues, impaired with few cues</td></tr>
+        <tr><th>Same goal elsewhere</th><td>Place-cell remapping (uncorrelated maps)</td><td>LTP associativity (linking events)</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <div class="block">
+    <h3>Two directions of the LTP–neurogenesis coupling</h3>
+    <p class="caption">The two papers describe opposite arrows between the same two processes, and together they close a loop: LTP makes new neurons, new neurons erase old LTP.</p>
+    <div class="tblwrap"><table>
+      <thead><tr><th>Dimension</th><th>LTP → neurogenesis (Bruel-Jungerman)</th><th>Neurogenesis → LTP (Alam)</th></tr></thead>
+      <tbody>
+        <tr><th>Effect</th><td>LTP raises proliferation and young-cell survival</td><td>Neurogenesis drives decay of saturated LTP</td></tr>
+        <tr><th>Cells involved</th><td>Progenitors; 1–2-week-old granule cells</td><td>Integrating new neurons competing with old ones</td></tr>
+        <tr><th>Time scale</th><td>Days (division) to weeks (survival)</td><td>About two weeks of LTP decay</td></tr>
+        <tr><th>Manipulation</th><td>Unilateral tetanus vs pseudotetanus</td><td>X-ray ablation; wheel running</td></tr>
+        <tr><th>Readout</th><td>BrdU counts, Zif268</td><td>fEPSP decay and contextual fear learning</td></tr>
+        <tr><th>Functional meaning</th><td>Learning-induced LTP may signal more new neurons</td><td>New neurons restore capacity to learn</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</section>
+
+<!-- 4 FUNCTIONAL DIAGRAMS -->
+<section id="diagrams">
+  <h2><span class="n">4</span>Functional diagrams</h2>
+
+  <div class="block">
+    <h3>Life of a memory trace in the hippocampus</h3>
+    <p><b>Problem:</b> keep a memory while freeing the hippocampus for the next one.</p>
+    <div class="frame">
+    <svg viewBox="0 0 780 590" role="img" aria-label="A memory trace is written by LTP, made lasting, trimmed by sleep, slowly cleared by neurogenesis, and kept in neocortex">
+      <defs><marker id="ah2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="arrowhead" d="M0 0L10 5L0 10z"/></marker></defs>
+      <rect class="n-v" x="170" y="20" width="380" height="70" rx="8"/>
+      <text class="t-name" x="360" y="48" text-anchor="middle">Encoding</text>
+      <text class="t-role" x="360" y="70" text-anchor="middle">NMDA-dependent LTP binds active cells into an assembly</text>
+      <rect class="n-v" x="170" y="130" width="380" height="70" rx="8"/>
+      <text class="t-name" x="360" y="158" text-anchor="middle">Late LTP</text>
+      <text class="t-role" x="360" y="180" text-anchor="middle">protein synthesis makes the trace long-lasting</text>
+      <rect class="n-g" x="170" y="240" width="380" height="70" rx="8"/>
+      <text class="t-name" x="360" y="268" text-anchor="middle">Sleep</text>
+      <text class="t-role" x="360" y="290" text-anchor="middle">fast downscaling: removes and shrinks spines</text>
+      <rect class="n-g" x="170" y="350" width="380" height="70" rx="8"/>
+      <text class="t-name" x="360" y="378" text-anchor="middle">Adult neurogenesis</text>
+      <text class="t-role" x="360" y="400" text-anchor="middle">slow (about two weeks): new neurons rewire the circuit</text>
+      <rect class="n-g" x="170" y="460" width="380" height="70" rx="8"/>
+      <text class="t-name" x="360" y="488" text-anchor="middle">Hippocampus near baseline</text>
+      <text class="t-role" x="360" y="510" text-anchor="middle">capacity restored for new learning</text>
+      <rect class="n-box" x="590" y="345" width="170" height="80" rx="8"/>
+      <text class="t-name" x="675" y="370" text-anchor="middle">Neocortex</text>
+      <text class="t-role" x="675" y="390" text-anchor="middle">memory kept,</text>
+      <text class="t-role" x="675" y="406" text-anchor="middle">now cortex-dependent</text>
+
+      <path class="e" d="M360 90V128" marker-end="url(#ah2)"/>
+      <text class="t-edge" x="370" y="114">repeated activity</text>
+      <path class="e" d="M360 200V238" marker-end="url(#ah2)"/>
+      <text class="t-edge" x="370" y="224">trimmed during sleep</text>
+      <path class="e" d="M360 310V348" marker-end="url(#ah2)"/>
+      <text class="t-edge" x="370" y="334">strong, consolidated LTP escapes sleep</text>
+      <path class="e" d="M360 420V458" marker-end="url(#ah2)"/>
+      <text class="t-edge" x="370" y="444">LTP decays to baseline</text>
+      <path class="e" d="M550 385H588" marker-end="url(#ah2)"/>
+      <text class="t-edge" x="675" y="336" text-anchor="middle">dependence shifts to</text>
+      <path class="e-dash" d="M170 495H120V55H168" marker-end="url(#ah2)"/>
+      <text class="t-edge" x="112" y="270" text-anchor="end">room for</text>
+      <text class="t-edge" x="112" y="284" text-anchor="end">the next</text>
+      <text class="t-edge" x="112" y="298" text-anchor="end">event</text>
+      <text class="t-small" x="170" y="566">violet = writing the trace · green = clearing it</text>
+    </svg>
+    </div>
+    <p class="caption"><b>A trace is written fast and cleared in two speeds:</b> sleep trims quickly, and the strong potentiation that survives is renormalized only as new neurons rewire the DG, by which time the memory depends on the neocortex instead.</p>
+  </div>
+
+  <div class="block">
+    <h3>How LTP raises neurogenesis in cells of different ages</h3>
+    <p><b>Problem:</b> LTP favors young neurons at several ages, although the youngest cannot yet be potentiated themselves.</p>
+    <div class="frame">
+    <svg viewBox="0 0 760 530" role="img" aria-label="LTP in mature granule cells acts on progenitors and one-week cells via the local milieu, and on two-week cells directly">
+      <defs><marker id="ah3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="arrowhead" d="M0 0L10 5L0 10z"/></marker></defs>
+      <rect class="n-v" x="230" y="20" width="300" height="70" rx="8"/>
+      <text class="t-name" x="380" y="48" text-anchor="middle">LTP at perforant path → DG</text>
+      <text class="t-role" x="380" y="70" text-anchor="middle">the trigger: strong depolarization</text>
+      <rect class="n-box" x="230" y="150" width="300" height="70" rx="8"/>
+      <text class="t-name" x="380" y="178" text-anchor="middle">Surrounding tissue (proposed)</text>
+      <text class="t-role" x="380" y="200" text-anchor="middle">BDNF up for a day or more; glutamate, GABA</text>
+      <rect class="n-g" x="20" y="290" width="230" height="90" rx="8"/>
+      <text class="t-name" x="135" y="316" text-anchor="middle">Progenitors (SGZ)</text>
+      <text class="t-role" x="135" y="338" text-anchor="middle">divide more;</text>
+      <text class="t-role" x="135" y="354" text-anchor="middle">effect builds up over days</text>
+      <rect class="n-g" x="265" y="290" width="230" height="90" rx="8"/>
+      <text class="t-name" x="380" y="316" text-anchor="middle">1-week-old cells</text>
+      <text class="t-role" x="380" y="338" text-anchor="middle">no glutamatergic input,</text>
+      <text class="t-role" x="380" y="354" text-anchor="middle">no Zif268, yet survive better</text>
+      <rect class="n-g" x="510" y="290" width="230" height="90" rx="8"/>
+      <text class="t-name" x="625" y="316" text-anchor="middle">2-week-old cells</text>
+      <text class="t-role" x="625" y="338" text-anchor="middle">first glutamatergic input,</text>
+      <text class="t-role" x="625" y="354" text-anchor="middle">low LTP threshold</text>
+      <rect class="n-box" x="20" y="450" width="720" height="50" rx="8"/>
+      <text class="t-name" x="380" y="480" text-anchor="middle">More adult-born granule cells · same share become neurons (fate unchanged)</text>
+
+      <path class="e" d="M380 90V148" marker-end="url(#ah3)"/>
+      <text class="t-edge" x="388" y="124">releases factors</text>
+      <path class="e" d="M530 55H625V288" marker-end="url(#ah3)"/>
+      <text class="t-edge" x="633" y="176">direct potentiation</text>
+      <text class="t-edge" x="633" y="190">(Zif268 in a fraction)</text>
+      <path class="e-dash" d="M230 185H135V288" marker-end="url(#ah3)"/>
+      <text class="t-edge" x="127" y="240" text-anchor="end">promitotic</text>
+      <text class="t-edge" x="127" y="254" text-anchor="end">signal</text>
+      <path class="e-dash" d="M380 220V288" marker-end="url(#ah3)"/>
+      <text class="t-edge" x="388" y="258">pro-survival milieu</text>
+      <path class="e" d="M135 380V448" marker-end="url(#ah3)"/>
+      <text class="t-edge" x="143" y="418">more born</text>
+      <path class="e" d="M380 380V448" marker-end="url(#ah3)"/>
+      <text class="t-edge" x="388" y="418">more survive</text>
+      <path class="e" d="M625 380V448" marker-end="url(#ah3)"/>
+      <text class="t-edge" x="633" y="418">more survive</text>
+      <text class="t-small" x="20" y="522">dashed = proposed route (not established in the source)</text>
+    </svg>
+    </div>
+    <p class="caption"><b>LTP reaches young neurons by two routes:</b> 2-week-old cells can be potentiated directly, while progenitors and 1-week-old cells, which lack glutamatergic input, benefit from the milieu that LTP in mature neighbours creates.</p>
+  </div>
+
+  <div class="block">
+    <h3>Covered by source figures</h3>
+    <p class="caption">These figures already draw the structure; the lists add only the roles they leave unlabeled.</p>
+    <div class="figref">
+      <article>
+        <span class="src">Kandel Fig. 54–1</span>
+        <span class="to">Notes §1, §12</span>
+        <ul>
+          <li>Entorhinal cortex: input; carries the rigid grid map</li>
+          <li>Perforant path → DG: the synapse saturated by Alam and tetanized by Bruel-Jungerman</li>
+          <li>Dentate gyrus: pattern separator; the only region here with adult-born neurons</li>
+          <li>CA3 recurrents: pattern completer, associative store</li>
+          <li>CA1: output; its tagged cells are needed for recall</li>
+        </ul>
+      </article>
+      <article>
+        <span class="src">Kandel Fig. 54–3</span>
+        <span class="to">Notes §3–6</span>
+        <ul>
+          <li>NMDA receptor: coincidence detector</li>
+          <li>Ca²⁺: the instruction; its amount sets LTP vs LTD</li>
+          <li>CaMKII: molecular switch</li>
+          <li>New AMPA receptors: the expression</li>
+          <li>NO: presynaptic boost that keeps specificity</li>
+          <li>PKA → MAPK → CREB: transcription switch to late LTP</li>
+          <li>PKMζ: keeps late LTP switched on</li>
+        </ul>
+      </article>
+      <article>
+        <span class="src">Kandel Fig. 54–6</span>
+        <span class="to">Notes §8</span>
+        <ul>
+          <li>Cooperativity: significance filter</li>
+          <li>Associativity: CS–US linkage</li>
+          <li>Synapse specificity: storage capacity</li>
+        </ul>
+      </article>
+      <article>
+        <span class="src">Alam Fig. 4M–N</span>
+        <span class="to">Notes §17</span>
+        <ul>
+          <li>M (freezing) = the capacity gauge; N (fEPSP) = the saturation level</li>
+          <li>Read them as mirror images: where N stays high, M stays low</li>
+          <li>The runner group recovers first; irradiated groups stay impaired</li>
+        </ul>
+      </article>
+      <article>
+        <span class="src">Alam Figs. 3L, 4K</span>
+        <span class="to">Notes §17</span>
+        <ul>
+          <li>Per-animal correlation: residual LTP, not elapsed time, predicts the learning deficit</li>
+        </ul>
+      </article>
+      <article>
+        <span class="src">Bruel-Jungerman Figs. 1b, 2b</span>
+        <span class="to">Notes §16</span>
+        <ul>
+          <li>Proliferation bars vs survival bars answer different questions (see BrdU table)</li>
+          <li>PT bars: control showing stimulation without LTP does nothing</li>
+        </ul>
+      </article>
+      <article>
+        <span class="src">Kandel Fig. 54–10C</span>
+        <span class="to">Notes §10</span>
+        <ul>
+          <li>Relearning a moved platform: LTD's role is updating, the synapse-level counterpart of capacity renewal</li>
+        </ul>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- 5 ANALOGIES -->
+<section id="analogies">
+  <h2><span class="n">5</span>Analogies</h2>
+  <div class="analogy">
+    <span class="lbl">Analogy · capacity</span>
+    <p>The DG is a whiteboard. LTP writes on it; LTP saturation is a board covered edge to edge. LTD erases single words, sleep wipes off faint marks each night, and neurogenesis slowly swaps in fresh panels while the content has already been copied into a notebook (neocortex).</p>
+    <p><b>Where it breaks down:</b> the new panels are not blank space only; new neurons also help write new memories and separate similar ones. And neurogenesis does not do the copying: cortex dependence grows alongside the clearing, it is not caused by it in these sources.</p>
+  </div>
+  <div class="analogy">
+    <span class="lbl">Analogy · NMDA receptor</span>
+    <p>The NMDA receptor is an AND gate: it passes current only when glutamate AND depolarization are present.</p>
+    <p><b>Where it breaks down:</b> its output is graded, not on/off. A little Ca²⁺ gives LTD, a lot gives LTP, and spike order changes the amount.</p>
+  </div>
+</section>
+
+<!-- 6 WHY -->
+<section id="why">
+  <h2><span class="n">6</span>Why questions</h2>
+  <ol class="questions">
+    <li>Running speeds recovery of contextual fear learning after LTP saturation, but irradiated runners do not recover faster. Why does this place neurogenesis between exercise and learning capacity, and where in that chain does LTP decay sit?</li>
+    <li>Saturating LTP before training blocks new learning, while inducing LTP across the DG after training erases a memory. Why do both results support the same idea about how memories are stored?</li>
+    <li>Mice without NMDA-dependent LTD learn a platform location normally but keep searching at the old spot when it moves. Why is this a synapse-level version of the problem that adult neurogenesis solves for the whole circuit?</li>
+    <li>LTP increases survival of 1-week-old granule cells that show no Zif268 response. Why does that point to an indirect mechanism, and why does it matter for a loop in which learning-induced LTP supplies the neurons that later clear it?</li>
+    <li>Why would falling neurogenesis with age impair acquiring new memories more than recalling old ones?</li>
+  </ol>
+</section>
+</div>
+
+</body></html>
