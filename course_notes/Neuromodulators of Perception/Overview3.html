@@ -1,0 +1,642 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Cholinergic Synthesis Layer</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+/* Layout: single reading column; wide visuals break out into their own scroll containers.
+   Nicotinic and muscarinic keep one colour each across every visual. */
+:root{
+  --bg:#eef0f4; --surface:#ffffff; --surface-2:#e4e7ed;
+  --fg:#141821; --muted:#5a6473; --line:#cfd4dc;
+  --accent:#8a5a00; --nic:#0d6b78; --mus:#8d3a6b;
+  --display:"Zilla Slab",Georgia,serif;
+  --body:"Source Serif 4",Georgia,"Times New Roman",serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#10131a; --surface:#171b23; --surface-2:#1e232c;
+  --fg:#e7eaef; --muted:#99a2b0; --line:#2b313c;
+  --accent:#dba544; --nic:#55c4d0; --mus:#e382b4; color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#10131a; --surface:#171b23; --surface-2:#1e232c;
+  --fg:#e7eaef; --muted:#99a2b0; --line:#2b313c;
+  --accent:#dba544; --nic:#55c4d0; --mus:#e382b4; color-scheme:dark;
+}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.55;margin:0}
+.wrap{max-width:62rem;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:2.5rem 4rem}
+header{border-bottom:2px solid var(--fg);padding-bottom:1.1rem;margin-bottom:2rem}
+.eyebrow{font-family:var(--mono);font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin:0 0 .45rem}
+h1{font-family:var(--display);font-weight:700;font-size:clamp(1.65rem,4.2vw,2.3rem);line-height:1.12;margin:0;text-wrap:balance;letter-spacing:-.01em}
+.sub{color:var(--muted);margin:.5rem 0 0;max-width:46rem}
+section{margin-block:3.2rem}
+h2{font-family:var(--display);font-weight:600;font-size:1.35rem;margin:0 0 .3rem;text-wrap:balance}
+h2 .num{font-family:var(--mono);font-size:.78rem;color:var(--accent);margin-right:.55rem;vertical-align:.18em}
+h3{font-family:var(--display);font-weight:600;font-size:1.03rem;margin:2rem 0 .4rem;text-wrap:balance}
+h4{font-family:var(--mono);font-weight:600;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:1.6rem 0 .35rem}
+p{margin:.55rem 0;max-width:40rem}
+.lead{max-width:42rem}
+ul,ol{margin:.5rem 0;padding-left:1.25rem;max-width:40rem}
+li{margin:.22rem 0}
+.q{display:grid;gap:.6rem;margin:1.1rem 0 1.4rem;padding:1rem 1.1rem;background:var(--surface);border-left:3px solid var(--accent);border-radius:0 4px 4px 0}
+.q p{margin:0;font-size:1.02rem;font-weight:600;font-family:var(--display)}
+.q span{font-family:var(--mono);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:.15rem;font-weight:500}
+.scroller{overflow-x:auto;margin:1.2rem 0 .4rem;padding-bottom:.4rem;border:1px solid var(--line);border-radius:6px;background:var(--surface)}
+.scroller svg{display:block}
+figcaption{font-size:.9rem;color:var(--muted);font-style:italic;max-width:44rem;margin:.1rem 0 0}
+figure{margin:1.4rem 0 1.8rem}
+.tw{overflow-x:auto;margin:.9rem 0 .4rem;border:1px solid var(--line);border-radius:6px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:40rem;font-size:.9rem}
+caption{text-align:left;font-family:var(--mono);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:.7rem .8rem .3rem}
+th,td{text-align:left;vertical-align:top;padding:.5rem .7rem;border-top:1px solid var(--line)}
+thead th{font-family:var(--mono);font-size:.7rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--fg);background:var(--surface-2);border-top:none;line-height:1.3}
+tbody th{font-weight:600;font-family:var(--display);white-space:nowrap}
+td b{font-weight:600}
+.nic{color:var(--nic);font-weight:600}
+.mus{color:var(--mus);font-weight:600}
+.template{background:var(--surface-2);border-radius:6px;padding:.85rem 1rem;margin:.9rem 0;max-width:44rem}
+.template p{margin:0;max-width:none}
+.template .lbl{font-family:var(--mono);font-size:.66rem;letter-spacing:.11em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:.25rem}
+.template ol{margin:.3rem 0 0;padding-left:1.1rem;font-size:.95rem}
+.takeaway{font-size:.92rem;margin:.35rem 0 0;padding-left:.7rem;border-left:2px solid var(--accent);max-width:42rem}
+.see{border:1px dashed var(--line);border-radius:6px;padding:.7rem .9rem;margin:1rem 0;background:var(--surface);max-width:44rem}
+.see .lbl{font-family:var(--mono);font-size:.66rem;letter-spacing:.11em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:.25rem}
+.see p{margin:0 0 .3rem;font-size:.93rem}
+.see ul{margin:.25rem 0 0;font-size:.9rem;padding-left:1.1rem}
+.analogy{border:1px solid var(--line);border-left:3px solid var(--nic);border-radius:0 6px 6px 0;padding:.75rem .95rem;margin:1rem 0;max-width:44rem;background:var(--surface)}
+.analogy .lbl{font-family:var(--mono);font-size:.66rem;letter-spacing:.11em;text-transform:uppercase;color:var(--nic);display:block;margin-bottom:.25rem}
+.analogy p{margin:0 0 .35rem;font-size:.94rem}
+.analogy p:last-child{margin:0}
+.problem{font-family:var(--mono);font-size:.8rem;color:var(--fg);background:var(--surface-2);border-radius:4px;padding:.5rem .7rem;margin:.8rem 0 .2rem;max-width:44rem;line-height:1.45}
+.why{counter-reset:w;display:grid;gap:.9rem;margin-top:1.1rem}
+.why>div{display:grid;grid-template-columns:auto 1fr;gap:.8rem;align-items:start}
+.why>div::before{counter-increment:w;content:counter(w);font-family:var(--mono);font-size:.78rem;color:var(--accent);border:1px solid var(--line);border-radius:50%;width:1.6rem;height:1.6rem;display:grid;place-items:center;margin-top:.15rem}
+.why p{margin:0;font-size:1rem}
+.hint{display:block;color:var(--muted);font-size:.86rem;font-style:italic;margin-top:.2rem}
+.node{fill:var(--surface);stroke:var(--line);stroke-width:1.2}
+.node-hub{fill:var(--surface-2);stroke:var(--fg);stroke-width:1.6}
+.nt{font-family:var(--display);font-size:14px;font-weight:600;fill:var(--fg)}
+.ns{font-family:var(--mono);font-size:10.5px;fill:var(--muted)}
+.el{font-family:var(--mono);font-size:10px;fill:var(--fg);paint-order:stroke;stroke:var(--surface);stroke-width:4.5px;stroke-linejoin:round}
+.edge{fill:none;stroke:var(--muted);stroke-width:1.3}
+.edge-s{fill:none;stroke:var(--accent);stroke-width:1.3;stroke-dasharray:5 3}
+@media (max-width:560px){body{font-size:15px}.wrap{padding-block:1.8rem 3rem}}
+@media (prefers-reduced-motion:no-preference){a{transition:color .15s}}
+</style>
+
+<div class="wrap">
+<header>
+  <p class="eyebrow">Acetylcholine · synthesis layer</p>
+  <h1>Cholinergic Synthesis Layer</h1>
+  <p class="sub">Connections, comparisons and functional roles across the five sources. Mechanism detail sits in the notes; structure sits in the source figures. <span class="nic">Nicotinic</span> and <span class="mus">muscarinic</span> keep one colour each throughout.</p>
+</header>
+
+<section>
+  <h2><span class="num">01</span>Overview map</h2>
+  <div class="q">
+    <p><span>Central question A</span>What decides whether a cortical network processes the world or its own stored patterns?</p>
+    <p><span>Central question B</span>Why does one slowly released transmitter produce attention, encoding and maintenance — and, when altered, psychosis or amnesia?</p>
+  </div>
+
+  <figure>
+  <div class="scroller">
+  <svg viewBox="0 0 1170 520" width="1170" height="520" role="img" aria-label="Map of cholinergic topics with labelled relationships">
+    <title>Topic map: determinants, the core rule, the cognitive functions it produces, and the two disorders</title>
+    <defs>
+      <marker id="a1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M0,1 L9,5 L0,9 z" fill="var(--muted)"/>
+      </marker>
+      <marker id="a2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M0,1 L9,5 L0,9 z" fill="var(--accent)"/>
+      </marker>
+    </defs>
+
+    <!-- edges first -->
+    <path class="edge" d="M215,78 L330,205" marker-end="url(#a1)"/>
+    <text class="el" x="272" y="120" text-anchor="middle">supplies the<tspan x="272" dy="12">transmitter for</tspan></text>
+
+    <path class="edge" d="M215,238 L330,245" marker-end="url(#a1)"/>
+    <text class="el" x="272" y="216" text-anchor="middle">sets the sign of<tspan x="272" dy="12">each half of</tspan></text>
+
+    <path class="edge" d="M215,393 L330,300" marker-end="url(#a1)"/>
+    <text class="el" x="272" y="352" text-anchor="middle">delivers it, tonic<tspan x="272" dy="12">and phasic, to</tspan></text>
+
+    <path class="edge" d="M535,200 L650,58" marker-end="url(#a1)"/>
+    <text class="el" x="592" y="116" text-anchor="middle">is read out<tspan x="592" dy="12">behaviourally as</tspan></text>
+
+    <path class="edge" d="M535,250 L650,188" marker-end="url(#a1)"/>
+    <text class="el" x="592" y="204" text-anchor="middle">is the plasticity<tspan x="592" dy="12">gate for</tspan></text>
+
+    <path class="edge" d="M535,300 L650,318" marker-end="url(#a1)"/>
+    <text class="el" x="592" y="288" text-anchor="middle">maintains the<tspan x="592" dy="12">admitted item in</tspan></text>
+
+    <path class="edge" d="M747,96 L747,150" marker-end="url(#a1)"/>
+    <text class="el" x="755" y="126">sets the ceiling for</text>
+
+    <path class="edge" d="M747,226 L747,280" marker-end="url(#a1)"/>
+    <text class="el" x="755" y="256">shares its novelty rule with</text>
+
+    <path class="edge" d="M845,58 L960,83" marker-end="url(#a1)"/>
+    <text class="el" x="902" y="54" text-anchor="middle">is the function<tspan x="902" dy="12">that fails in</tspan></text>
+
+    <path class="edge" d="M845,188 L960,262" marker-end="url(#a1)"/>
+    <text class="el" x="902" y="210" text-anchor="middle">loses its<tspan x="902" dy="12">source in</tspan></text>
+
+    <path class="edge" d="M1055,126 L1055,230" marker-end="url(#a1)" marker-start="url(#a1)"/>
+    <text class="el" x="1063" y="170">receptor-level vs<tspan x="1063" dy="12">source-level lesion</tspan></text>
+
+    <path class="edge-s" d="M10,238 L4,238 L4,480 L1055,480 L1055,326" marker-end="url(#a2)"/>
+    <text class="el" x="560" y="473" text-anchor="middle">its subtype losses define the receptor pathology in</text>
+
+    <!-- nodes -->
+    <g>
+      <rect class="node" x="10" y="40" width="205" height="76" rx="4"/>
+      <text class="nt" x="24" y="68">ACh availability</text>
+      <text class="ns" x="24" y="86">synthesis → release →</text>
+      <text class="ns" x="24" y="101">AChE / BuChE off-switch</text>
+    </g>
+    <g>
+      <rect class="node" x="10" y="200" width="205" height="76" rx="4"/>
+      <text class="nt" x="24" y="228">Receptor composition</text>
+      <text class="ns" x="24" y="246"><tspan fill="var(--nic)">nicotinic subunits</tspan> ·</text>
+      <text class="ns" x="24" y="261"><tspan fill="var(--mus)">muscarinic subtypes</tspan></text>
+    </g>
+    <g>
+      <rect class="node" x="10" y="350" width="205" height="86" rx="4"/>
+      <text class="nt" x="24" y="378">Source architecture</text>
+      <text class="ns" x="24" y="396">basal forebrain · brainstem</text>
+      <text class="ns" x="24" y="411">· striatal interneurons</text>
+      <text class="ns" x="24" y="426">broadcast vs local tone</text>
+    </g>
+    <g>
+      <rect class="node-hub" x="330" y="170" width="205" height="160" rx="4"/>
+      <text class="nt" x="344" y="200" font-size="15">Core rule</text>
+      <text class="ns" x="344" y="224" fill="var(--fg)">amplify extrinsic input</text>
+      <text class="ns" x="344" y="241" fill="var(--nic)">(nicotinic)</text>
+      <text class="ns" x="344" y="262" fill="var(--fg)">suppress intrinsic input</text>
+      <text class="ns" x="344" y="279" fill="var(--mus)">(muscarinic)</text>
+      <text class="ns" x="344" y="300" fill="var(--fg)">lower the LTP threshold</text>
+      <text class="ns" x="344" y="317">= world in, memory out</text>
+    </g>
+    <g>
+      <rect class="node" x="650" y="20" width="195" height="76" rx="4"/>
+      <text class="nt" x="664" y="48">Attention</text>
+      <text class="ns" x="664" y="66">= effective processing</text>
+      <text class="ns" x="664" y="81">tonic effort + phasic cue</text>
+    </g>
+    <g>
+      <rect class="node" x="650" y="150" width="195" height="76" rx="4"/>
+      <text class="nt" x="664" y="178">Encoding &amp; theta</text>
+      <text class="ns" x="664" y="196">separates encoding from</text>
+      <text class="ns" x="664" y="211">retrieval within a cycle</text>
+    </g>
+    <g>
+      <rect class="node" x="650" y="280" width="195" height="76" rx="4"/>
+      <text class="nt" x="664" y="308">Working memory</text>
+      <text class="ns" x="664" y="326">persistent spiking holds</text>
+      <text class="ns" x="664" y="341">a novel item</text>
+    </g>
+    <g>
+      <rect class="node" x="960" y="40" width="190" height="86" rx="4"/>
+      <text class="nt" x="974" y="68">Schizophrenia</text>
+      <text class="ns" x="974" y="86" fill="var(--nic)">α7 ↓</text>
+      <text class="ns" x="974" y="101" fill="var(--mus)">M1 cortex ↓ · M4 hipp. ↓</text>
+      <text class="ns" x="974" y="116">receptors, sources intact</text>
+    </g>
+    <g>
+      <rect class="node" x="960" y="230" width="190" height="96" rx="4"/>
+      <text class="nt" x="974" y="258">Alzheimer disease</text>
+      <text class="ns" x="974" y="276">projection degenerates,</text>
+      <text class="ns" x="974" y="291">targets survive at first</text>
+      <text class="ns" x="974" y="306" fill="var(--nic)">α4-containing loss</text>
+      <text class="ns" x="974" y="321">AChE inhibition = lever</text>
+    </g>
+  </svg>
+  </div>
+  <figcaption>Three determinants — how much ACh there is, which receptors are at the target, and which architecture delivers it — converge on one circuit rule, and that rule is what the cognitive functions read out and what the two disorders break at opposite levels.</figcaption>
+  </figure>
+
+  <div class="see">
+    <span class="lbl">See in source</span>
+    <p><b>Newman 2012, Fig. 1 + Table 1</b> (anatomy of the projections) — belongs with the notes' "Where ACh comes from". Roles the figure does not label:</p>
+    <ul>
+      <li>Ch1–Ch2 (medial septum, vertical limb) = the <b>memory arm</b>; its target is the buffer for novel items.</li>
+      <li>Ch4 (nucleus basalis) = the <b>attention arm</b>; the one whose loss is modelled by cortical deafferentation.</li>
+      <li>PPT/LDT = the <b>thalamic/arousal arm</b>, plus the VTA branch that makes nicotine reinforcing.</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <h2><span class="num">02</span>Recurring principles</h2>
+  <p class="lead">Each template is stated once in plain words; the table maps the instances onto its stages.</p>
+
+  <h3>P1 · Admit the new, mute the stored</h3>
+  <div class="template">
+    <span class="lbl">Template</span>
+    <ol>
+      <li>Input arrives that must not be confused with what is already stored.</li>
+      <li>ACh rises and cuts the pathway that would deliver stored patterns.</li>
+      <li>The same rise opens the pathway that encodes or holds the new input.</li>
+      <li>When ACh falls, the stored pathway returns and drives retrieval and consolidation.</li>
+    </ol>
+  </div>
+  <div class="tw">
+  <table>
+    <caption>P1 instances</caption>
+    <thead><tr><th>Instance</th><th>What must not interfere</th><th>What is cut</th><th>What is opened</th><th>Key difference</th></tr></thead>
+    <tbody>
+      <tr><th>Piriform pattern separation</th><td>Earlier odours resembling the new one</td><td>Feedback synapses, afferent ones spared</td><td>Encoding of the new odour</td><td>The dissociation is a property of the synapse type, not the cell</td></tr>
+      <tr><th>Theta phase alternation</th><td>Retrieval of CA3 associations during encoding</td><td>CA3→CA1 strength at the encoding phase</td><td>EC→CA1 strength, lowest LTP threshold</td><td>Separation is in <b>time</b>, cycling within one rhythm, not held open</td></tr>
+      <tr><th>Entorhinal persistent spiking</th><td>Distractors reaching the maintenance state</td><td>Admission of unselected input</td><td>A self-sustaining current holding the item</td><td>Works at the level of a single cell, not a network</td></tr>
+      <tr><th>Grid-cell rescaling in novelty</th><td>The spatial metric learnt elsewhere</td><td>Resonant frequency of stellate cells</td><td>An expanded, re-tunable spatial scale</td><td>What is gated is a <b>metric</b>, not a stimulus representation</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p class="takeaway">The same gate appears at four grains — synapse type, rhythm phase, single cell, spatial metric — which is why ACh looks contradictory until you ask which pathway is being muted.</p>
+
+  <div class="analogy">
+    <span class="lbl">Analogy</span>
+    <p>A microphone and a monitor speaker in one room: raising the mic gain while muting the monitor lets the room be heard instead of the room's own echo.</p>
+    <p><b>Where it breaks down:</b> the monitor's content here is not acoustic feedback but stored memory, and it is useful context rather than noise — exactly the disagreement in contrast table C3.</p>
+  </div>
+
+  <h3>P2 · The brake is built into the signal</h3>
+  <div class="template">
+    <span class="lbl">Template</span>
+    <ol>
+      <li>The signal acts.</li>
+      <li>Acting engages a mechanism that shuts the same signal down.</li>
+      <li>The signal is therefore short and self-limiting, which protects the target and sharpens timing.</li>
+    </ol>
+  </div>
+  <div class="tw">
+  <table>
+    <caption>P2 instances</caption>
+    <thead><tr><th>Instance</th><th>Action</th><th>Shut-off it engages</th><th>What is protected</th><th>Key difference</th></tr></thead>
+    <tbody>
+      <tr><th class="mus">M2/M4 autoreceptor</th><td>ACh accumulates in the cleft</td><td>Gi-coupled receptor on the cholinergic terminal cuts further release</td><td>Against sustained flooding of the synapse</td><td>Acts on <b>release</b>; receptors stay available</td></tr>
+      <tr><th class="nic">α7 desensitisation</th><td>Calcium enters through the open channel</td><td>Rapid transition to a refractory high-affinity closed state</td><td>Against calcium overload and excitotoxicity</td><td>Acts on the <b>receptor</b>; transmitter level unchanged</td></tr>
+      <tr><th>AChE in the cleft</th><td>ACh reaches its receptors</td><td>Hydrolysis destroys the transmitter in place</td><td>Against prolonged action; forces recycling of choline only</td><td>Removes the transmitter rather than silencing a protein — and so is the only lever a drug can pull</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p class="takeaway">Three brakes at three levels, and each one defines a different drug strategy: block the brake (esterase inhibitors), exploit the brake (self-limiting α7 agonism), or bypass it (allosteric modulation that needs endogenous ACh).</p>
+
+  <div class="analogy">
+    <span class="lbl">Analogy</span>
+    <p>α7 desensitisation as a circuit breaker: it trips on the current it is carrying.</p>
+    <p><b>Where it breaks down:</b> a breaker is binary and has to be reset from outside, whereas desensitised receptors recover on their own and, while refractory, bind agonist with higher affinity than when resting.</p>
+  </div>
+
+  <h3>P3 · Replace a lost signal while its targets still exist</h3>
+  <div class="template">
+    <span class="lbl">Template</span>
+    <ol>
+      <li>A presynaptic source degenerates.</li>
+      <li>The postsynaptic targets and their receptors are still there.</li>
+      <li>Raising transmitter availability at those targets restores part of the function.</li>
+      <li>When the targets themselves die, the same intervention has nothing left to act on.</li>
+    </ol>
+  </div>
+  <div class="tw">
+  <table>
+    <caption>P3 instances</caption>
+    <thead><tr><th>Instance</th><th>Source lost</th><th>How availability is raised</th><th>Why it expires</th><th>Key difference</th></tr></thead>
+    <tbody>
+      <tr><th>AChE inhibition in AD</th><td>Basal forebrain cholinergic projection</td><td>Block the enzyme that destroys released ACh</td><td>Cortical and hippocampal target neurons die</td><td>Boosts what is still released; needs surviving terminals as well as targets</td></tr>
+      <tr><th>BuChE inhibition, later disease</th><td>Same projection, with gliosis added</td><td>Block the glial enzyme acting away from the synapse</td><td>Same endpoint</td><td>A second route that becomes more relevant as glia proliferate</td></tr>
+      <tr><th>Levodopa in Parkinson disease</th><td>Nigrostriatal dopamine projection</td><td>Supply the precursor so surviving terminals make more</td><td>Terminals needed to convert it are lost</td><td>Acts on <b>synthesis</b>, not on degradation — the source's own comparison for the cholinergic logic</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p class="takeaway">Symptomatic cholinergic treatment is a replacement strategy with an expiry date written into it, and the expiry is set by the targets, not by the drug.</p>
+
+  <div class="see">
+    <span class="lbl">See in source</span>
+    <p><b>Stahl Ch. 12, Fig. 12-33A–D</b> draws this trajectory in four panels — belongs with the notes' "Alzheimer disease and cholinesterase inhibition". Role of each panel:</p>
+    <ul>
+      <li>A, B = the premise: presynaptic loss with the postsynaptic apparatus intact.</li>
+      <li>C = why inhibition works at all: more ACh reaching surviving receptors.</li>
+      <li>D = why it stops working: the receptors' own neurons are gone.</li>
+    </ul>
+  </div>
+
+  <h3>P4 · Composition at the target, not the transmitter, sets the response</h3>
+  <div class="template">
+    <span class="lbl">Template</span>
+    <ol>
+      <li>One transmitter arrives at many targets.</li>
+      <li>Which subunits or subtype are assembled there decides sign, speed and calcium entry.</li>
+      <li>The same release therefore produces different, sometimes opposite, effects at different targets.</li>
+    </ol>
+  </div>
+  <div class="tw">
+  <table>
+    <caption>P4 instances</caption>
+    <thead><tr><th>Instance</th><th>What varies</th><th>Consequence at the target</th><th>Where it decides a question</th></tr></thead>
+    <tbody>
+      <tr><th class="nic">α7 vs α4β2</th><td>Homomeric vs heteromeric assembly</td><td>Five binding sites, fast and highly calcium-permeable vs two sites, slower, activated by basal ACh</td><td>Which receptor carries a phasic signal and which reads tonic level</td></tr>
+      <tr><th class="nic">α4β2 stoichiometry</th><td>Ratio of the same two subunits</td><td>Different activation sensitivity and desensitisation rate</td><td>Why chronic nicotine shifts a population rather than just occupying it</td></tr>
+      <tr><th class="nic">α5, β3 auxiliary subunits</th><td>Subunits with no binding site</td><td>Altered permeability, desensitisation, localisation</td><td>Why subunit presence cannot be read off agonist binding</td></tr>
+      <tr><th class="mus">M1/M3/M5 vs M2/M4</th><td>Gq/11 vs Gi/o coupling</td><td>Postsynaptic excitation vs presynaptic inhibition of release</td><td>Why the same transmitter both drives a cell and silences its inputs</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p class="takeaway">Asking "what does ACh do" has no answer; the answerable question is what the receptor at that terminal is made of.</p>
+
+  <div class="see">
+    <span class="lbl">See in source</span>
+    <p><b>Clementi 2004, Fig. 1C</b> (subunit arrangement in α7 and α4β2, with the binding site marked) — belongs with the notes' nicotinic structure section. The role the drawing implies but does not state: the site lies at a <b>subunit interface</b>, so the number of interfaces of the right kind, and therefore the number of binding sites, follows directly from the assembly. <b>Scarr 2011, Table 1</b> does the same job for muscarinic receptors; read its G-protein column as the <b>sign</b> of the effect and its distribution column as which disorder each subtype is implicated in.</p>
+  </div>
+
+  <h3>P5 · A conserved site blocks selectivity, so go allosteric</h3>
+  <div class="template">
+    <span class="lbl">Template</span>
+    <ol>
+      <li>The transmitter's own binding site is nearly identical across subtypes.</li>
+      <li>A drug aimed at that site hits every subtype, including peripheral ones, so side effects cap the dose.</li>
+      <li>Sites elsewhere on the receptor are far less conserved.</li>
+      <li>A ligand there gains selectivity, and if it only modulates, it also follows endogenous activity instead of replacing it.</li>
+    </ol>
+  </div>
+  <div class="tw">
+  <table>
+    <caption>P5 instances</caption>
+    <thead><tr><th>Instance</th><th>The selectivity problem</th><th>Allosteric escape</th><th>Key difference</th></tr></thead>
+    <tbody>
+      <tr><th class="mus">Muscarinic M1/M4</th><td>Orthosteric homology across M1–M5; a partial agonist with the right profile was still limited by peripheral M2 and M3 actions</td><td>Subtype-selective allosteric agonists and PAMs</td><td>Efficacy was never in doubt; only selectivity was</td></tr>
+      <tr><th class="nic">Nicotinic, in AD treatment</th><td>An esterase inhibitor raises ACh but cannot aim it</td><td>The same molecule also acts as a nicotinic PAM, amplifying ACh where it is released</td><td>Amplifies an existing signal rather than replacing it — theoretically synergistic, not an established clinical advantage</td></tr>
+      <tr><th>Dualsteric ligands</th><td>Pure allosteric ligands may bind weakly or inconsistently</td><td>One molecule engages both sites</td><td>Buys affinity at the cost of reintroducing orthosteric exposure</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p class="takeaway">The shift from orthosteric to allosteric is the same move in both receptor families: stop imitating the transmitter and start changing how the receptor answers it.</p>
+</section>
+
+<section>
+  <h2><span class="num">03</span>Contrast tables</h2>
+
+  <h3>C1 · Presynaptic receptors that are easy to swap</h3>
+  <div class="tw">
+  <table>
+    <caption>C1 · Three presynaptic cholinergic receptors</caption>
+    <thead><tr><th>Dimension</th><th class="mus">M2/M4 autoreceptor</th><th class="mus">M2/M4 heteroreceptor</th><th class="nic">Nicotinic heteroreceptor</th></tr></thead>
+    <tbody>
+      <tr><th>Sits on</th><td>The cholinergic terminal itself</td><td>A glutamate or GABA terminal</td><td>An afferent glutamate terminal (e.g. thalamocortical)</td></tr>
+      <tr><th>Effect on release there</th><td>Decreases ACh release</td><td>Decreases release of the other transmitter</td><td><b>Increases</b> release</td></tr>
+      <tr><th>Who is being regulated</th><td>Itself</td><td>A neighbour</td><td>A neighbour</td></tr>
+      <tr><th>Functional role</th><td>Negative feedback on its own output</td><td>The suppression half of the core rule</td><td>The amplification half of the core rule</td></tr>
+      <tr><th>Signalling</th><td>Metabotropic, slow</td><td>Metabotropic, slow</td><td>Ionotropic, fast; calcium entry triggers release</td></tr>
+      <tr><th>Source figure</th><td>Stahl Fig. 12-27</td><td>Stahl Fig. 12-27</td><td>Stahl Fig. 12-29</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <figcaption>The same transmitter at the same anatomical position inhibits release through one receptor family and facilitates it through the other, which is where the core rule is actually implemented.</figcaption>
+
+  <h3>C2 · Five ways cholinergic signalling drops, which are not interchangeable</h3>
+  <div class="tw">
+  <table>
+    <caption>C2 · Loss of cholinergic signalling, by level</caption>
+    <thead><tr><th>Mechanism</th><th>What changes</th><th>ACh level</th><th>Receptor availability</th><th>Reversible?</th><th>Where it appears</th></tr></thead>
+    <tbody>
+      <tr><th>Competitive antagonism</th><td>Receptor occupied by a blocker</td><td>Unchanged</td><td>Occupied, not lost</td><td>Yes, on clearance</td><td>Scopolamine experiments; anticholinergic side effects; psychosis-like symptoms in healthy people</td></tr>
+      <tr><th>Agonist desensitisation</th><td>Receptor driven into a refractory state</td><td>Raised by the agonist</td><td>Present but non-responsive</td><td>Yes, over ms to minutes</td><td>Sustained nicotinic agonism; the limit on α7 drive</td></tr>
+      <tr><th>Receptor loss</th><td>Fewer receptors expressed</td><td>Unchanged</td><td>Genuinely reduced</td><td>No</td><td>α4-containing loss in AD; α7 and M1/M4 reductions in schizophrenia</td></tr>
+      <tr><th>Source degeneration</th><td>The releasing neuron dies</td><td>Reduced</td><td>Intact at first</td><td>No</td><td>Nucleus basalis in AD; cortical deafferentation models</td></tr>
+      <tr><th>Autoreceptor feedback</th><td>Release switched down from within</td><td>Reduced locally</td><td>Intact</td><td>Yes, moment to moment</td><td>Normal physiology, not pathology</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <figcaption>"Less cholinergic function" hides five different lesions, and only two of them can be corrected by putting more ACh in the cleft.</figcaption>
+
+  <h3>C3 · Two readings of the same modulation</h3>
+  <div class="tw">
+  <table>
+    <caption>C3 · Signal-to-noise versus top-down gating</caption>
+    <thead><tr><th>Dimension</th><th>Signal-to-noise reading</th><th>Bottom-up / top-down gating reading</th></tr></thead>
+    <tbody>
+      <tr><th>Intrinsic activity is</th><td>Noise that degrades the afferent signal</td><td>Context that disambiguates an unclear afferent signal</td></tr>
+      <tr><th>High ACh means</th><td>Sharpen the incoming signal, remove background</td><td>The sensory evidence can be trusted; do not let expectations in</td></tr>
+      <tr><th>Low ACh means</th><td>Signal degraded</td><td>Evidence is unreliable; admit top-down expectation</td></tr>
+      <tr><th>Attentional effort tracks</th><td>Processing quality</td><td>How much the current context has to be re-evaluated</td></tr>
+      <tr><th>Both predict</th><td colspan="2">Sharper receptive fields, better cue detection, worse retrieval of similar stored patterns under high ACh — which is why the cognitive data do not separate them</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <figcaption>The same measurements support two interpretations that differ only in whether the suppressed intrinsic input is treated as noise or as useful context — visible in the scare quotes on "noise" in Higley 2014, Fig. 1.</figcaption>
+
+  <div class="see">
+    <span class="lbl">See in source</span>
+    <p><b>Higley 2014, Fig. 1</b> (cortical microcircuit) and <b>Newman 2012, Fig. 2</b> (high vs low ACh) — both belong with the notes' "core circuit effect". Roles neither figure labels:</p>
+    <ul>
+      <li>Dendrite-targeting interneurons = the <b>damper on intracortical input</b> arriving at distal dendrites.</li>
+      <li>Soma-targeting interneurons = the <b>gate on the cell's output</b>; relieving them lets afferent drive through.</li>
+      <li>The LTP threshold in Newman Fig. 2 = the <b>plasticity gate</b>, which is what makes high ACh an encoding mode rather than only a perceptual one.</li>
+      <li>Low ACh in that figure is not a deficit state but the <b>consolidation and retrieval mode</b>.</li>
+    </ul>
+  </div>
+
+  <h3>C4 · Same receptor family, opposite lesions</h3>
+  <div class="tw">
+  <table>
+    <caption>C4 · Direction of the cholinergic lesion across disorders</caption>
+    <thead><tr><th>Disorder</th><th>Element altered</th><th>Direction</th><th>Resulting disturbance</th><th>Therapeutic lever</th></tr></thead>
+    <tbody>
+      <tr><th>Alzheimer disease</th><td>The projection, then its targets; <span class="nic">α4-containing</span> receptors</td><td>Loss</td><td>Encoding fails; amnesia</td><td>Raise available ACh while targets survive</td></tr>
+      <tr><th>Schizophrenia</th><td><span class="nic">α7</span>; <span class="mus">M1 cortex, M4 hippocampus</span></td><td>Reduction, with sources intact</td><td>Sensory gating and attention fail; positive symptoms</td><td>Agonism or allosteric modulation at the specific subtype</td></tr>
+      <tr><th>ADNFLE</th><td><span class="nic">α4 or β2</span> channel domain</td><td><b>Gain</b> of sensitivity to ACh</td><td>Thalamocortical synchronisation; seizures</td><td>Reduce excitability, not raise it</td></tr>
+      <tr><th>Parkinson disease</th><td><span class="nic">α6- and α4-containing</span> receptors on dopaminergic terminals; cortical α4, α7</td><td>Selective loss by subtype and location</td><td>Movement disorder plus cognitive impairment</td><td>Subtype-specific; unselective nicotinic action hits both</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <figcaption>Reading down the direction column shows why no single cholinergic drug class could serve these disorders: one lesion is a missing source, one a missing receptor, one a receptor that works too well.</figcaption>
+
+  <div class="see">
+    <span class="lbl">See in source</span>
+    <p><b>Scarr 2011, Fig. 1</b> (pirenzepine binding in controls versus schizophrenia) — belongs with the notes' M1-deficit subgroup. The role the histogram carries: the <b>bimodality is a subgroup boundary, not measurement spread</b>, which turns a syndrome-wide average into a candidate for selecting patients. <b>Clementi 2004, Fig. 3</b> (striatal subtypes on the mesostriatal scheme) carries the role that nicotine's reinforcing action is a <b>presynaptic dopamine-release</b> phenomenon, not a postsynaptic cortical one.</p>
+  </div>
+</section>
+
+<section>
+  <h2><span class="num">04</span>Functional diagrams</h2>
+
+  <h3>D1 · Who aims the broadcast</h3>
+  <p class="problem">Problem it solves: ACh is released widely and slowly, so something outside the cholinergic system has to decide when the gain should go up — and something has to stop it going up without limit.</p>
+  <figure>
+  <div class="scroller">
+  <svg viewBox="0 0 1180 400" width="1180" height="400" role="img" aria-label="Control loop that sets cortical acetylcholine level">
+    <title>Control loop: task demand to prefrontal cortex to basal forebrain to two ACh timescales to the cortical microcircuit, with feedback</title>
+    <defs>
+      <marker id="b1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M0,1 L9,5 L0,9 z" fill="var(--muted)"/>
+      </marker>
+    </defs>
+    <path class="edge" d="M160,200 L265,200" marker-end="url(#b1)"/>
+    <text class="el" x="212" y="182" text-anchor="middle">raises the<tspan x="212" dy="12">demand read by</tspan></text>
+
+    <path class="edge" d="M415,200 L520,200" marker-end="url(#b1)"/>
+    <text class="el" x="467" y="182" text-anchor="middle">recruits, by<tspan x="467" dy="12">glutamate input,</tspan></text>
+
+    <path class="edge" d="M680,185 L785,100" marker-end="url(#b1)"/>
+    <text class="el" x="732" y="130" text-anchor="middle">slow component</text>
+
+    <path class="edge" d="M680,215 L785,300" marker-end="url(#b1)"/>
+    <text class="el" x="732" y="268" text-anchor="middle">fast component</text>
+
+    <path class="edge" d="M935,90 L1020,180" marker-end="url(#b1)"/>
+    <text class="el" x="977" y="118" text-anchor="middle">sets gain in</text>
+
+    <path class="edge" d="M935,320 L1020,230" marker-end="url(#b1)"/>
+    <text class="el" x="977" y="296" text-anchor="middle">time-stamps<tspan x="977" dy="12">one cue in</tspan></text>
+
+    <path class="edge" d="M600,320 L600,242" marker-end="url(#b1)"/>
+    <text class="el" x="608" y="292">caps runaway drive in</text>
+
+    <path class="edge" d="M1095,148 L1095,20 L340,20 L340,158" marker-end="url(#b1)"/>
+    <text class="el" x="700" y="14" text-anchor="middle">its processing quality is judged by</text>
+
+    <g>
+      <rect class="node" x="10" y="158" width="150" height="84" rx="4"/>
+      <text class="nt" x="22" y="184" font-size="13">Task demand</text>
+      <text class="ns" x="22" y="202">ambiguous or</text>
+      <text class="ns" x="22" y="216">unpredictable cue</text>
+      <text class="ns" x="22" y="232">= the trigger</text>
+    </g>
+    <g>
+      <rect class="node" x="265" y="158" width="150" height="84" rx="4"/>
+      <text class="nt" x="277" y="184" font-size="13">Medial, ventral PFC</text>
+      <text class="ns" x="277" y="202">judges how much</text>
+      <text class="ns" x="277" y="216">effort is needed</text>
+      <text class="ns" x="277" y="232">= the controller</text>
+    </g>
+    <g>
+      <rect class="node-hub" x="520" y="158" width="160" height="84" rx="4"/>
+      <text class="nt" x="532" y="184" font-size="13">Basal forebrain</text>
+      <text class="ns" x="532" y="202">cholinergic neurons</text>
+      <text class="ns" x="532" y="216">broadcast to cortex</text>
+      <text class="ns" x="532" y="232">= the amplifier</text>
+    </g>
+    <g>
+      <rect class="node" x="520" y="320" width="160" height="60" rx="4"/>
+      <text class="nt" x="532" y="344" font-size="13">Accumbens, hipp.</text>
+      <text class="ns" x="532" y="362">GABAergic feedback</text>
+      <text class="ns" x="532" y="376">= the brake</text>
+    </g>
+    <g>
+      <rect class="node" x="785" y="38" width="150" height="80" rx="4"/>
+      <text class="nt" x="797" y="64" font-size="13">Tonic ACh</text>
+      <text class="ns" x="797" y="82">minutes; tracks</text>
+      <text class="ns" x="797" y="96">attentional effort</text>
+      <text class="ns" x="797" y="110">= how hard, not how well</text>
+    </g>
+    <g>
+      <rect class="node" x="785" y="278" width="150" height="80" rx="4"/>
+      <text class="nt" x="797" y="304" font-size="13">Phasic ACh</text>
+      <text class="ns" x="797" y="322">seconds; only on</text>
+      <text class="ns" x="797" y="336">detected cues</text>
+      <text class="ns" x="797" y="350">= a discrete marker</text>
+    </g>
+    <g>
+      <rect class="node" x="1020" y="148" width="150" height="104" rx="4"/>
+      <text class="nt" x="1032" y="174" font-size="13">Cortical</text>
+      <text class="nt" x="1032" y="190" font-size="13">microcircuit</text>
+      <text class="ns" x="1032" y="210">where the gain change</text>
+      <text class="ns" x="1032" y="224">lands</text>
+      <text class="ns" x="1032" y="242">= see Higley Fig. 1</text>
+    </g>
+  </svg>
+  </div>
+  <figcaption>The cholinergic system is a broadcast amplifier that is aimed from the front of the brain and braked from below, and its two output timescales do different jobs: one sets how hard a region works, the other marks that something just happened.</figcaption>
+  </figure>
+
+  <h3>D2 · Holding an item that has no synapse to hold it</h3>
+  <p class="problem">Problem it solves: a novel item has no strengthened synapses to fall back on, so the representation has to be held by the cell's own current — and only for items worth holding.</p>
+  <figure>
+  <div class="scroller">
+  <svg viewBox="0 0 900 350" width="900" height="350" role="img" aria-label="Cholinergically gated persistent spiking loop">
+    <title>Persistent spiking: muscarinic receptor arms a calcium-sensitive current that sustains firing after the stimulus ends</title>
+    <defs>
+      <marker id="c1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M0,1 L9,5 L0,9 z" fill="var(--muted)"/>
+      </marker>
+    </defs>
+    <path class="edge" d="M196,62 L300,62" marker-end="url(#c1)"/>
+    <text class="el" x="248" y="54" text-anchor="middle">opens</text>
+
+    <path class="edge" d="M196,258 L300,258" marker-end="url(#c1)"/>
+    <text class="el" x="248" y="250" text-anchor="middle">produces</text>
+
+    <path class="edge" d="M372,220 L372,100" marker-end="url(#c1)"/>
+    <text class="el" x="334" y="164" text-anchor="end">activates</text>
+
+    <path class="edge" d="M430,100 L430,220" marker-end="url(#c1)"/>
+    <text class="el" x="440" y="158">depolarises further,<tspan x="440" dy="12">admitting more Ca²⁺</tspan></text>
+
+    <path class="edge" d="M490,70 C545,78 545,118 580,142" marker-end="url(#c1)"/>
+    <text class="el" x="534" y="176" text-anchor="middle">the loop<tspan x="534" dy="12">yields</tspan></text>
+
+    <path class="edge" d="M660,250 L660,200" marker-end="url(#c1)"/>
+    <text class="el" x="670" y="228">is excluded from</text>
+
+    <g>
+      <rect class="node" x="16" y="24" width="180" height="76" rx="4"/>
+      <text class="nt" x="28" y="48" font-size="13" fill="var(--mus)">ACh at M1</text>
+      <text class="ns" x="28" y="66">arms a Ca-sensitive</text>
+      <text class="ns" x="28" y="80">cation current</text>
+      <text class="ns" x="28" y="94">= the switch</text>
+    </g>
+    <g>
+      <rect class="node-hub" x="300" y="24" width="190" height="76" rx="4"/>
+      <text class="nt" x="312" y="48" font-size="13">I<tspan font-size="10" dy="3">CAN</tspan></text>
+      <text class="ns" x="312" y="66">non-specific cation</text>
+      <text class="ns" x="312" y="80">current, Ca-gated</text>
+      <text class="ns" x="312" y="94">= the sustaining current</text>
+    </g>
+    <g>
+      <rect class="node" x="16" y="220" width="180" height="76" rx="4"/>
+      <text class="nt" x="28" y="244" font-size="13">Afferent glutamate</text>
+      <text class="ns" x="28" y="262">arrives only while the</text>
+      <text class="ns" x="28" y="276">stimulus is present</text>
+      <text class="ns" x="28" y="290">= the content</text>
+    </g>
+    <g>
+      <rect class="node" x="300" y="220" width="190" height="76" rx="4"/>
+      <text class="nt" x="312" y="244" font-size="13">Depolarisation + Ca²⁺</text>
+      <text class="ns" x="312" y="262">intracellular calcium</text>
+      <text class="ns" x="312" y="276">rises</text>
+      <text class="ns" x="312" y="290">= the feedback carrier</text>
+    </g>
+    <g>
+      <rect class="node" x="580" y="110" width="160" height="80" rx="4"/>
+      <text class="nt" x="592" y="134" font-size="13">Spiking that</text>
+      <text class="nt" x="592" y="150" font-size="13">outlasts the input</text>
+      <text class="ns" x="592" y="170">= the maintained item</text>
+      <text class="ns" x="592" y="184">no ACh → silence</text>
+    </g>
+    <g>
+      <rect class="node" x="580" y="250" width="180" height="76" rx="4"/>
+      <text class="nt" x="592" y="274" font-size="13">Distractor</text>
+      <text class="ns" x="592" y="292">another stimulus during</text>
+      <text class="ns" x="592" y="306">the delay</text>
+      <text class="ns" x="592" y="320">= what the gate must reject</text>
+    </g>
+  </svg>
+  </div>
+  <figcaption>Calcium is both the consequence and the cause here: the current it opens deepens the depolarisation that admits more of it, so the cell keeps firing after the stimulus has gone — and the only thing deciding which item enters the loop is whether ACh armed the switch for it.</figcaption>
+  </figure>
+</section>
+
+<section>
+  <h2><span class="num">05</span>Why questions</h2>
+  <div class="why">
+    <div><p>Why does ACh have to be destroyed in the cleft rather than recaptured, and what does that force about every drug designed to raise cholinergic transmission?<span class="hint">Connects the life cycle to why there is no cholinergic equivalent of an SSRI.</span></p></div>
+    <div><p>Why does one rise in ACh make a cue easier to detect and, at the same time, make a similar stored pattern harder to retrieve?<span class="hint">Requires the two halves of the core rule and the two receptor families that implement them.</span></p></div>
+    <div><p>Why does a receptor whose desensitisation protects the neuron also limit the drug strategy built on it, and why does chronic exposure change the receptor population rather than only its activation?<span class="hint">Joins P2 with P4.</span></p></div>
+    <div><p>Why do cholinesterase inhibitors slow decline early in Alzheimer disease and lose effect later, when nothing about the drug's mechanism has changed?<span class="hint">The expiry is a property of the circuit, not the molecule.</span></p></div>
+    <div><p>Why does schizophrenia research point at receptor subtypes while Alzheimer research points at a projection, even though both disorders present with impaired attention and memory?<span class="hint">Compare where each lesion sits in the overview map.</span></p></div>
+  </div>
+</section>
+</div>
+
+</body></html>
