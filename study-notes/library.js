@@ -8,6 +8,13 @@
 
   // CaseNotes3.pdf, Overview3.html, "Case Notes 3.pdf", overview_3.htm ...
   const FILE_PATTERN = /^(case[\s_-]*notes?|overview)[\s_-]*(\d+)\.([a-z0-9]+)$/i;
+  // Readable names for additional files; anything else shows as "<EXT> file".
+  const FILE_KINDS = {
+    csv: "CSV file", tsv: "TSV file", ipynb: "Jupyter notebook", py: "Python script", r: "R script",
+    pdf: "PDF document", html: "Web page", htm: "Web page", md: "Markdown file", txt: "Text file",
+    json: "JSON file", zip: "ZIP archive", apkg: "Anki deck", xlsx: "Excel workbook",
+    docx: "Word document", pptx: "PowerPoint presentation",
+  };
   const PDFJS = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/";
   const DESKTOP = window.matchMedia("(min-width: 960px)");
 
@@ -43,7 +50,9 @@
       const file = { name: fileName, url: fileUrl(path), type: ext === "pdf" ? "pdf" : /^html?$/.test(ext) ? "html" : "other" };
       const match = FILE_PATTERN.exec(fileName);
       if (!match || file.type === "other") {
-        course.other.push(file);
+        // Anything that isn't a week's overview or case notes is an additional file of the course.
+        // Files in subfolders keep their folder in the label, e.g. "Notebooks/Lab 1.ipynb".
+        course.other.push({ ...file, label: parts.slice(2).join("/") });
         continue;
       }
       const number = parseInt(match[2], 10);
@@ -57,7 +66,7 @@
       .map((course) => ({
         ...course,
         weeks: [...course.weeks.values()].sort((a, b) => a.number - b.number),
-        other: course.other.sort((a, b) => byText(a.name, b.name)),
+        other: course.other.sort((a, b) => byText(a.label, b.label)),
       }));
   }
 
@@ -129,6 +138,18 @@
     return week.overview ? "overview" : "case notes";
   }
 
+  function describeFile(file) {
+    const ext = file.name.includes(".") ? file.name.split(".").pop().toLowerCase() : "";
+    return FILE_KINDS[ext] || (ext ? ext.toUpperCase() + " file" : "File");
+  }
+
+  function describeCourse(course) {
+    return [
+      course.weeks.length ? plural(course.weeks.length, "week") : "No weeks yet",
+      course.other.length ? plural(course.other.length, "additional file") : null,
+    ].filter(Boolean).join(" · ");
+  }
+
   function breadcrumbs(links, current) {
     return el("nav", { class: "breadcrumbs", "aria-label": "Breadcrumb" },
       el("ol", null, [
@@ -187,7 +208,7 @@
         ? el("ul", { class: "course-list" }, courses.map((course) => el("li", null, [
           el("a", { class: "course-link", href: href(course) }, [
             el("span", { class: "course-name", text: course.name }),
-            el("span", { class: "course-meta", text: course.weeks.length ? plural(course.weeks.length, "week") : "No weeks yet" }),
+            el("span", { class: "course-meta", text: describeCourse(course) }),
           ]),
           weekStrip(course, null),
         ])))
@@ -214,10 +235,15 @@
           week.notes && week.notes.type === "pdf" && el("a", { class: "doc-link download", href: week.notes.url, download: "", text: "Download PDF" }),
         ]),
       ]))) : null,
-      course.other.length ? el("section", { class: "other-files" }, [
-        el("h2", { text: "Other files" }),
-        el("ul", null, course.other.map((file) =>
-          el("li", null, el("a", { href: file.url, target: "_blank", rel: "noopener", text: file.name })))),
+      course.other.length ? el("section", { class: "extra-files", "aria-labelledby": "extra-files-title" }, [
+        el("h2", { id: "extra-files-title", text: "Additional files" }),
+        el("ul", { class: "file-list" }, course.other.map((file) => el("li", null, [
+          el("div", { class: "file-info" }, [
+            el("span", { class: "file-name", text: file.label }),
+            el("span", { class: "file-kind", text: describeFile(file) }),
+          ]),
+          el("a", { class: "doc-link download", href: file.url, download: file.name, "aria-label": "Download " + file.label, text: "Download" }),
+        ]))),
       ]) : null,
     ]);
   }

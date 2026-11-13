@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Adaptive Myelination — Synthesis Layer</title>
+<style>
+  :root{
+    --ink:#1b1f24; --body:#2b333b; --muted:#626e79; --rule:#dde2e8; --bg:#fcfbf9; --panel:#ffffff;
+    --elec:#2f6f9f; --elec-bg:#eaf2f8;
+    --glia:#2d7d74; --glia-bg:#e8f3f1;
+    --beh:#7a5aa6; --beh-bg:#f0ebf7;
+    --dis:#b0702a; --dis-bg:#f8f0e5;
+    --mal:#a33a3a; --mal-bg:#f8ebeb;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--body);
+    font:16px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
+  .wrap{max-width:1180px;margin:0 auto;padding:48px 28px 96px}
+  header{border-bottom:2px solid var(--ink);padding-bottom:18px;margin-bottom:12px}
+  h1{font-size:30px;line-height:1.2;margin:0 0 8px;color:var(--ink);letter-spacing:-.01em}
+  .sub{color:var(--muted);font-size:15px;max-width:72ch;margin:0}
+  h2{font-size:21px;color:var(--ink);margin:56px 0 6px;letter-spacing:-.01em}
+  h2 .num{color:var(--muted);font-weight:600;margin-right:10px;font-variant-numeric:tabular-nums}
+  h3{font-size:16px;color:var(--ink);margin:30px 0 4px}
+  h4{font-size:14px;color:var(--ink);margin:22px 0 4px;text-transform:uppercase;letter-spacing:.06em}
+  p{margin:8px 0}
+  .lede{font-size:15px;color:var(--muted);max-width:80ch;margin-bottom:4px}
+  figure{margin:20px 0 10px;background:var(--panel);border:1px solid var(--rule);border-radius:10px;padding:18px 18px 10px;overflow-x:auto}
+  figcaption{font-size:13.5px;color:var(--muted);margin-top:12px;padding-top:10px;border-top:1px solid var(--rule);max-width:95ch}
+  svg{display:block;max-width:100%;height:auto}
+  table{border-collapse:collapse;width:100%;font-size:13.5px;margin:12px 0 4px;background:var(--panel)}
+  caption{caption-side:bottom;text-align:left;font-size:13px;color:var(--muted);padding-top:10px;max-width:95ch}
+  th,td{border-bottom:1px solid var(--rule);padding:8px 10px;text-align:left;vertical-align:top}
+  thead th{border-bottom:1.5px solid var(--ink);color:var(--ink);font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;white-space:nowrap}
+  tbody tr:last-child td{border-bottom:1.5px solid var(--ink)}
+  td:first-child{color:var(--ink);font-weight:600}
+  .tpl{background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--glia);
+       border-radius:8px;padding:12px 16px;margin:12px 0;font-size:14.5px}
+  .tpl ol{margin:6px 0 0;padding-left:20px}
+  .tpl li{margin:3px 0}
+  .tpl .lab{font-size:11.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700}
+  .take{font-size:14px;color:var(--ink);background:#f4f6f2;border-left:3px solid var(--ink);
+        padding:8px 14px;margin:10px 0 0;border-radius:0 6px 6px 0}
+  .take b{font-variant:all-small-caps;letter-spacing:.04em;color:var(--muted)}
+  .anal{font-size:13.5px;color:var(--body);background:var(--beh-bg);border:1px dashed #c2b2d8;
+        border-radius:8px;padding:9px 14px;margin:12px 0}
+  .anal b{color:var(--beh);font-variant:all-small-caps;letter-spacing:.04em}
+  .roles{font-size:13.5px;margin:6px 0 0;padding-left:18px}
+  .roles li{margin:2px 0}
+  ul.q{list-style:none;padding:0;counter-reset:q}
+  ul.q li{counter-increment:q;position:relative;padding:14px 16px 14px 52px;margin:10px 0;
+    background:var(--panel);border:1px solid var(--rule);border-radius:10px;color:var(--ink);font-size:15.5px}
+  ul.q li::before{content:counter(q);position:absolute;left:16px;top:12px;width:24px;height:24px;
+    border-radius:50%;background:var(--ink);color:#fff;font-size:13px;font-weight:700;
+    display:flex;align-items:center;justify-content:center}
+  .key{display:flex;flex-wrap:wrap;gap:14px;margin:14px 0 0;font-size:12.5px;color:var(--muted)}
+  .key span{display:flex;align-items:center;gap:6px}
+  .key i{width:12px;height:12px;border-radius:3px;display:inline-block}
+  .n-label{font:600 12.5px/1.25 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+  .n-sub{font:400 11px/1.2 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+  .e-label{font:500 11px/1.1 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    fill:#4a555f;paint-order:stroke;stroke:#fcfbf9;stroke-width:3.5px;stroke-linejoin:round}
+  hr{border:0;border-top:1px solid var(--rule);margin:40px 0}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>Adaptive myelination — synthesis layer</h1>
+  <p class="sub">Connections, comparisons and functional meaning across the five sources. Mechanistic detail lives in the study notes; structural detail lives in the source figures, which are referenced rather than redrawn.</p>
+</header>
+
+<!-- ============================= 1. OVERVIEW MAP ============================= -->
+<h2><span class="num">1</span>Overview map</h2>
+<p class="lede">Central question: <b>how does experience change a circuit durably enough to change behaviour — and what does the myelinated infrastructure add that synapses cannot?</b> Sub-question running underneath it: if conduction velocity is adjustable, what is it adjusted <i>for</i>?</p>
+
+<figure>
+<svg viewBox="0 0 1160 790" role="img" aria-label="Overview map of topics and their labelled relationships">
+  <defs>
+    <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#7a858f"/>
+    </marker>
+  </defs>
+  <g stroke="#7a858f" stroke-width="1.4" fill="none" marker-end="url(#ar)">
+    <path d="M240,58 L322,58"/>
+    <path d="M650,58 L732,58"/>
+    <path d="M490,86 L490,152"/>
+    <path d="M900,88 L640,152"/>
+    <path d="M960,86 L960,152"/>
+    <path d="M470,216 L700,292"/>
+    <path d="M270,328 L322,328"/>
+    <path d="M550,328 L612,328"/>
+    <path d="M740,356 L620,432"/>
+    <path d="M940,216 L940,432"/>
+    <path d="M150,356 L150,432"/>
+    <path d="M290,468 L372,468"/>
+    <path d="M700,468 L782,468"/>
+    <path d="M540,496 L540,562"/>
+    <path d="M900,496 L780,562"/>
+    <path d="M570,682 L570,628"/>
+    <path d="M1040,58 L1136,58 L1136,716 L1104,716"/>
+    <path d="M30,716 L14,716 L14,16 L884,16 L884,28"/>
+  </g>
+
+  <g>
+    <rect x="30" y="30" width="210" height="56" rx="9" fill="var(--beh-bg)" stroke="var(--beh)" stroke-width="1.2"/>
+    <text x="135" y="55" text-anchor="middle" class="n-label" fill="var(--ink)">Experience &amp; learning</text>
+    <text x="135" y="71" text-anchor="middle" class="n-sub" fill="var(--muted)">sensory · social · motor · fear</text>
+
+    <rect x="322" y="30" width="328" height="56" rx="9" fill="var(--glia-bg)" stroke="var(--glia)" stroke-width="1.2"/>
+    <text x="486" y="55" text-anchor="middle" class="n-label" fill="var(--ink)">Neuronal activity + axonal cues</text>
+    <text x="486" y="71" text-anchor="middle" class="n-sub" fill="var(--muted)">vesicular release · BDNF–TrkB · sheath Ca²⁺ · diameter</text>
+
+    <rect x="732" y="30" width="308" height="56" rx="9" fill="var(--glia-bg)" stroke="var(--glia)" stroke-width="1.2"/>
+    <text x="886" y="55" text-anchor="middle" class="n-label" fill="var(--ink)">Oligodendrocyte lineage</text>
+    <text x="886" y="71" text-anchor="middle" class="n-sub" fill="var(--muted)">OPC → new oligodendrocyte → survival</text>
+
+    <rect x="300" y="152" width="380" height="56" rx="9" fill="var(--glia-bg)" stroke="var(--glia)" stroke-width="1.2"/>
+    <text x="490" y="177" text-anchor="middle" class="n-label" fill="var(--ink)">Myelin geometry</text>
+    <text x="490" y="193" text-anchor="middle" class="n-sub" fill="var(--muted)">g-ratio · internode length · node length · coverage</text>
+
+    <rect x="760" y="152" width="360" height="56" rx="9" fill="var(--glia-bg)" stroke="var(--glia)" stroke-width="1.2"/>
+    <text x="940" y="177" text-anchor="middle" class="n-label" fill="var(--ink)">Non-conduction oligodendroglial functions</text>
+    <text x="940" y="193" text-anchor="middle" class="n-sub" fill="var(--muted)">K⁺ clearance · metabolic support · glutamate · Nogo-A · NG2</text>
+
+    <rect x="30" y="300" width="240" height="56" rx="9" fill="var(--elec-bg)" stroke="var(--elec)" stroke-width="1.2"/>
+    <text x="150" y="325" text-anchor="middle" class="n-label" fill="var(--ink)">Na⁺ channels confined</text>
+    <text x="150" y="341" text-anchor="middle" class="n-sub" fill="var(--muted)">to the node of Ranvier</text>
+
+    <rect x="322" y="300" width="228" height="56" rx="9" fill="var(--elec-bg)" stroke="var(--elec)" stroke-width="1.2"/>
+    <text x="436" y="325" text-anchor="middle" class="n-label" fill="var(--ink)">Saltatory conduction</text>
+    <text x="436" y="341" text-anchor="middle" class="n-sub" fill="var(--muted)">regeneration only at nodes</text>
+
+    <rect x="612" y="300" width="256" height="56" rx="9" fill="var(--elec-bg)" stroke="var(--elec)" stroke-width="1.2"/>
+    <text x="740" y="325" text-anchor="middle" class="n-label" fill="var(--ink)">Conduction velocity</text>
+    <text x="740" y="341" text-anchor="middle" class="n-sub" fill="var(--muted)">= spike arrival time</text>
+
+    <rect x="30" y="432" width="260" height="56" rx="9" fill="var(--elec-bg)" stroke="var(--elec)" stroke-width="1.2"/>
+    <text x="160" y="457" text-anchor="middle" class="n-label" fill="var(--ink)">Neuronal excitability</text>
+    <text x="160" y="473" text-anchor="middle" class="n-sub" fill="var(--muted)">channel complement · AIS · firing pattern</text>
+
+    <rect x="372" y="432" width="328" height="56" rx="9" fill="var(--beh-bg)" stroke="var(--beh)" stroke-width="1.2"/>
+    <text x="536" y="457" text-anchor="middle" class="n-label" fill="var(--ink)">Circuit synchrony</text>
+    <text x="536" y="473" text-anchor="middle" class="n-sub" fill="var(--muted)">coincidence detection · ripple–spindle coupling</text>
+
+    <rect x="782" y="432" width="308" height="56" rx="9" fill="var(--beh-bg)" stroke="var(--beh)" stroke-width="1.2"/>
+    <text x="936" y="457" text-anchor="middle" class="n-label" fill="var(--ink)">Synaptic plasticity</text>
+    <text x="936" y="473" text-anchor="middle" class="n-sub" fill="var(--muted)">weights · timing-dependent rules</text>
+
+    <rect x="330" y="562" width="480" height="56" rx="9" fill="var(--beh-bg)" stroke="var(--beh)" stroke-width="1.2"/>
+    <text x="570" y="587" text-anchor="middle" class="n-label" fill="var(--ink)">Memory</text>
+    <text x="570" y="603" text-anchor="middle" class="n-sub" fill="var(--muted)">acquisition → consolidation → remote retention</text>
+
+    <rect x="30" y="688" width="270" height="56" rx="9" fill="var(--dis-bg)" stroke="var(--dis)" stroke-width="1.2"/>
+    <text x="165" y="713" text-anchor="middle" class="n-label" fill="var(--ink)">Tools &amp; their limits</text>
+    <text x="165" y="729" text-anchor="middle" class="n-sub" fill="var(--muted)">what can and cannot be separated</text>
+
+    <rect x="420" y="688" width="300" height="56" rx="9" fill="var(--dis-bg)" stroke="var(--dis)" stroke-width="1.2"/>
+    <text x="570" y="713" text-anchor="middle" class="n-label" fill="var(--ink)">Ageing &amp; disease</text>
+    <text x="570" y="729" text-anchor="middle" class="n-sub" fill="var(--muted)">differentiation block · chemobrain · hypomyelination</text>
+
+    <rect x="834" y="688" width="270" height="56" rx="9" fill="var(--mal-bg)" stroke="var(--mal)" stroke-width="1.2"/>
+    <text x="969" y="713" text-anchor="middle" class="n-label" fill="var(--ink)">Glioma</text>
+    <text x="969" y="729" text-anchor="middle" class="n-sub" fill="var(--muted)">hijacked lineage control</text>
+  </g>
+
+  <g class="e-label" text-anchor="middle">
+    <text x="281" y="48">translates into</text>
+    <text x="691" y="48">gates differentiation of</text>
+    <text x="498" y="122">sets sheath growth vs retraction</text>
+    <text x="700" y="124">supplies new sheaths to</text>
+    <text x="1046" y="122">same new cells provide</text>
+    <text x="548" y="252">sets</text>
+    <text x="296" y="316">makes possible</text>
+    <text x="581" y="316">determines</text>
+    <text x="604" y="400">aligns arrivals for</text>
+    <text x="1012" y="330">shapes synapses in</text>
+    <text x="150" y="398" text-anchor="start" dx="8">same channel logic as</text>
+    <text x="331" y="456">sets contribution to</text>
+    <text x="741" y="456">timing permits</text>
+    <text x="540" y="534" dx="8" text-anchor="start">required for</text>
+    <text x="854" y="534">sets acquisition in</text>
+    <text x="570" y="658">degrades</text>
+    <text x="1136" y="380" transform="rotate(-90 1136 380)">hijacked by</text>
+    <text x="14" y="366" transform="rotate(-90 14 366)">measure &amp; manipulate</text>
+  </g>
+</svg>
+<div class="key">
+  <span><i style="background:var(--elec-bg);border:1px solid var(--elec)"></i>electrical / axonal</span>
+  <span><i style="background:var(--glia-bg);border:1px solid var(--glia)"></i>oligodendroglial</span>
+  <span><i style="background:var(--beh-bg);border:1px solid var(--beh)"></i>circuit / behaviour</span>
+  <span><i style="background:var(--dis-bg);border:1px solid var(--dis)"></i>failure &amp; method</span>
+  <span><i style="background:var(--mal-bg);border:1px solid var(--mal)"></i>malignant</span>
+</div>
+<figcaption>The material is one cascade read downwards — experience becomes activity, activity gates the oligodendrocyte lineage, the lineage sets myelin geometry, geometry sets arrival time, and arrival time is what memory consolidation and coincidence-based synaptic plasticity actually consume; the three boxes at the bottom are the same cascade failing (ageing, disease), being exploited (glioma), and being measured (tools).</figcaption>
+</figure>
+
+<!-- ============================= 2. RECURRING PRINCIPLES ============================= -->
+<h2><span class="num">2</span>Recurring principles</h2>
+<p class="lede">Five templates that each appear in more than one topic or source. Each is stated once in plain words, then every instance is mapped onto its stages.</p>
+
+<h3>P1 · The same messenger, opposite outcomes, decided by its pattern</h3>
+<div class="tpl">
+  <span class="lab">Template</span>
+  <ol>
+    <li>Activity occurs in the axon or the circuit.</li>
+    <li>Ca²⁺ rises inside one defined compartment that is listening.</li>
+    <li>The <i>pattern</i> of the rise — frequency, duration — is what carries the instruction, not its presence.</li>
+    <li>Opposite structural outcomes follow from the same messenger.</li>
+  </ol>
+</div>
+<table>
+  <thead><tr><th>Instance</th><th>1 · Activity source</th><th>2 · Listening compartment</th><th>3 · Pattern read</th><th>4 · Outcome</th><th>Key difference</th></tr></thead>
+  <tbody>
+    <tr><td>Nascent myelin sheath</td><td>Axonal firing, vesicular release</td><td>The new sheath itself</td><td>Short high-frequency transients vs long low-frequency ones</td><td>Elongation vs retraction</td><td>The only case where the two patterns give literally opposite structural fates</td></tr>
+    <tr><td>Astrocyte network</td><td>Transmitter spillover, K⁺ release</td><td>Astrocyte cytoplasm, then neighbours via gap junctions</td><td>Spread of the rise across cells</td><td>Secretion of signals that modulate synapses and blood flow</td><td>Signal propagates between cells rather than instructing one structure</td></tr>
+    <tr><td>Neuron-to-glioma synapse</td><td>Firing of the invaded circuit</td><td>Glioma cell, via Ca²⁺-permeable AMPARs (under-edited GluA2)</td><td>Depolarisation, however produced</td><td>Proliferation and invasion</td><td>The read-out is growth, and depolarisation alone suffices</td></tr>
+    <tr><td>Glioma “hub cells”</td><td>Autonomous, not synaptic</td><td>Hub cell, gated by KCa3.1</td><td>Rhythmic oscillation</td><td>Network-wide growth signalling</td><td>Self-generated pattern — the pacemaker logic without a neuron</td></tr>
+  </tbody>
+  <caption>Ca²⁺ is the common decision variable across glia, neurons and tumour; what differs is which compartment is listening and what a given pattern is taken to mean.</caption>
+</table>
+<p class="take"><b>Takeaway —</b> asking “does activity raise Ca²⁺?” predicts nothing; the mechanism lives in the compartment and the pattern.</p>
+
+<h3>P2 · Overproduce, then select</h3>
+<div class="tpl">
+  <span class="lab">Template</span>
+  <ol>
+    <li>A surplus of candidate structures or cells is produced.</li>
+    <li>They are tested in place, within a limited window.</li>
+    <li>Most are withdrawn or die; experience biases which ones.</li>
+    <li>What survives becomes durable and hard to change afterwards.</li>
+  </ol>
+</div>
+<table>
+  <thead><tr><th>Instance</th><th>1 · Overproduced</th><th>2 · Window</th><th>3 · What biases selection</th><th>4 · What persists</th></tr></thead>
+  <tbody>
+    <tr><td>New oligodendrocytes</td><td>Far more differentiating cells than integrate</td><td>Days after losing progenitor identity</td><td>Enrichment raises the integrated fraction, not the number born</td><td>A long-lived cell carrying dozens of sheaths</td></tr>
+    <tr><td>Nascent sheaths of one cell</td><td>Processes extended onto many candidate axons</td><td>A few hours of sampling per premyelinating cell</td><td>Axonal activity and vesicular release; the sheath Ca²⁺ signature of P1</td><td>A stable internode on the selected axon</td></tr>
+    <tr><td>Existing sheaths during motor learning</td><td>Sheaths already in place, some still growing</td><td>The training week itself</td><td>Learning increases retraction and halts growing sheaths</td><td>A transiently bare segment, free for axonal remodelling</td></tr>
+    <tr><td>Synapses and axon branches</td><td>Excess contacts in the developing circuit</td><td>Development, continuing at lower rate in adult</td><td>Activity-dependent engulfment by microglia, astrocytes and OPCs</td><td>The refined connectivity pattern</td></tr>
+  </tbody>
+  <caption>Every level of the myelinated infrastructure is built by making too much and then removing most of it, which is why experience can act without changing production rates at all.</caption>
+</table>
+<p class="take"><b>Takeaway —</b> myelin plasticity is subtractive as often as additive; a paradigm that only counts new cells will miss the step experience actually acted on.</p>
+<p class="anal"><b>Analogy —</b> casting by audition: far more candidates appear than parts exist, and the role goes to whoever fits the scene. <i>Where it breaks down:</i> rejected cells die rather than auditioning elsewhere, and the "scene" (the axon) is itself altered by the audition.</p>
+
+<h3>P3 · Activity-regulated courier to a precursor</h3>
+<div class="tpl">
+  <span class="lab">Template</span>
+  <ol>
+    <li>Neurons fire.</li>
+    <li>A factor is released or proteolytically shed in an activity-dependent way.</li>
+    <li>It binds a receptor on a precursor or progenitor-like cell.</li>
+    <li>That cell proliferates, differentiates, or grows.</li>
+  </ol>
+</div>
+<table>
+  <thead><tr><th>Instance</th><th>2 · Courier &amp; release</th><th>3 · Receiving cell &amp; receptor</th><th>4 · Output</th><th>Healthy or malignant</th></tr></thead>
+  <tbody>
+    <tr><td>BDNF → OPC</td><td>Activity-regulated neuronal secretion</td><td>OPC, TrkB</td><td>Required for activity-driven proliferation, oligodendrogenesis and myelin change</td><td>Healthy — the one mechanistically required component identified</td></tr>
+    <tr><td>Endothelin → oligodendrocyte</td><td>Activity-regulated secretion from cerebral vasculature</td><td>Oligodendrocyte, endothelin B receptor</td><td>Sets how many internodes one cell makes</td><td>Healthy — the mediator of social-experience effects</td></tr>
+    <tr><td>BDNF → glioma</td><td>Same activity-regulated release</td><td>Glioma cell, TrkB (NTRK2 upregulated by NLGN3)</td><td>Mitogen; also traffics AMPARs to strengthen neuron-to-glioma synapses</td><td>Malignant — same courier, same receptor</td></tr>
+    <tr><td>Neuroligin-3 → glioma</td><td>Activity-regulated ADAM10 cleavage of the ectodomain</td><td>Glioma cell, receptor unknown</td><td>Proliferation plus feed-forward induction of synapse, K⁺ channel and microtube genes</td><td>Malignant — required: xenografts fail to grow without it in the microenvironment</td></tr>
+    <tr><td>IGF1 → glioma</td><td>Activity-regulated paracrine signalling</td><td>Glioma cell</td><td>Gliomagenesis in the olfactory bulb</td><td>Malignant — region-specific, unlike NLGN3</td></tr>
+  </tbody>
+  <caption>The courier system that lets axonal activity recruit new myelin is the same one that lets an active circuit feed a tumour, down to the identical ligand–receptor pair.</caption>
+</table>
+<p class="take"><b>Takeaway —</b> this identity is why therapy aims at the courier (shedding enzyme, receptor) rather than at the cancer cell, and why the specificity problem is unavoidable.</p>
+
+<h3>P4 · Control by brake, not throttle</h3>
+<div class="tpl">
+  <span class="lab">Template</span>
+  <ol>
+    <li>A process is competent to run by default.</li>
+    <li>A brake holds it back, setting the operating level.</li>
+    <li>Releasing the brake raises output faster and more reliably than adding drive.</li>
+  </ol>
+</div>
+<table>
+  <thead><tr><th>Brake</th><th>Process restrained</th><th>Where it acts</th><th>Effect of releasing it</th></tr></thead>
+  <tbody>
+    <tr><td>M1 muscarinic receptor</td><td>OPC differentiation</td><td>On the OPC itself</td><td>Deletion, or an antimuscarinic pro-myelinating drug, increases new myelin and improves recall in aged and fear-conditioned animals</td></tr>
+    <tr><td>Nogo-A</td><td>Extent of one cell's myelination; dendritic branching and spine turnover</td><td>Oligodendrocyte surface</td><td>More dendritic branching and spine turnover — i.e. the brake couples myelin extent to neuronal structural plasticity</td></tr>
+    <tr><td>Somatodendritic inhibitory cues</td><td>Wrapping of the wrong compartment</td><td>Neuronal soma and dendrites</td><td>Myelin is excluded from dendrites — selectivity achieved by prohibition, not attraction</td></tr>
+    <tr><td>Na⁺ channel inactivation gate</td><td>The action potential's own regenerative cycle</td><td>Domain IV S4 and the III–IV linker</td><td>Without it the spike has no self-terminating step and no refractory period</td></tr>
+    <tr><td>Juxtaparanodal K⁺ channels</td><td>Spiking of the sheathed membrane</td><td>Under the myelin, flanking the paranode</td><td>Exposure by demyelination turns a silent brake into an active block on conduction</td></tr>
+  </tbody>
+  <caption>From the spike to the sheath, the system is built as a permitted process under restraint, so the useful experimental and therapeutic handle is almost always the brake.</caption>
+</table>
+<p class="take"><b>Takeaway —</b> “enhancing myelination” in practice means disinhibiting differentiation, which is also why the effect cannot be aimed at one circuit.</p>
+<p class="anal"><b>Analogy —</b> a handbrake rather than an accelerator. <i>Where it breaks down:</i> releasing this brake acts on every OPC in the CNS at once, so there is no steering to go with it.</p>
+
+<h3>P5 · Function from confinement</h3>
+<div class="tpl">
+  <span class="lab">Template</span>
+  <ol>
+    <li>A protein that would do little if spread evenly over the membrane.</li>
+    <li>Adhesion molecules and scaffolds fence it into a small domain.</li>
+    <li>The high local density creates a threshold, a trigger point or a clearance site.</li>
+    <li>When the fence fails, the molecule is still present but the function is gone — or inverted.</li>
+  </ol>
+</div>
+<table>
+  <thead><tr><th>Molecule</th><th>Fence / scaffold</th><th>What confinement buys</th><th>Failure mode</th></tr></thead>
+  <tbody>
+    <tr><td>Na⁺ channels at the node</td><td>Ankyrin G, NF186, NrCAM; paranodal junctions as the boundary</td><td>A low-threshold hot spot that regenerates the spike, with pumping confined to a small patch</td><td>Demyelination: current leaks, juxtaparanodal K⁺ channels become exposed, conduction slows or blocks</td></tr>
+    <tr><td>Na⁺ channels at the axon initial segment</td><td>Scaffolding at the AIS</td><td>The lowest-threshold point in the cell — the trigger zone that converts graded input to a spike train</td><td>Shifts in AIS length or position retune excitability</td></tr>
+    <tr><td>K⁺ channels at the juxtaparanode</td><td>Caspr2, under the sheath</td><td>Suppression of spiking in the sheathed membrane without opposing the nodal spike</td><td>Exposure converts suppression into conduction failure</td></tr>
+    <tr><td>Cav2 channels at the presynaptic terminal</td><td>Active zone organisation</td><td>Ca²⁺ influx exactly where vesicles are docked</td><td>Transmitter release uncoupled from the spike</td></tr>
+    <tr><td>Glutamate transporters on perisynaptic astrocyte processes</td><td>Astrocyte ensheathment of the cleft</td><td>Clearance fast enough to keep transmission point-to-point and prevent excitotoxicity</td><td>Spillover and excitotoxic death</td></tr>
+  </tbody>
+  <caption>Myelin's electrical advantage and the neuron's excitability both rest on the same trick — putting a channel population in one small place and fencing it there.</caption>
+</table>
+<p class="take"><b>Takeaway —</b> this is why node geometry is a plausible plasticity variable at all: change the size of the fence and you change how many channels are inside it.</p>
+
+<!-- ============================= 3. CONTRAST TABLES ============================= -->
+<h2><span class="num">3</span>Contrast tables</h2>
+<p class="lede">Pairs and groups that the sources use in close succession and that collapse together under exam pressure.</p>
+
+<h4>C1 · The four lineage verbs</h4>
+<table>
+  <thead><tr><th>Step</th><th>What changes</th><th>Detected by</th><th>Blocked by</th><th>Time course</th><th>Why it is confused</th></tr></thead>
+  <tbody>
+    <tr><td>Proliferation</td><td>OPC number</td><td>EdU/BrdU with PDGFRα or NG2</td><td>No selective tool exists</td><td>Within a day of learning</td><td>Read as the source of new oligodendrocytes, when it is largely homeostatic refilling</td></tr>
+    <tr><td>Direct differentiation</td><td>An existing OPC becomes an oligodendrocyte without dividing</td><td>Fate mapping (tau-driven reporter), in vivo imaging</td><td>Myrf or Olig2 conditional deletion</td><td>Hours</td><td>Invisible to thymidine-analogue designs, yet it is the majority route</td></tr>
+    <tr><td>Integration / survival</td><td>Whether the new cell lives</td><td>Longitudinal in vivo imaging only</td><td>Nothing selective</td><td>Days</td><td>Experience acts here, so “more cells born” and “more cells kept” get reported alike</td></tr>
+    <tr><td>Myelination</td><td>Sheaths actually built and compacted</td><td>Electron microscopy, myelin protein reporters</td><td>Not separable from differentiation with current tools</td><td>One to two weeks for compact myelin</td><td>Treated as the automatic consequence of differentiation</td></tr>
+  </tbody>
+  <caption>Four separable steps that the literature reports under one phrase, which is the single biggest source of apparent contradiction between papers.</caption>
+</table>
+
+<h4>C2 · Kinds of myelin change</h4>
+<table>
+  <thead><tr><th>Kind</th><th>Which cell acts</th><th>Substrate it needs</th><th>Functional consequence</th><th>Reversibility</th></tr></thead>
+  <tbody>
+    <tr><td>Developmental myelination</td><td>Newly generated oligodendrocytes</td><td>Unmyelinated axons, in a fixed chronological and topographical order</td><td>Establishes the baseline conduction architecture</td><td>Effectively none</td></tr>
+    <tr><td>Adaptive de novo myelination</td><td>New oligodendrocytes</td><td>Axons or segments left bare — hence partial myelination is the precondition</td><td>Adds internodes where experience demands; task-related regions</td><td>Limited; mature cells are stable</td></tr>
+    <tr><td>Sheath remodelling</td><td>Existing oligodendrocytes</td><td>Partially myelinated axons with adjacent bare stretches</td><td>Changes internode length and coverage; frees axon segments during learning</td><td>Yes — extension and retraction both observed</td></tr>
+    <tr><td>Thickening</td><td>Existing or new oligodendrocytes</td><td>An already-wrapped segment</td><td>Lowers capacitance → faster conduction; raises synapse density in ageing</td><td>Unclear</td></tr>
+    <tr><td>Remyelination</td><td>Newly differentiated oligodendrocytes</td><td>Demyelinated axons</td><td>Restores conduction, but with shorter and more numerous internodes than the original</td><td>Incomplete, especially with age</td></tr>
+  </tbody>
+  <caption>“More myelin” can mean five different cellular events with different cells, different prerequisites and different consequences for conduction.</caption>
+</table>
+
+<h4>C3 · Domains of the axonal membrane</h4>
+<table>
+  <thead><tr><th>Domain</th><th>Defining molecules</th><th>Channel content</th><th>Role in plain words</th><th>What its failure looks like</th></tr></thead>
+  <tbody>
+    <tr><td>Axon initial segment</td><td>AIS scaffolding; Nav1.6, Kv1, Kv7, T-type Ca²⁺</td><td>Highest Na⁺ density in the cell</td><td>Decides whether the cell fires at all</td><td>Altered threshold; structural shifts retune excitability</td></tr>
+    <tr><td>Node of Ranvier</td><td>Ankyrin G, NF186, NrCAM; perinodal astrocyte processes in CNS</td><td>Na⁺-rich, K⁺-poor</td><td>The only place the spike is regenerated; its length sets channel number</td><td>Lengthens after stress, high-frequency firing, hypoperfusion</td></tr>
+    <tr><td>Paranode</td><td>Caspr, contactin, neurofascin; paranodal glial loops</td><td>Essentially none</td><td>Seals the periaxonal space and fences the other domains apart</td><td>Loss merges domains; node position and size drift</td></tr>
+    <tr><td>Juxtaparanode</td><td>Caspr2, under the sheath</td><td>K⁺-rich</td><td>Keeps the sheathed membrane from generating spikes</td><td>Once exposed, actively opposes conduction</td></tr>
+    <tr><td>Internode</td><td>Compact myelin: MBP, PLP (CNS); P0, PMP22 (PNS)</td><td>Insulated, low-capacitance membrane</td><td>Carries the current passively between nodes</td><td>Demyelination: current leaks, passive spread fails</td></tr>
+  </tbody>
+  <caption>Four short domains and one long one, each defined by adhesion rather than by the axon itself — the structural reading of principle P5.</caption>
+</table>
+
+<h4>C4 · Action potential confusables</h4>
+<table>
+  <thead><tr><th>Pair</th><th>What it is</th><th>Set by</th><th>What it explains</th><th>Typical error</th></tr></thead>
+  <tbody>
+    <tr><td>Activation vs inactivation gate</td><td>Two gates in the same Na⁺ channel, both opened by depolarisation</td><td>S4 of domains I–III (fast) vs S4 of domain IV and the III–IV linker (slow)</td><td>Why the channel conducts only briefly, during the interval when both are open</td><td>Treating inactivation as closure of the activation gate, which would make it reversible by depolarisation</td></tr>
+    <tr><td>Absolute vs relative refractory period</td><td>No spike possible vs spike possible with a larger stimulus</td><td>Na⁺ channels fully inactivated vs partly recovered, with K⁺ conductance still raised</td><td>The ceiling on firing rate, and hence on information capacity</td><td>Attributing both to K⁺ conductance alone</td></tr>
+    <tr><td>Conductance vs current vs driving force</td><td>Open channels vs ions actually flowing vs the electrochemical push</td><td>Voltage and time vs the product g × (V<sub>m</sub> − E<sub>ion</sub>)</td><td>Why the Na⁺ current falls and then reverses while g<sub>Na</sub> is still large</td><td>Reading a current trace as a conductance trace</td></tr>
+    <tr><td>All-or-none vs graded conductance</td><td>A fixed-amplitude spike vs smoothly graded channel opening</td><td>Net ionic current crossing from outward to inward</td><td>How a tipping point produces a discrete event from a continuous process</td><td>Assuming a dedicated threshold mechanism exists</td></tr>
+  </tbody>
+  <caption>Each pair is one mechanism seen at two levels of description, which is where the Hodgkin–Huxley account is usually misremembered.</caption>
+</table>
+
+<h4>C5 · Memory vocabulary, and what each manipulation actually hits</h4>
+<table>
+  <thead><tr><th>Stage</th><th>Behavioural test</th><th>Intact when new oligodendrocytes are blocked?</th><th>Interpretation</th></tr></thead>
+  <tbody>
+    <tr><td>Acquisition</td><td>Learning curve during training</td><td>Yes for spatial and fear; <b>no</b> for motor learning</td><td>Myelin is not needed to form most memories, but is needed to learn a new motor skill — and performing a pre-learned skill is unaffected</td></tr>
+    <tr><td>Recent recall</td><td>Probe or re-exposure at 24 h</td><td>Fear: yes. Spatial: impaired</td><td>The dissociation across paradigms is unresolved and is a stated open problem</td></tr>
+    <tr><td>Consolidation</td><td>Physiology across the days after training</td><td>No — prefrontal responses fail to evolve; ripple–spindle coupling does not increase</td><td>This is the window in which new compact myelin appears</td></tr>
+    <tr><td>Remote retention</td><td>Re-exposure at about a month</td><td>No — less freezing, fewer reactivated neurons in memory-related regions only</td><td>The engram is not maintained or cannot be reactivated, rather than the behaviour being blocked</td></tr>
+  </tbody>
+  <caption>Reading the same manipulation across all four stages is what turns a list of deficits into the claim that adaptive myelination stabilises rather than forms memories.</caption>
+</table>
+
+<h4>C6 · Modes of neuron–glioma interaction, against their healthy counterparts</h4>
+<table>
+  <thead><tr><th>Mode</th><th>Carrier</th><th>Receiver</th><th>Immediate effect</th><th>Healthy counterpart</th><th>Drug handle</th></tr></thead>
+  <tbody>
+    <tr><td>Paracrine</td><td>Shed NLGN3, BDNF, IGF1</td><td>Receptors on glioma cells</td><td>Proliferation, plus transcription of the machinery for the other modes</td><td>BDNF–TrkB and endothelin signalling to OPCs</td><td>ADAM10 inhibition</td></tr>
+    <tr><td>Synaptic</td><td>Glutamate at a real synapse</td><td>Ca²⁺-permeable AMPARs on glioma</td><td>Excitatory postsynaptic current → depolarisation → growth and invasion</td><td>Neuron-to-OPC synapses, also AMPAR-mediated</td><td>AMPAR blockade (anti-seizure drug)</td></tr>
+    <tr><td>Non-synaptic electrical</td><td>Extracellular K⁺ from firing neurons</td><td>K⁺ channels on glioma</td><td>Slow inward current lasting seconds</td><td>Oligodendrocyte and astrocyte K⁺ buffering — here the clearance is impaired instead</td><td>Targeting K⁺ channels</td></tr>
+    <tr><td>Gap-junctional</td><td>Tumour microtubes coupled by connexin 43</td><td>The glioma network</td><td>Amplifies and synchronises Ca²⁺ transients across cells</td><td>Astrocyte coupling and Ca²⁺ waves</td><td>Gap junction blockade</td></tr>
+    <tr><td>Reciprocal</td><td>Glutamate, synaptogenic factors, interneuron loss</td><td>Neurons</td><td>Hyperexcitability and seizures → more input to the tumour</td><td>No benign counterpart — this is the loop that has no physiological analogue</td><td>Thrombospondin pathway blockade</td></tr>
+  </tbody>
+  <caption>Four of the five modes are borrowed wholesale from normal neuron–glial signalling; only the hyperexcitability loop is the tumour's own addition, and it is what makes the others self-reinforcing.</caption>
+</table>
+
+<!-- ============================= 4. FUNCTIONAL DIAGRAMS ============================= -->
+<h2><span class="num">4</span>Functional diagrams</h2>
+
+<h4>Already covered by source figures — reference, with the role labels they lack</h4>
+<table>
+  <thead><tr><th>Source figure</th><th>What it shows</th><th>Notes section it serves</th><th>Role labels to add</th></tr></thead>
+  <tbody>
+    <tr><td>Kandel Ch. 7, Fig. 7–15</td><td>CNS and PNS myelination; the four stages of Schwann cell wrapping</td><td>How a myelin sheath is built</td><td>Mesaxon = the starting edge of the spiral; turns = thickness; cytoplasmic extrusion = the step that creates the insulator</td></tr>
+    <tr><td>Kandel Ch. 7, Fig. 7–16</td><td>Node micrographs plus the molecular map of node, paranode, juxtaparanode</td><td>The node of Ranvier and saltatory conduction</td><td>Paranodal loops = the fence; ankyrin G = the anchor; juxtaparanodal K⁺ = the brake under the sheath (P4, P5)</td></tr>
+    <tr><td>Kandel Ch. 10, Fig. 10–7</td><td>The action potential reconstructed from g<sub>Na</sub> and g<sub>K</sub></td><td>The action potential</td><td>Rising g<sub>Na</sub> = positive feedback; its fall = the self-terminating brake; delayed g<sub>K</sub> = the repolarising arm</td></tr>
+    <tr><td>Kandel Ch. 10, Fig. 10–10</td><td>Gating charge movement; resting, open and inactivated states</td><td>The action potential</td><td>Domains I–III S4 = the trigger; domain IV S4 plus III–IV linker = the timer that ends the spike</td></tr>
+    <tr><td>Xin &amp; Chan, Fig. 1 · Chapman &amp; Hill, Fig. 1</td><td>The forms of plasticity in the lineage, from division to sheath geometry</td><td>Forms of myelin plasticity; how oligodendrocytes are made</td><td>Direct differentiation = the majority route; cell death = the selection step (P2); node length = the cheapest geometric lever</td></tr>
+    <tr><td>Xin &amp; Chan, Fig. 2</td><td>Oligodendroglial modulation of neuronal function: Kir4.1, glutamine synthetase, BDNF, timing, Nogo-A, NG2</td><td>Beyond conduction</td><td>These are the fast-acting functions; they, not compact myelin, can explain deficits appearing within hours</td></tr>
+    <tr><td>Xin &amp; Chan, Tables 1 and 2</td><td>Tools with advantages and disadvantages; paradigm-by-paradigm requirement evidence</td><td>Tools; is new myelin required?</td><td>Read Table 2 down the “timeline” column rather than across rows — that is what separates acquisition from consolidation</td></tr>
+    <tr><td>Taylor &amp; Monje, Fig. 2 and Fig. 3</td><td>Activity-regulated mechanisms of glioma growth; depolarisation driving proliferation</td><td>Malignant myelin plasticity</td><td>NLGN3 = the courier (P3); AMPAR and K⁺ currents = the receivers; gap junctions = the amplifier</td></tr>
+    <tr><td>Taylor &amp; Monje, Fig. 4</td><td>The neuron–glioma feedback loop</td><td>Malignant myelin plasticity</td><td>The loop closes because the tumour makes its own input: hyperexcitability is both a symptom and a growth signal</td></tr>
+  </tbody>
+  <caption>What the source figures already carry structurally, and the functional labels that have to be added from scattered text to make each one readable as a mechanism.</caption>
+</table>
+
+<h3>D1 · Why myelination is for synchrony, not speed</h3>
+<p>The problem it solves: a downstream detector must compare two signals that left the same neuron but travel unequal distances.</p>
+<figure>
+<svg viewBox="0 0 960 400" role="img" aria-label="Diagram of isochronic conduction along two branches of unequal length">
+  <defs>
+    <marker id="ar2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#7a858f"/>
+    </marker>
+  </defs>
+
+  <circle cx="86" cy="200" r="30" fill="var(--elec-bg)" stroke="var(--elec)" stroke-width="1.4"/>
+  <text x="86" y="205" text-anchor="middle" class="n-label" fill="var(--ink)">spike</text>
+  <text x="86" y="252" text-anchor="middle" class="n-sub" fill="var(--muted)">one origin:</text>
+  <text x="86" y="266" text-anchor="middle" class="n-sub" fill="var(--muted)">both branches carry</text>
+  <text x="86" y="280" text-anchor="middle" class="n-sub" fill="var(--muted)">the identical signal</text>
+
+  <path d="M116,186 C170,120 210,96 268,96" stroke="#7a858f" stroke-width="1.4" fill="none" marker-end="url(#ar2)"/>
+  <path d="M116,214 C170,280 210,304 268,304" stroke="#7a858f" stroke-width="1.4" fill="none" marker-end="url(#ar2)"/>
+  <text x="196" y="130" text-anchor="middle" class="e-label">carries</text>
+  <text x="196" y="286" text-anchor="middle" class="e-label">carries</text>
+
+  <g>
+    <line x1="276" y1="96" x2="700" y2="96" stroke="var(--muted)" stroke-width="2"/>
+    <rect x="286" y="86" width="52" height="20" rx="5" fill="var(--glia-bg)" stroke="var(--glia)"/>
+    <rect x="350" y="86" width="52" height="20" rx="5" fill="var(--glia-bg)" stroke="var(--glia)"/>
+    <rect x="414" y="86" width="52" height="20" rx="5" fill="var(--glia-bg)" stroke="var(--glia)"/>
+    <rect x="478" y="86" width="52" height="20" rx="5" fill="var(--glia-bg)" stroke="var(--glia)"/>
+    <rect x="542" y="86" width="52" height="20" rx="5" fill="var(--glia-bg)" stroke="var(--glia)"/>
+    <rect x="606" y="86" width="52" height="20" rx="5" fill="var(--glia-bg)" stroke="var(--glia)"/>
+    <text x="490" y="60" text-anchor="middle" class="n-label" fill="var(--ink)">short branch · short internodes, thinner sheath</text>
+    <text x="490" y="76" text-anchor="middle" class="n-sub" fill="var(--muted)">role: slowed on purpose — delay is added so distance is not an advantage</text>
+    <text x="490" y="132" text-anchor="middle" class="n-sub" fill="var(--muted)">nodes (green gaps) = the only regeneration points; their spacing is the tuning variable</text>
+  </g>
+
+  <g>
+    <line x1="276" y1="304" x2="700" y2="304" stroke="var(--muted)" stroke-width="3.4"/>
+    <rect x="296" y="292" width="92" height="24" rx="6" fill="var(--glia-bg)" stroke="var(--glia)"/>
+    <rect x="400" y="292" width="92" height="24" rx="6" fill="var(--glia-bg)" stroke="var(--glia)"/>
+    <rect x="504" y="292" width="92" height="24" rx="6" fill="var(--glia-bg)" stroke="var(--glia)"/>
+    <rect x="608" y="292" width="80" height="24" rx="6" fill="var(--glia-bg)" stroke="var(--glia)"/>
+    <text x="490" y="352" text-anchor="middle" class="n-label" fill="var(--ink)">long branch · long internodes, thicker sheath</text>
+    <text x="490" y="368" text-anchor="middle" class="n-sub" fill="var(--muted)">role: sped up — fewer regeneration steps compensate for the extra length</text>
+  </g>
+
+  <path d="M700,96 C740,96 756,150 770,186" stroke="#7a858f" stroke-width="1.4" fill="none" marker-end="url(#ar2)"/>
+  <path d="M700,304 C740,304 756,250 770,214" stroke="#7a858f" stroke-width="1.4" fill="none" marker-end="url(#ar2)"/>
+  <text x="742" y="140" text-anchor="middle" class="e-label">arrives at t</text>
+  <text x="742" y="266" text-anchor="middle" class="e-label">arrives at the same t</text>
+
+  <rect x="784" y="168" width="160" height="64" rx="9" fill="var(--beh-bg)" stroke="var(--beh)" stroke-width="1.3"/>
+  <text x="864" y="192" text-anchor="middle" class="n-label" fill="var(--ink)">coincidence detector</text>
+  <text x="864" y="208" text-anchor="middle" class="n-sub" fill="var(--muted)">role: fires only if both</text>
+  <text x="864" y="222" text-anchor="middle" class="n-sub" fill="var(--muted)">arrive within microseconds</text>
+</svg>
+<figcaption>One neuron's two branches differ greatly in length, and myelin geometry is set per branch so that the two spikes arrive together — the computation the circuit performs is the comparison, so the useful output of myelination is equal arrival time, which means slowing the short branch as readily as speeding the long one.</figcaption>
+</figure>
+<p class="anal"><b>Analogy —</b> a staggered start on a running track, where the lanes are set so everyone reaches the line at once. <i>Where it breaks down:</i> myelin does not shift the start time, it changes the speed of the whole lane, and the same lane also has to carry every later signal.</p>
+
+<h3>D2 · Where in the memory timeline each manipulation bites</h3>
+<p>The problem it solves: reconciling deficits that appear within hours with a structure that takes weeks to build.</p>
+<figure>
+<svg viewBox="0 0 980 410" role="img" aria-label="Timeline relating oligodendroglial events to behavioural deficits">
+  <defs>
+    <marker id="ar3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#7a858f"/>
+    </marker>
+  </defs>
+
+  <line x1="80" y1="60" x2="930" y2="60" stroke="var(--ink)" stroke-width="1.4" marker-end="url(#ar3)"/>
+  <text x="900" y="46" text-anchor="middle" class="e-label">time after training begins</text>
+  <g class="n-sub" fill="var(--muted)" text-anchor="middle">
+    <text x="118" y="44">training</text>
+    <text x="300" y="44">~2 h</text>
+    <text x="490" y="44">24 h</text>
+    <text x="680" y="44">1–2 weeks</text>
+    <text x="870" y="44">~30 days</text>
+  </g>
+  <g fill="var(--ink)">
+    <circle cx="118" cy="60" r="4"/><circle cx="300" cy="60" r="4"/><circle cx="490" cy="60" r="4"/>
+    <circle cx="680" cy="60" r="4"/><circle cx="870" cy="60" r="4"/>
+  </g>
+
+  <text x="80" y="110" class="n-sub" fill="var(--muted)">LINEAGE</text>
+  <rect x="200" y="124" width="200" height="50" rx="8" fill="var(--glia-bg)" stroke="var(--glia)" stroke-width="1.2"/>
+  <text x="300" y="144" text-anchor="middle" class="n-label" fill="var(--ink)">direct differentiation</text>
+  <text x="300" y="160" text-anchor="middle" class="n-sub" fill="var(--muted)">role: supplies new cells fast</text>
+
+  <rect x="414" y="124" width="190" height="50" rx="8" fill="var(--glia-bg)" stroke="var(--glia)" stroke-width="1.2"/>
+  <text x="509" y="144" text-anchor="middle" class="n-label" fill="var(--ink)">OPC proliferation</text>
+  <text x="509" y="160" text-anchor="middle" class="n-sub" fill="var(--muted)">role: refills the emptied pool</text>
+
+  <rect x="618" y="124" width="196" height="50" rx="8" fill="var(--glia-bg)" stroke="var(--glia)" stroke-width="1.2"/>
+  <text x="716" y="144" text-anchor="middle" class="n-label" fill="var(--ink)">new compact myelin</text>
+  <text x="716" y="160" text-anchor="middle" class="n-sub" fill="var(--muted)">role: changes conduction</text>
+
+  <rect x="828" y="124" width="112" height="50" rx="8" fill="var(--glia-bg)" stroke="var(--glia)" stroke-width="1.2"/>
+  <text x="884" y="144" text-anchor="middle" class="n-label" fill="var(--ink)">stable cell</text>
+  <text x="884" y="160" text-anchor="middle" class="n-sub" fill="var(--muted)">role: persists</text>
+
+  <path d="M400,149 L410,149" stroke="#7a858f" stroke-width="1.4" marker-end="url(#ar3)"/>
+  <path d="M604,149 L614,149" stroke="#7a858f" stroke-width="1.4" marker-end="url(#ar3)"/>
+  <path d="M814,149 L824,149" stroke="#7a858f" stroke-width="1.4" marker-end="url(#ar3)"/>
+  <text x="405" y="116" text-anchor="middle" class="e-label">empties pool →</text>
+  <text x="609" y="116" text-anchor="middle" class="e-label">matures into</text>
+  <text x="819" y="116" text-anchor="middle" class="e-label">survives as</text>
+
+  <text x="80" y="234" class="n-sub" fill="var(--muted)">BEHAVIOUR</text>
+  <text x="80" y="248" class="n-sub" fill="var(--muted)">with new</text>
+  <text x="80" y="262" class="n-sub" fill="var(--muted)">oligodendrocytes</text>
+  <text x="80" y="276" class="n-sub" fill="var(--muted)">blocked</text>
+
+  <rect x="200" y="228" width="200" height="50" rx="8" fill="var(--mal-bg)" stroke="var(--mal)" stroke-width="1.2"/>
+  <text x="300" y="248" text-anchor="middle" class="n-label" fill="var(--ink)">motor speed impaired</text>
+  <text x="300" y="264" text-anchor="middle" class="n-sub" fill="var(--muted)">too early for compact myelin</text>
+
+  <rect x="414" y="228" width="190" height="50" rx="8" fill="var(--beh-bg)" stroke="var(--beh)" stroke-width="1.2"/>
+  <text x="509" y="248" text-anchor="middle" class="n-label" fill="var(--ink)">fear recall normal</text>
+  <text x="509" y="264" text-anchor="middle" class="n-sub" fill="var(--muted)">acquisition intact</text>
+
+  <rect x="618" y="228" width="196" height="50" rx="8" fill="var(--mal-bg)" stroke="var(--mal)" stroke-width="1.2"/>
+  <text x="716" y="248" text-anchor="middle" class="n-label" fill="var(--ink)">consolidation fails</text>
+  <text x="716" y="264" text-anchor="middle" class="n-sub" fill="var(--muted)">prefrontal responses static</text>
+
+  <rect x="828" y="228" width="112" height="50" rx="8" fill="var(--mal-bg)" stroke="var(--mal)" stroke-width="1.2"/>
+  <text x="884" y="248" text-anchor="middle" class="n-label" fill="var(--ink)">remote recall</text>
+  <text x="884" y="264" text-anchor="middle" class="n-sub" fill="var(--muted)">impaired; engram quiet</text>
+
+  <path d="M300,178 L300,224" stroke="#7a858f" stroke-width="1.4" fill="none" marker-end="url(#ar3)" stroke-dasharray="4 3"/>
+  <path d="M716,178 L716,224" stroke="#7a858f" stroke-width="1.4" fill="none" marker-end="url(#ar3)"/>
+  <text x="306" y="204" text-anchor="start" class="e-label">cannot explain</text>
+  <text x="722" y="204" text-anchor="start" class="e-label">explains</text>
+
+  <rect x="200" y="318" width="340" height="56" rx="9" fill="var(--elec-bg)" stroke="var(--elec)" stroke-width="1.2"/>
+  <text x="370" y="342" text-anchor="middle" class="n-label" fill="var(--ink)">early deficits ⇒ non-myelin functions</text>
+  <text x="370" y="358" text-anchor="middle" class="n-sub" fill="var(--muted)">K⁺ clearance · metabolic support · glutamate handling</text>
+
+  <rect x="600" y="318" width="340" height="56" rx="9" fill="var(--elec-bg)" stroke="var(--elec)" stroke-width="1.2"/>
+  <text x="770" y="342" text-anchor="middle" class="n-label" fill="var(--ink)">late deficits ⇒ compact myelin</text>
+  <text x="770" y="358" text-anchor="middle" class="n-sub" fill="var(--muted)">conduction timing · engram maintenance</text>
+
+  <path d="M300,282 L310,314" stroke="#7a858f" stroke-width="1.4" fill="none" marker-end="url(#ar3)"/>
+  <path d="M716,282 L730,314" stroke="#7a858f" stroke-width="1.4" fill="none" marker-end="url(#ar3)"/>
+  <text x="318" y="300" text-anchor="start" class="e-label">must be attributed to</text>
+  <text x="738" y="300" text-anchor="start" class="e-label">consistent with</text>
+</svg>
+<figcaption>Laying the lineage events and the behavioural failures on one axis turns the field's apparent contradiction into a division of labour: deficits before new myelin can exist belong to the fast, non-myelin functions of the lineage, and only deficits in the consolidation window onwards can be attributed to compact myelin itself.</figcaption>
+</figure>
+
+<!-- ============================= 5 / 6 ============================= -->
+<h2><span class="num">5</span>Why-questions</h2>
+<p class="lede">Each requires a connection between sections; none can be answered by recalling a list.</p>
+<ul class="q">
+  <li>Why does blocking new oligodendrocyte formation leave the learning curve intact but destroy remote recall, while interfering with synaptic potentiation does close to the opposite — and what does that pair of results say about what a memory <i>is</i> at one month?</li>
+  <li>Why can adding myelin to an axon improve what a circuit computes even when the added myelin slows that axon's branch down?</li>
+  <li>Why do deficits appear within two hours of training in animals that cannot make new oligodendrocytes, when compact myelin takes one to two weeks to form — and which functions of the lineage must therefore be carrying the early load?</li>
+  <li>Why is the node of Ranvier, rather than the internode, the place where both conduction speed and conduction failure are decided — and why does that make node length an attractive plasticity variable?</li>
+  <li>Why do the manipulations that enhance myelination and the manipulations that accelerate glioma growth converge on the same molecules, and what constraint does that put on any pro-myelinating therapy?</li>
+</ul>
+
+</div>
+</body>
+</html>

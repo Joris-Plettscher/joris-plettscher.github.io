@@ -352,7 +352,8 @@ h2 {
 /* ---------- Home: course list ---------- */
 
 .course-list,
-.week-list {
+.week-list,
+.file-list {
 	list-style: none;
 	margin: 0;
 	padding: 0;
@@ -370,7 +371,8 @@ h2 {
 }
 
 .course-list > li + li,
-.week-list > li + li {
+.week-list > li + li,
+.file-list > li + li {
 	border-top: 1px solid var(--line);
 }
 
@@ -455,13 +457,41 @@ h2 {
 	color: var(--muted);
 }
 
-.other-files {
+/* ---------- Course: additional files (download only) ---------- */
+
+.extra-files {
 	margin-top: 32px;
 }
 
-.other-files ul {
-	margin: 0;
-	padding-left: 20px;
+.file-list > li {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 10px 24px;
+	padding: 14px 20px;
+}
+
+.file-info {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+	min-width: 0;
+}
+
+.file-name {
+	color: var(--navy);
+	font-weight: 600;
+	line-height: 1.35;
+	overflow-wrap: anywhere;
+}
+
+.file-kind {
+	color: var(--muted);
+	font-size: 14px;
+}
+
+.file-list .doc-link {
+	flex-shrink: 0;
 }
 
 /* ---------- Week view ---------- */
@@ -691,7 +721,8 @@ h2 {
 		padding: 16px;
 	}
 
-	.week-list > li {
+	.week-list > li,
+	.file-list > li {
 		padding: 14px 16px;
 	}
 

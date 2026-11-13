@@ -1,0 +1,474 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>Stress Neurobiology Synthesis</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one reading column; every visual sits in a bordered plate with its caption beneath. */
+:root{
+  --bg:#f6f7fa; --surface:#ffffff; --surface-2:#eef1f7; --ink:#191c24; --muted:#5a6174;
+  --line:#dde2eb; --line2:#c3cad8; --arrow:#8a93a6;
+  --slow:#2b4fb8; --fast:#bc2a78; --good:#1b7a62; --risk:#a33a2b;
+  --tint-slow:#eef2fd; --tint-risk:#fdeeea; --tint-flat:#f1f4f9;
+  --font-display:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --font-body:"Inter","Helvetica Neue",Arial,sans-serif;
+  --font-mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0f1218; --surface:#161a22; --surface-2:#1b2029; --ink:#e8ebf2; --muted:#9aa2b5;
+  --line:#262c38; --line2:#3a4250; --arrow:#79839a;
+  --slow:#89a7ff; --fast:#f382c4; --good:#55c2a5; --risk:#ec8a74;
+  --tint-slow:#161e2f; --tint-risk:#2a1b19; --tint-flat:#141921; color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#0f1218; --surface:#161a22; --surface-2:#1b2029; --ink:#e8ebf2; --muted:#9aa2b5;
+  --line:#262c38; --line2:#3a4250; --arrow:#79839a;
+  --slow:#89a7ff; --fast:#f382c4; --good:#55c2a5; --risk:#ec8a74;
+  --tint-slow:#161e2f; --tint-risk:#2a1b19; --tint-flat:#141921; color-scheme:dark;
+}
+body{background:var(--bg);color:var(--ink);font-family:var(--font-body);line-height:1.5}
+.wrap{max-width:1140px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:40px 72px}
+header.top{display:flex;flex-direction:column;gap:10px;border-bottom:2px solid var(--line2);padding-bottom:22px;margin-bottom:34px}
+h1{font-family:var(--font-display);font-weight:700;font-size:clamp(28px,4.4vw,42px);line-height:1.06;letter-spacing:-.02em;margin:0;text-wrap:balance}
+.sub{color:var(--muted);font-size:14.5px;max-width:62ch;margin:0}
+.key{font-family:var(--font-mono);font-size:10.5px;letter-spacing:.04em;color:var(--muted);display:flex;flex-wrap:wrap;gap:6px 14px}
+.key b{color:var(--ink);font-weight:500}
+section{margin-bottom:56px}
+.eyebrow{font-family:var(--font-mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--slow);margin:0 0 6px}
+h2{font-family:var(--font-display);font-weight:600;font-size:clamp(20px,2.6vw,27px);letter-spacing:-.01em;margin:0 0 8px;text-wrap:balance}
+h3{font-family:var(--font-display);font-weight:600;font-size:16.5px;margin:30px 0 6px;text-wrap:balance}
+p{margin:0 0 12px;max-width:72ch}
+.lead{font-size:15px;color:var(--muted);max-width:70ch}
+.plate{border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:14px;overflow-x:auto}
+.plate svg{display:block;width:100%;height:auto}
+.cap{font-size:12.5px;color:var(--muted);margin:10px 2px 0;max-width:80ch}
+.cap b{color:var(--ink);font-weight:600}
+.tpl{display:flex;flex-wrap:wrap;gap:8px 10px;align-items:center;background:var(--tint-flat);border:1px solid var(--line);border-radius:10px;padding:11px 13px;margin:0 0 12px;font-size:13.5px;max-width:none}
+.tpl span.n{font-family:var(--font-mono);font-size:10px;font-weight:500;color:var(--surface);background:var(--slow);border-radius:50%;width:17px;height:17px;display:inline-flex;align-items:center;justify-content:center;flex:none}
+.tpl em{font-style:normal;color:var(--ink)}
+.tpl .arw{color:var(--arrow)}
+.scroll{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:720px;font-size:13px}
+th{text-align:left;font-family:var(--font-mono);font-weight:500;font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--line2);padding:10px 12px;vertical-align:bottom;background:var(--surface-2)}
+td{padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+tbody tr:last-child td{border-bottom:none}
+td:first-child{font-weight:600;color:var(--ink)}
+td{color:var(--muted)}
+td strong{color:var(--ink);font-weight:600}
+.take{font-size:13px;color:var(--ink);margin:10px 2px 0;padding-left:12px;border-left:3px solid var(--good);max-width:80ch}
+.ana{border:1px dashed var(--line2);border-radius:10px;padding:12px 14px;background:var(--tint-flat);font-size:13px;color:var(--muted);margin:14px 0 0;max-width:80ch}
+.ana b{font-family:var(--font-mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--fast);display:block;margin-bottom:5px}
+.ana i{font-style:normal;color:var(--ink)}
+.prob{font-size:13.5px;color:var(--ink);margin:0 0 10px;padding:9px 12px;border-left:3px solid var(--fast);background:var(--tint-flat);border-radius:0 8px 8px 0;max-width:80ch}
+.prob b{font-family:var(--font-mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--fast);display:block;margin-bottom:3px}
+ol.qs{counter-reset:q;list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:14px}
+ol.qs li{counter-increment:q;border:1px solid var(--line);border-radius:12px;padding:14px 16px;background:var(--surface);position:relative}
+ol.qs li::before{content:"Q" counter(q);font-family:var(--font-mono);font-size:10px;letter-spacing:.1em;color:var(--fast);display:block;margin-bottom:5px}
+ol.qs p{margin:0;font-size:15px;color:var(--ink);font-weight:500}
+ol.qs .joins{margin:8px 0 0;font-size:12px;color:var(--muted);font-family:var(--font-mono);letter-spacing:.01em}
+/* SVG primitives */
+.nb{fill:var(--surface);stroke:var(--line2);stroke-width:1.3}
+.nb.s{fill:var(--tint-slow);stroke:var(--slow)}
+.nb.l{stroke:var(--fast)}
+.nb.risk{fill:var(--tint-risk);stroke:var(--risk)}
+.nb.flat{fill:var(--tint-flat)}
+.tt{font-family:var(--font-display);font-size:12.5px;font-weight:600;fill:var(--ink)}
+.dd{font-family:var(--font-body);font-size:10.3px;fill:var(--muted)}
+.el{font-family:var(--font-body);font-size:9.4px;fill:var(--muted)}
+.hd{font-family:var(--font-mono);font-size:9.5px;letter-spacing:.11em;text-transform:uppercase;fill:var(--muted)}
+.ln{stroke:var(--arrow);stroke-width:1.4;fill:none}
+.ln.dash{stroke-dasharray:4 3}
+.bannerbox{fill:var(--tint-slow);stroke:var(--slow);stroke-width:1.3}
+.qt{font-family:var(--font-display);font-size:14.5px;font-weight:600;fill:var(--ink)}
+@media (max-width:620px){.wrap{padding-block:28px 56px}}
+</style>
+
+<div class="wrap">
+<header class="top">
+  <p class="eyebrow">Synthesis layer</p>
+  <h1>Stress Neurobiology Synthesis</h1>
+  <p class="sub">What the figures and the notes leave out: how the topics connect, which concepts are mistaken for each other, and what each mechanism is actually for.</p>
+  <p class="key"><b>Godoy 2018</b> stress neurobiology overview · <b>de Kloet 2019</b> top-down and bottom-up control of stress-coping · <b>de Kloet &amp; Joëls 2024</b> the cortisol switch · <b>McEwen &amp; Akil 2020</b> revisiting the stress concept · <b>Stahl Ch. 6</b> norepinephrine</p>
+</header>
+
+<section>
+  <p class="eyebrow">01 — Overview map</p>
+  <h2>One question, three strands</h2>
+  <p class="lead">The spine is the causal chain from threat to disorder. The left column holds what makes and delivers the signal; the right column holds what modifies the chain and what it costs. Every edge states the relationship it carries.</p>
+  <div class="plate">
+  <svg viewBox="0 0 1120 850" style="min-width:1000px" role="img" aria-label="Overview map of stress neurobiology topics">
+    <defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--arrow)"/></marker></defs>
+
+    <rect class="bannerbox" x="55" y="18" width="1010" height="52" rx="10"/>
+    <text class="hd" x="73" y="38">Central question</text>
+    <text class="qt" x="73" y="57">How does a brain turn a threat into adaptation — and when does the same machinery produce disease?</text>
+
+    <text class="hd" x="55" y="104">Making and delivering the signal</text>
+    <text class="hd" x="425" y="104">The causal chain</text>
+    <text class="hd" x="795" y="104">Modifiers, costs and failures</text>
+
+    <!-- SPINE -->
+    <g><rect class="nb s" x="425" y="120" width="270" height="60" rx="9"/><text class="tt" x="439" y="143">Stressor</text><text class="dd" x="439" y="160">physical (a disturbance already present)</text><text class="dd" x="439" y="173">or psychological (anticipated)</text></g>
+    <g><rect class="nb s" x="425" y="212" width="270" height="60" rx="9"/><text class="tt" x="439" y="235">PVN</text><text class="dd" x="439" y="252">integrates every stressor into one</text><text class="dd" x="439" y="265">autonomic and endocrine command</text></g>
+    <g><rect class="nb s" x="425" y="304" width="270" height="60" rx="9"/><text class="tt" x="439" y="327">HPA axis</text><text class="dd" x="439" y="344">CRH → ACTH → CORT; amplified,</text><text class="dd" x="439" y="357">protracted, and it feeds back</text></g>
+    <g><rect class="nb s" x="425" y="396" width="270" height="60" rx="9"/><text class="tt" x="439" y="419">MR and GR</text><text class="dd" x="439" y="436">one hormone read at two affinities</text><text class="dd" x="439" y="449">= a two-level signal</text></g>
+    <g><rect class="nb s" x="425" y="488" width="270" height="60" rx="9"/><text class="tt" x="439" y="511">The switch</text><text class="dd" x="439" y="528">MR selects the coping style,</text><text class="dd" x="439" y="541">GR stores the one selected</text></g>
+    <g><rect class="nb s" x="425" y="580" width="270" height="60" rx="9"/><text class="tt" x="439" y="603">Adaptation, resilience</text><text class="dd" x="439" y="620">fast MR onset plus efficient</text><text class="dd" x="439" y="633">GR termination</text></g>
+    <g><rect class="nb risk" x="425" y="672" width="270" height="60" rx="9"/><text class="tt" x="439" y="695">Chronic stress construct</text><text class="dd" x="439" y="712">coping fails, the brain gets stuck:</text><text class="dd" x="439" y="725">habit, rumination, no flexibility</text></g>
+    <g><rect class="nb risk" x="425" y="764" width="270" height="60" rx="9"/><text class="tt" x="439" y="787">MDD ↔ PTSD</text><text class="dd" x="439" y="804">hyper- and hypocortisolaemic ends</text><text class="dd" x="439" y="817">of one MR–GR defect</text></g>
+
+    <line class="ln" x1="560" y1="180" x2="560" y2="206" marker-end="url(#ar)"/><text class="el" x="572" y="198">converges on</text>
+    <line class="ln" x1="560" y1="272" x2="560" y2="298" marker-end="url(#ar)"/><text class="el" x="572" y="290">slow hormonal arm</text>
+    <line class="ln" x1="560" y1="364" x2="560" y2="390" marker-end="url(#ar)"/><text class="el" x="572" y="382">acts only through</text>
+    <line class="ln" x1="560" y1="456" x2="560" y2="482" marker-end="url(#ar)"/><text class="el" x="572" y="474">the affinity split runs</text>
+    <line class="ln" x1="560" y1="548" x2="560" y2="574" marker-end="url(#ar)"/><text class="el" x="572" y="566">when both work</text>
+    <line class="ln" x1="560" y1="640" x2="560" y2="666" marker-end="url(#ar)"/><text class="el" x="572" y="658">when they do not</text>
+    <line class="ln" x1="560" y1="732" x2="560" y2="758" marker-end="url(#ar)"/><text class="el" x="572" y="750">reads out clinically as</text>
+
+    <!-- LEFT -->
+    <g><rect class="nb l" x="55" y="212" width="270" height="60" rx="9"/><text class="tt" x="69" y="235">Detection routes</text><text class="dd" x="69" y="252">brainstem/NTS reaches it directly;</text><text class="dd" x="69" y="265">limbic input only via relays</text></g>
+    <g><rect class="nb l" x="55" y="304" width="270" height="60" rx="9"/><text class="tt" x="69" y="327">SAM axis and LC–NE</text><text class="dd" x="69" y="344">NE/E, NET and the α2 brake;</text><text class="dd" x="69" y="357">the alarm that adds cognition</text></g>
+    <g><rect class="nb l" x="55" y="396" width="270" height="60" rx="9"/><text class="tt" x="69" y="419">Gatekeepers</text><text class="dd" x="69" y="436">CBG · P-glycoprotein ·</text><text class="dd" x="69" y="449">11β-HSD1 and 11β-HSD2</text></g>
+    <g><rect class="nb l" x="55" y="488" width="270" height="60" rx="9"/><text class="tt" x="69" y="511">Rhythms and time domains</text><text class="dd" x="69" y="528">ultradian pulses under circadian;</text><text class="dd" x="69" y="541">rapid non-genomic, then genomic</text></g>
+    <g><rect class="nb l" x="55" y="580" width="270" height="60" rx="9"/><text class="tt" x="69" y="603">mPFC output routes</text><text class="dd" x="69" y="620">PL → dlPAG active · IL → vlPAG passive</text><text class="dd" x="69" y="633">PL → avBNST pays the HPA cost</text></g>
+    <g><rect class="nb l" x="55" y="672" width="270" height="60" rx="9"/><text class="tt" x="69" y="695">Remodelling</text><text class="dd" x="69" y="712">hippocampus and mPFC atrophy,</text><text class="dd" x="69" y="725">BLA and orbitofrontal hypertrophy</text></g>
+
+    <line class="ln" x1="330" y1="256" x2="420" y2="256" marker-end="url(#ar)"/><text class="el" x="375" y="232" text-anchor="middle">deliver it to —</text><text class="el" x="375" y="244" text-anchor="middle">the relay sets the sign</text>
+    <line class="ln" x1="330" y1="348" x2="420" y2="348" marker-end="url(#ar)"/><text class="el" x="375" y="324" text-anchor="middle">fast arm; CRH</text><text class="el" x="375" y="336" text-anchor="middle">couples it to</text>
+    <line class="ln" x1="330" y1="440" x2="420" y2="440" marker-end="url(#ar)"/><text class="el" x="375" y="416" text-anchor="middle">decide which ligand</text><text class="el" x="375" y="428" text-anchor="middle">actually reaches</text>
+    <line class="ln" x1="330" y1="532" x2="420" y2="532" marker-end="url(#ar)"/><text class="el" x="375" y="508" text-anchor="middle">set when each</text><text class="el" x="375" y="520" text-anchor="middle">receptor gets its turn</text>
+    <line class="ln" x1="330" y1="624" x2="420" y2="624" marker-end="url(#ar)"/><text class="el" x="375" y="600" text-anchor="middle">execute the mode</text><text class="el" x="375" y="612" text-anchor="middle">the switch chose</text>
+    <line class="ln" x1="330" y1="716" x2="420" y2="716" marker-end="url(#ar)"/><text class="el" x="375" y="692" text-anchor="middle">is the structural</text><text class="el" x="375" y="704" text-anchor="middle">face of</text>
+
+    <!-- RIGHT -->
+    <g><rect class="nb flat" x="795" y="120" width="270" height="60" rx="9"/><text class="tt" x="809" y="143">Allostasis and allostatic load</text><text class="dd" x="809" y="160">stability achieved by changing —</text><text class="dd" x="809" y="173">and the bill for the change</text></g>
+    <g><rect class="nb flat" x="795" y="304" width="270" height="60" rx="9"/><text class="tt" x="809" y="327">Early-life programming</text><text class="dd" x="809" y="344">SHRP · maternal care ·</text><text class="dd" x="809" y="357">GR (NR3C1) methylation</text></g>
+    <g><rect class="nb flat" x="795" y="396" width="270" height="60" rx="9"/><text class="tt" x="809" y="419">Inverted-U</text><text class="dd" x="809" y="436">too little and too much CORT</text><text class="dd" x="809" y="449">both impair plasticity</text></g>
+    <g><rect class="nb flat" x="795" y="488" width="270" height="60" rx="9"/><text class="tt" x="809" y="511">Energy economy</text><text class="dd" x="809" y="528">habit is the cheap routine;</text><text class="dd" x="809" y="541">passive coping conserves</text></g>
+    <g><rect class="nb flat" x="795" y="580" width="270" height="60" rx="9"/><text class="tt" x="809" y="603">Proactive vs reactive</text><text class="dd" x="809" y="620">trait style; high limbic MR =</text><text class="dd" x="809" y="633">rigid, low HPA, less flexible</text></g>
+    <g><rect class="nb flat" x="795" y="672" width="270" height="60" rx="9"/><text class="tt" x="809" y="695">Sensitization, immune arm</text><text class="dd" x="809" y="712">the cost appears at the next,</text><text class="dd" x="809" y="725">novel challenge</text></g>
+    <g><rect class="nb flat" x="795" y="764" width="270" height="60" rx="9"/><text class="tt" x="809" y="787">Timing defines treatment</text><text class="dd" x="809" y="804">storage · retrieval ·</text><text class="dd" x="809" y="817">extinction windows</text></g>
+
+    <line class="ln" x1="700" y1="164" x2="790" y2="164" marker-end="url(#ar)"/><text class="el" x="745" y="140" text-anchor="middle">every response is</text><text class="el" x="745" y="152" text-anchor="middle">an instance of</text>
+    <line class="ln" x1="790" y1="348" x2="700" y2="348" marker-end="url(#ar)"/><text class="el" x="745" y="324" text-anchor="middle">sets the lifelong</text><text class="el" x="745" y="336" text-anchor="middle">reactivity of</text>
+    <line class="ln" x1="790" y1="440" x2="700" y2="440" marker-end="url(#ar)"/><text class="el" x="745" y="416" text-anchor="middle">is the dose–response</text><text class="el" x="745" y="428" text-anchor="middle">shape of</text>
+    <line class="ln" x1="700" y1="532" x2="790" y2="532" marker-end="url(#ar)"/><text class="el" x="745" y="508" text-anchor="middle">biases selection</text><text class="el" x="745" y="520" text-anchor="middle">towards</text>
+    <line class="ln" x1="700" y1="624" x2="790" y2="624" marker-end="url(#ar)"/><text class="el" x="745" y="600" text-anchor="middle">differs between</text><text class="el" x="745" y="612" text-anchor="middle">people as</text>
+    <line class="ln" x1="700" y1="716" x2="790" y2="716" marker-end="url(#ar)"/><text class="el" x="745" y="692" text-anchor="middle">is revealed only</text><text class="el" x="745" y="704" text-anchor="middle">by a new challenge</text>
+    <line class="ln" x1="700" y1="808" x2="790" y2="808" marker-end="url(#ar)"/><text class="el" x="745" y="784" text-anchor="middle">is treated by</text><text class="el" x="745" y="796" text-anchor="middle">choosing among</text>
+  </svg>
+  </div>
+  <p class="cap"><b>The story:</b> one hormone system is built to be switched on cheaply and off expensively; everything on the left decides how the signal arrives, everything on the right decides what it costs and where it breaks, and the two failure nodes at the bottom are the same switch read from opposite directions.</p>
+</section>
+<section>
+  <p class="eyebrow">02 — Recurring principles</p>
+  <h2>Five templates that appear in every topic</h2>
+  <p class="lead">Each template is stated once in plain words; the table underneath maps every instance across the sources onto the same stages, so the instances become one thing to remember instead of five.</p>
+
+  <h3>P1 · Access control sits between the gland and the receptor</h3>
+  <p class="tpl"><span class="n">1</span><em>a signal is secreted</em><span class="arw">→</span><span class="n">2</span><em>a binding protein, transporter or enzyme decides how much, and in which form, arrives</em><span class="arw">→</span><span class="n">3</span><em>the effective signal differs from the measured one</em></p>
+  <div class="scroll"><table>
+    <thead><tr><th>Instance</th><th>The gate</th><th>What it acts on</th><th>What reaches the receptor</th><th>What you would get wrong</th></tr></thead>
+    <tbody>
+      <tr><td>CBG</td><td>binding globulin in blood</td><td>circulating CORT</td><td>only the free fraction</td><td>a total plasma value overstates the signal delivered</td></tr>
+      <tr><td>P-glycoprotein</td><td>export pump at the blood-brain barrier</td><td>cortisol, dexamethasone, prednisone — not corticosterone</td><td>little synthetic steroid inside the brain</td><td>that the dexamethasone test reads brain action; it reads pituitary feedback, while <strong>depleting</strong> brain CORT</td></tr>
+      <tr><td>11β-HSD2</td><td>oxidase (kidney, colon, NTS)</td><td>CORT, degraded</td><td>aldosterone, not CORT</td><td>that MR is one receptor with one job; there it serves salt appetite and volume</td></tr>
+      <tr><td>11β-HSD1</td><td>reductase (limbic brain, heart, fat)</td><td>inactive congeners, regenerated</td><td>CORT, in vast excess over aldosterone</td><td>that the limbic "mineralocorticoid" receptor has a mineralocorticoid ligand</td></tr>
+      <tr><td>NET</td><td>reuptake pump on the NE terminal</td><td>released NE, taken back intact</td><td>less NE in the cleft, and the transmitter is reusable</td><td>that clearance means destruction; here it means recycling</td></tr>
+      <tr><td>MAO and COMT</td><td>enzymes inside and outside the terminal</td><td>the NE that escapes reuptake</td><td>inactive metabolites</td><td>that one clearance route explains the signal; there are two, with different drug targets</td></tr>
+    </tbody>
+  </table></div>
+  <p class="take"><b>Takeaway:</b> secretion is not delivery — most of the control over a stress signal sits after it has left the gland or the vesicle.</p>
+  <p class="ana"><b>Analogy</b> Plasma cortisol is cargo leaving the warehouse; CBG, P-glycoprotein and 11β-HSD are the customs posts that decide how much, and in what form, actually arrives. <i>Where it breaks down:</i> 11β-HSD1 also regenerates active hormone locally, so this customs post manufactures the goods as well as inspecting them.</p>
+
+  <h3>P2 · The brake is built into the signal</h3>
+  <p class="tpl"><span class="n">1</span><em>output rises</em><span class="arw">→</span><span class="n">2</span><em>a detector senses that same output</em><span class="arw">→</span><span class="n">3</span><em>it damps the source</em><span class="arw">→</span><span class="n">4</span><em>what the brake fixes is mostly duration, not amplitude</em></p>
+  <div class="scroll"><table>
+    <thead><tr><th>Brake</th><th>What it senses</th><th>Where it sits</th><th>What it limits</th><th>When it fails</th></tr></thead>
+    <tbody>
+      <tr><td>α2 autoreceptor</td><td>NE already released</td><td>the noradrenergic terminal and the soma/dendrites</td><td>further NE release</td><td>an antagonist cuts the brake cable and release rises</td></tr>
+      <tr><td>Non-genomic GR at the PVN</td><td>CORT within minutes</td><td>PVN synapses, through endocannabinoid release</td><td>the immediate excitatory drive onto PVN</td><td>the peak overshoots before any genomic step can act</td></tr>
+      <tr><td>GR short loop</td><td>rising CORT</td><td>anterior pituitary corticotrophs</td><td>ACTH output</td><td>escape from dexamethasone suppression</td></tr>
+      <tr><td>GR long loop</td><td>rising CORT</td><td>PVN and hippocampus</td><td>the <strong>duration</strong> of the CORT response</td><td>chronic stress downregulates hippocampal GR, so the response runs on</td></tr>
+      <tr><td>PL → GABAergic BNST</td><td>an appraised, controllable threat</td><td>the relay, not the cortex itself</td><td>PVN drive while coping actively</td><td>mPFC atrophy removes it and the axis is disinhibited</td></tr>
+      <tr><td>MR → FKBP5</td><td>that MR has been activated</td><td>hippocampal cells</td><td>GR sensitivity</td><td>the on-switch no longer sets the gain of the off-switch</td></tr>
+    </tbody>
+  </table></div>
+  <p class="take"><b>Takeaway:</b> MR sets the peak and GR sets the duration, so every brake that is lost converts a response into a state.</p>
+
+  <h3>P3 · The receiver decides the effect, not the messenger</h3>
+  <p class="tpl"><span class="n">1</span><em>one messenger reaches many cells</em><span class="arw">→</span><span class="n">2</span><em>each cell's local complement differs: receptor subtype, converting enzyme, coregulators, relay cell type</em><span class="arw">→</span><span class="n">3</span><em>the same molecule produces opposite outcomes</em></p>
+  <div class="scroll"><table>
+    <thead><tr><th>Messenger</th><th>What differs at the receiver</th><th>One outcome</th><th>The opposite outcome</th></tr></thead>
+    <tbody>
+      <tr><td>NE and E</td><td>the α- and β-adrenoceptor complement of the tissue</td><td>one visceral response</td><td>a different one in a neighbouring organ, from the same catecholamine</td></tr>
+      <tr><td>CORT</td><td>MR (high affinity) vs GR (low affinity)</td><td>appraisal and selection of a coping style at low levels</td><td>termination and consolidation at the peak</td></tr>
+      <tr><td>CORT at MR</td><td>11β-HSD2 vs 11β-HSD1</td><td>aldosterone-selective MR in the NTS</td><td>CORT-preferring MR in the limbic brain</td></tr>
+      <tr><td>CORT via GR</td><td>the transcription-factor and coregulator cocktail of the cell</td><td>CRH expression suppressed in the PVN</td><td>CRH expression stimulated in the central amygdala</td></tr>
+      <tr><td>mPFC glutamate</td><td>GABAergic vs non-GABAergic BNST target cells</td><td>PVN inhibited (prelimbic)</td><td>PVN excited (infralimbic)</td></tr>
+      <tr><td>CORT, either receptor</td><td>membrane vs nuclear location of the receptor</td><td>transmitter release changed within minutes</td><td>transcription changed over hours to days</td></tr>
+    </tbody>
+  </table></div>
+  <p class="take"><b>Takeaway:</b> a blanket agonist or antagonist cannot have a single clinical effect, which is exactly the argument for selective receptor modulators.</p>
+  <h3>P4 · Timing decides the sign</h3>
+  <p class="tpl"><span class="n">1</span><em>a mediator acts in an early window and has one effect</em><span class="arw">→</span><span class="n">2</span><em>the same mediator in a later window, or on a second hit, has the opposite effect</em><span class="arw">→</span><span class="n">3</span><em>so the question is when, not how much</em></p>
+  <div class="scroll"><table>
+    <thead><tr><th>Mediator and place</th><th>Early window</th><th>Later window or second hit</th><th>What flips the sign</th></tr></thead>
+    <tbody>
+      <tr><td>CORT in the BLA</td><td>first pulse: MR raises glutamatergic transmission</td><td>a pulse an hour later: GR lowers it</td><td>which receptor is occupied by then — metaplasticity</td></tr>
+      <tr><td>CORT in CA1</td><td>rapid MR action: excitability up, the encoding window open</td><td>delayed GR action: LTD promoted, LTP impaired, window closed</td><td>genomic action arriving behind the non-genomic one</td></tr>
+      <tr><td>CORT and the immune system</td><td>restrains the inflammatory reaction during the stressor</td><td>sensitizes the immune response in the recovery phase</td><td>the phase of the challenge, not the dose</td></tr>
+      <tr><td>CORT in the mPFC</td><td>acute: GR-dependent endocannabinoid block of interneurons boosts output</td><td>chronic: GR hypo-activity and atrophy disinhibit the HPA axis</td><td>duration of exposure</td></tr>
+      <tr><td>Drugs at GR after trauma</td><td>anti-glucocorticoid in the golden hours blocks <strong>storage</strong></td><td>a glucocorticoid before re-exposure blocks <strong>retrieval</strong>; after reactivation it promotes <strong>extinction</strong></td><td>which memory operation is running at that moment</td></tr>
+    </tbody>
+  </table></div>
+  <p class="take"><b>Takeaway:</b> there is no fixed "effect of cortisol", only an effect of cortisol at a time — which is why opposite drugs can both be correct in PTSD.</p>
+
+  <h3>P5 · Pay less for coping</h3>
+  <p class="tpl"><span class="n">1</span><em>demand exceeds what the expensive strategy can afford</em><span class="arw">→</span><span class="n">2</span><em>a cheaper routine is substituted</em><span class="arw">→</span><span class="n">3</span><em>performance is kept, flexibility is spent</em><span class="arw">→</span><span class="n">4</span><em>the saving is billed later</em></p>
+  <div class="scroll"><table>
+    <thead><tr><th>Situation</th><th>Expensive option</th><th>Cheap substitute</th><th>Kept / lost</th><th>Who calls it</th></tr></thead>
+    <tbody>
+      <tr><td>Finding an escape route</td><td>hippocampal spatial strategy</td><td>dorsolateral-striatal stimulus-response routine</td><td>performance kept; flexibility lost</td><td>MR — an MR antagonist prevents the switch</td></tr>
+      <tr><td>Inescapable swim</td><td>struggling, swimming, climbing</td><td>immobile floating</td><td>energy kept; the attempt at control lost</td><td>MR selects it, GR stores it for the retest</td></tr>
+      <tr><td>Uncontrollable stressor</td><td>PL → dlPAG goal-directed coping</td><td>IL → vlPAG passive mode, IL–DLS habit</td><td>resources kept; goal-directedness lost</td><td>the prelimbic-to-infralimbic shift</td></tr>
+      <tr><td>Chronic stress</td><td>contextual, top-down processing</td><td>habit and rumination — "the brain gets stuck"</td><td>a working routine kept; the way back lost</td><td>nobody: the switch itself has failed</td></tr>
+      <tr><td>The life course</td><td>homeostasis around a fixed set-point</td><td>allostasis: the set-point is moved in advance</td><td>adaptation kept; the price billed as allostatic load</td><td>the organism, continuously</td></tr>
+    </tbody>
+  </table></div>
+  <p class="take"><b>Takeaway:</b> habit is an economy rather than a deficit; it becomes a deficit only when the switch back is no longer available.</p>
+</section>
+
+<section>
+  <p class="eyebrow">03 — Contrast tables</p>
+  <h2>Pairs that get mistaken for each other</h2>
+  <p class="lead">Each table lists only the dimensions on which the two actually differ.</p>
+
+  <h3>MR vs GR</h3>
+  <div class="scroll"><table>
+    <thead><tr><th>Dimension</th><th>MR</th><th>GR</th></tr></thead>
+    <tbody>
+      <tr><td>Affinity and occupancy</td><td>about tenfold higher; substantially occupied already at the circadian trough</td><td>lower; recruited at the circadian peak and by stress-induced rises</td></tr>
+      <tr><td>Distribution</td><td>concentrated in limbic regions — hippocampus, septum, amygdala</td><td>in every cell; highest in PVN, hippocampus, amygdala, aminergic nuclei, PFC</td></tr>
+      <tr><td>Rapid, non-genomic action</td><td>membrane MR raises presynaptic glutamate release</td><td>membrane GR releases endocannabinoids that block transmitter release</td></tr>
+      <tr><td>Stage of processing</td><td>appraisal, risk assessment, selection of the coping style</td><td>termination, rationalization, contextualization, recovery</td></tr>
+      <tr><td>Memory operation</td><td>retrieval, and encoding of the ongoing experience</td><td>consolidation and storage of the experience and the strategy</td></tr>
+      <tr><td>What it sets in the axis</td><td>the <strong>peak</strong> — blockade lowers vigilance and sympathetic tone yet raises CORT output</td><td>the <strong>duration</strong> — feedback at pituitary, PVN and hippocampus</td></tr>
+      <tr><td>Rate-limiting step</td><td>receptor activity, since MR is near-saturated under all circumstances</td><td>ligand concentration, since GR occupancy tracks the rise</td></tr>
+      <tr><td>Direction in disease</td><td>reduced limbic expression in the depressed brain; the gain-of-function variant tracks optimism and a habit preference</td><td>downregulated and resistant in chronic stress and MDD; increased with enhanced feedback in PTSD</td></tr>
+    </tbody>
+  </table></div>
+  <p class="cap"><b>The story:</b> the same hormone is read twice — once to decide what to do, once to pay for stopping and remembering it.</p>
+  <p class="ana"><b>Analogy</b> A two-stage alarm: MR is the always-powered floor sensor that decides what to do about a signal; GR is the high-threshold system that shuts the alarm off and writes the incident report that the floor sensor will read next time. <i>Where it breaks down:</i> GR does not only terminate — it also supplies the energy for executive control; and MR is not a simple sensor, since it is nearly saturated, so its activity rather than the hormone level is the limiting factor.</p>
+
+  <h3>SAM axis vs HPA axis</h3>
+  <div class="scroll"><table>
+    <thead><tr><th>Dimension</th><th>SAM</th><th>HPA</th></tr></thead>
+    <tbody>
+      <tr><td>Signal type</td><td>synaptic and neural</td><td>hormonal, through the hypophyseal portal system</td></tr>
+      <tr><td>Onset and span</td><td>seconds; short-lasting</td><td>sluggish by comparison, but amplified and protracted</td></tr>
+      <tr><td>Mediators</td><td>NE from sympathetic nerves; E (most of the output) and NE from the adrenal medulla</td><td>CRH with vasopressin, ACTH, CORT</td></tr>
+      <tr><td>Route</td><td>PVN, LC, RVLM → intermediolateral column → ganglion; or straight onto adrenal chromaffin cells</td><td>PVN → portal blood → corticotrophs → adrenal cortex</td></tr>
+      <tr><td>Termination</td><td>reuptake, enzymatic clearance, α2 autoreceptor; parasympathetic tone sets the duration</td><td>GR negative feedback, short loop and long loop</td></tr>
+      <tr><td>What it delivers</td><td>alertness, vigilance, appraisal — the opening strategy</td><td>energy, containment of the defence reaction, and the memory of it</td></tr>
+      <tr><td>Receiver side</td><td>α- and β-adrenoceptors on the tissue</td><td>MR and GR, at the membrane and in the nucleus</td></tr>
+      <tr><td>Relation to the other</td><td colspan="2">engaged in parallel for essentially every stressor; CRH released into the LC couples them, and MR/GR colocalize with adrenoceptors, so they act cooperatively or sequentially — often oppositely in one organ</td></tr>
+    </tbody>
+  </table></div>
+  <p class="cap"><b>The story:</b> one event, two outputs with different time constants, joined by CRH so that the slow arm can shape what the fast arm has already started.</p>
+  <h3>Homeostasis, allostasis, allostatic load, allostatic overload</h3>
+  <div class="scroll"><table>
+    <thead><tr><th>Term</th><th>What it describes</th><th>The set-point</th><th>Driven by</th><th>The cost</th></tr></thead>
+    <tbody>
+      <tr><td>Homeostasis</td><td>defence of a fixed internal state</td><td>fixed</td><td>a deviation already present</td><td>none while it holds</td></tr>
+      <tr><td>Allostasis</td><td>stability achieved through change</td><td>moved, in anticipation</td><td>prediction of demand</td><td>energy expenditure</td></tr>
+      <tr><td>Allostatic load</td><td>the cumulative price of repeated adjustment</td><td>—</td><td>overuse or dysregulation of the same mediators</td><td>wear that is still being compensated</td></tr>
+      <tr><td>Allostatic overload</td><td>the price exceeding capacity</td><td>—</td><td>chronic, uncontrollable demand</td><td>disease processes</td></tr>
+    </tbody>
+  </table></div>
+  <p class="cap"><b>The story:</b> the first two name how stability is achieved, the second two name what it costs — which is why the same mediators appear as protective in one row and damaging in the next.</p>
+
+  <h3>Coping as a state vs coping as a trait</h3>
+  <div class="scroll"><table>
+    <thead><tr><th>Dimension</th><th>Active vs passive (the state)</th><th>Proactive vs reactive (the trait)</th></tr></thead>
+    <tbody>
+      <tr><td>What varies</td><td>the mode chosen in this situation</td><td>the individual's default across situations</td></tr>
+      <tr><td>Read out by</td><td>forced swim, avoidance tests, which PAG column is engaged</td><td>selection lines: short vs long attack latency, high vs low avoidance</td></tr>
+      <tr><td>Role of MR</td><td>MR activation biases the shift towards the habitual, energy-saving option</td><td>high limbic MR expression marks the proactive type</td></tr>
+      <tr><td>HPA reactivity</td><td>rises as the episode proceeds, then is terminated by GR</td><td>proactive: low; reactive: high and prolonged after defeat</td></tr>
+      <tr><td>Autonomic profile</td><td>the active mode engages the sympathetic arm</td><td>proactive: high sympathetic; reactive: high parasympathetic, low sympathetic</td></tr>
+      <tr><td>Flexibility</td><td>switching between the modes is itself the adaptive trait</td><td>proactive: rigid and routine-like; reactive: guided by the environment</td></tr>
+      <tr><td>In a novel environment</td><td>whichever mode fits the controllability of the stressor</td><td>the reactive type copes better, although its stress response looks less controlled</td></tr>
+    </tbody>
+  </table></div>
+  <p class="cap"><b>The story:</b> the animal with the quietest HPA axis is the rigid one, so a well-damped hormone response and resilience are not the same measurement.</p>
+
+  <h3>Where a drug lands on the memory timeline</h3>
+  <div class="scroll"><table>
+    <thead><tr><th>Operation</th><th>When</th><th>Receptor doing it</th><th>What an intervention there does</th></tr></thead>
+    <tbody>
+      <tr><td>Encoding</td><td>during the event, low and rising CORT</td><td>MR</td><td>blocking it weakens what is taken in</td></tr>
+      <tr><td>Consolidation</td><td>the hours after the event</td><td>GR</td><td>an anti-glucocorticoid in the golden hours stops the trace being stored</td></tr>
+      <tr><td>Retrieval</td><td>at the next encounter, early phase</td><td>MR, with high GR activation impairing it</td><td>GR activation before re-exposure, or MR blockade, attenuates re-experiencing</td></tr>
+      <tr><td>Reconsolidation and extinction</td><td>after a reactivation that is not followed by the threat</td><td>GR</td><td>a glucocorticoid builds a new memory appraised as safe rather than erasing the old one</td></tr>
+      <tr><td>Over-consolidation</td><td>when GR activation at encoding is excessive</td><td>GR</td><td>fear becomes cue-driven and generalized instead of contextual — the PTSD-like phenotype</td></tr>
+    </tbody>
+  </table></div>
+  <p class="cap"><b>The story:</b> the receptor is the same throughout; only the operation running at that moment decides whether an agonist or an antagonist is the right drug.</p>
+
+  <h3>MDD vs PTSD</h3>
+  <div class="scroll"><table>
+    <thead><tr><th>Dimension</th><th>Major depression</th><th>PTSD</th></tr></thead>
+    <tbody>
+      <tr><td>Basal cortisol</td><td>raised in plasma, urine and CSF; pituitary and adrenal hyperplasia</td><td>lower in a substantial subgroup</td></tr>
+      <tr><td>GR</td><td>downregulated — glucocorticoid resistance</td><td>increased expression with enhanced negative feedback</td></tr>
+      <tr><td>Rhythm</td><td>flattened ultradian pattern with a raised trough</td><td>lower but more dynamic circadian pattern, itself a vulnerability factor</td></tr>
+      <tr><td>MR</td><td>reduced expression in the limbic brain post mortem</td><td>haplotype variants track resilience rather than the disorder</td></tr>
+      <tr><td>Dexamethasone test</td><td>escape from suppression</td><td>enhanced suppression</td></tr>
+      <tr><td>Memory signature</td><td>impaired contextualization, rumination</td><td>fear generalization, intrusive cue-driven memory</td></tr>
+      <tr><td>Intervention logic</td><td>reset a resistant receptor system — GR antagonism and selective modulators</td><td>choose the window — storage, retrieval or extinction</td></tr>
+    </tbody>
+  </table></div>
+  <p class="cap"><b>The story:</b> opposite endocrine directions that share one defect, because what fails is the balance between the two receptors rather than the amount of hormone.</p>
+
+  <h3>Seven proteins on one noradrenergic terminal</h3>
+  <div class="scroll"><table>
+    <thead><tr><th>Protein</th><th>Where</th><th>What it does</th><th>Why it matters</th></tr></thead>
+    <tbody>
+      <tr><td>Tyrosine transporter</td><td>terminal membrane</td><td>brings tyrosine in from blood</td><td>synthesis is supply-dependent at the start</td></tr>
+      <tr><td>Tyrosine hydroxylase</td><td>cytoplasm</td><td>tyrosine → DOPA</td><td>the rate-limiting and regulated step of NE synthesis</td></tr>
+      <tr><td>VMAT2</td><td>vesicle membrane</td><td>cytoplasmic NE → vesicle</td><td>storage is what makes release phasic rather than continuous</td></tr>
+      <tr><td>NET</td><td>terminal membrane</td><td>pulls released NE back intact</td><td>terminates the synaptic action and recycles the transmitter</td></tr>
+      <tr><td>MAO A/B</td><td>mitochondria, presynaptic and elsewhere</td><td>destroys NE inside the cell</td><td>handles what is not stored again</td></tr>
+      <tr><td>COMT</td><td>largely outside the terminal</td><td>destroys NE extracellularly</td><td>a second, independent clearance route</td></tr>
+      <tr><td>α2 autoreceptor</td><td>terminal, and soma plus dendrites</td><td>senses released NE and stops further release</td><td>the brake; an antagonist cuts the cable and release rises</td></tr>
+    </tbody>
+  </table></div>
+  <p class="cap"><b>The story:</b> four of these move the same molecule in different directions — supply, storage, recycling, destruction — and only one of them, the autoreceptor, decides whether more is released at all.</p>
+</section>
+<section>
+  <p class="eyebrow">04 — Figures and functional diagrams</p>
+  <h2>What the source figures already do</h2>
+  <p class="lead">These are not redrawn here. Each row says which part of the notes the figure belongs to, and the role labels worth writing onto it.</p>
+  <div class="scroll"><table>
+    <thead><tr><th>Figure</th><th>What it already gives you</th><th>Notes section</th><th>Role labels to add</th></tr></thead>
+    <tbody>
+      <tr><td>Godoy Fig. 1</td><td>the whole flow: stressors → two axes → mediators → receptors → body and brain effects → adaptation</td><td>What "stress" names; HPA and SAM</td><td>on the two arms: "synaptic, seconds, short" vs "hormonal, slow, amplified"; on the mediators: "containment of the defence reaction, not the damage"; on Adaptation: "the output the loop exists for"</td></tr>
+      <tr><td>Godoy Fig. 2 (A–D)</td><td>the structures, and which network reads physical (pink) vs psychological (blue) stressors</td><td>Neuroanatomy</td><td>on BNST and peri-PVN: "the sign switch"; on PVN and LC (grey): "the two relays that start the two axes"; on CA1: "feedback arm"; on PL and IL: "opposite signs onto the PVN"; on NAc: "hub for psychological stress", on the mesocortical DA path: "physical"</td></tr>
+      <tr><td>de Kloet 2019 Fig. 1 and 2024 Fig. 3</td><td>the time course: MR-dominated appraisal and retrieval, then MR/GR, then GR contextualization and memory storage; non-genomic before genomic</td><td>Rhythms and time domains; the cortisol switch</td><td>close the loop: "retrieval = reading the imprint the previous episode's GR wrote"; "consolidation = writing the imprint the next episode's MR will read"</td></tr>
+      <tr><td>de Kloet &amp; Joëls 2024 Fig. 1</td><td>the six steps of CORT action, from CBG to receptor dimers and coregulators</td><td>Gatekeepers; genomic action</td><td>step 1: "how much is free"; step 3: "which steroids are kept out of the brain"; step 4: "which ligand MR sees"; step 5: "receptor availability gate"; step 6: "where context decides the direction of the same signal"</td></tr>
+      <tr><td>de Kloet &amp; Joëls 2024 Fig. 2</td><td>perception → appraisal → coping → adaptation across salience, limbic-VTA and executive networks, with the vulnerable loop</td><td>The cortisol switch; chronic stress</td><td>on the loop: "coping failure feeds the loop that removes the control needed to escape it"</td></tr>
+      <tr><td>de Kloet &amp; Joëls 2024 Box 3</td><td>metaplasticity: successive CORT pulses in the amygdala</td><td>Rhythms and time domains</td><td>"the stressor's effect depends on where in the ultradian cycle it lands, not only on its size"</td></tr>
+      <tr><td>McEwen Fig. 2</td><td>the limbic HPA anatomy with the feedback arm, and genomic plus non-genomic effects side by side</td><td>HPA axis</td><td>on the hippocampal arm: "primed by the diurnal rhythm to switch the axis off, rather than acting as a thermostat"</td></tr>
+      <tr><td>McEwen Fig. 3</td><td>the biphasic, inverted-U relation between glucocorticoid levels and synaptic function</td><td>One hormone, two receptors</td><td>left shoulder: "MR under-occupied, as after adrenalectomy or dexamethasone"; right shoulder: "GR-dominated"; the apex: "balanced occupancy, the protected state"</td></tr>
+      <tr><td>McEwen Table 2</td><td>what makes hippocampal volume shrink or grow</td><td>Chronic stress</td><td>"this structure is also the axis's own brake, so its shrinkage is a feedback failure as well as a memory deficit"</td></tr>
+      <tr><td>Stahl Fig. 6-12, 6-13, 6-14</td><td>NE synthesis, termination and the receptor set on one terminal</td><td>SAM axis, NE life cycle</td><td>TOH: "the regulated step"; VMAT2: "storage, what makes release phasic"; NET: "recycling, not destruction"; MAO and COMT: "destruction, two separate routes"; α2 autoreceptor: "the brake"; postsynaptic α and β: "the tissue's own reading of the same signal"</td></tr>
+    </tbody>
+  </table></div>
+  <p class="cap"><b>The story:</b> between them the sources already draw the anatomy, the time course and the dose-response — what they leave unlabelled is what each element is <em>for</em>, which is all that is added above.</p>
+
+  <h3>Diagram A · The relay that sets the sign</h3>
+  <p class="prob"><b>Problem it solves</b> The same cortex must be able to turn the axis down in one situation and up in another. The sign cannot live in the cortex, so it lives in the relay the cortex uses.</p>
+  <div class="plate">
+  <svg viewBox="0 0 1000 330" style="min-width:860px" role="img" aria-label="Limbic input reaches the PVN through a GABAergic relay that sets the sign">
+    <defs><marker id="ar2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--arrow)"/></marker></defs>
+
+    <g><rect class="nb l" x="20" y="16" width="210" height="50" rx="8"/><text class="tt" x="33" y="37">Prelimbic PFC</text><text class="dd" x="33" y="53">appraises a controllable threat</text></g>
+    <g><rect class="nb l" x="20" y="76" width="210" height="50" rx="8"/><text class="tt" x="33" y="97">Infralimbic PFC</text><text class="dd" x="33" y="113">drives the passive and habit mode</text></g>
+    <g><rect class="nb l" x="20" y="136" width="210" height="50" rx="8"/><text class="tt" x="33" y="157">Hippocampus CA1 / subiculum</text><text class="dd" x="33" y="173">supplies context; the feedback arm</text></g>
+    <g><rect class="nb l" x="20" y="196" width="210" height="50" rx="8"/><text class="tt" x="33" y="217">BLA → CeA / MeA</text><text class="dd" x="33" y="233">flags an anticipated threat</text></g>
+    <g><rect class="nb" x="20" y="256" width="210" height="50" rx="8"/><text class="tt" x="33" y="277">NTS and brainstem</text><text class="dd" x="33" y="293">reports a disturbance already present</text></g>
+
+    <g><rect class="nb s" x="360" y="110" width="190" height="110" rx="9"/><text class="tt" x="374" y="133">BNST and peri-PVN</text><text class="dd" x="374" y="151">GABAergic relay cells</text><text class="dd" x="374" y="166">= the sign switch: which</text><text class="dd" x="374" y="181">cell type the cortex lands</text><text class="dd" x="374" y="196">on decides up or down</text></g>
+
+    <g><rect class="nb s" x="600" y="137" width="150" height="56" rx="9"/><text class="tt" x="614" y="160">PVN</text><text class="dd" x="614" y="177">the only common output</text></g>
+    <g><rect class="nb" x="820" y="137" width="160" height="56" rx="9"/><text class="tt" x="834" y="160">One command</text><text class="dd" x="834" y="177">CRH and autonomic drive</text></g>
+
+    <line class="ln" x1="232" y1="41" x2="358" y2="128" marker-end="url(#ar2)"/><text class="el" x="243" y="36">excites GABAergic cells here</text>
+    <line class="ln" x1="232" y1="101" x2="358" y2="150" marker-end="url(#ar2)"/><text class="el" x="243" y="96">targets non-GABAergic cells</text>
+    <line class="ln" x1="232" y1="161" x2="358" y2="172" marker-end="url(#ar2)"/><text class="el" x="243" y="156">adds context, inhibitory</text>
+    <line class="ln" x1="232" y1="221" x2="358" y2="196" marker-end="url(#ar2)"/><text class="el" x="243" y="216">arrives multisynaptically</text>
+
+    <line class="ln" x1="552" y1="165" x2="596" y2="165" marker-end="url(#ar2)"/><text class="el" x="574" y="148" text-anchor="middle">inhibits</text><text class="el" x="574" y="138" text-anchor="middle">or excites</text>
+    <line class="ln" x1="752" y1="165" x2="816" y2="165" marker-end="url(#ar2)"/><text class="el" x="784" y="148" text-anchor="middle">issues</text>
+
+    <polyline class="ln" points="232,281 670,281 670,197" marker-end="url(#ar2)"/><text class="el" x="300" y="273">no appraisal needed — straight to the PVN, bypassing the relay</text>
+  </svg>
+  </div>
+  <p class="cap"><b>The story:</b> physical stressors take the short road and arrive as they are, while every psychological signal is passed through a cell-type switch — which is why psychological stress is the modifiable kind, and why losing prefrontal input disinhibits the axis instead of silencing it.</p>
+  <h3>Diagram B · Choosing a coping mode is choosing what it costs</h3>
+  <p class="prob"><b>Problem it solves</b> An animal must act against a stressor it can control and conserve resources against one it cannot — and it must keep paying for the physiology of whichever it chose.</p>
+  <div class="plate">
+  <svg viewBox="0 0 1000 370" style="min-width:860px" role="img" aria-label="Prefrontal output routes for active, passive and habitual coping">
+    <defs><marker id="ar3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--arrow)"/></marker></defs>
+
+    <g><rect class="nb l" x="24" y="40" width="210" height="60" rx="9"/><text class="tt" x="38" y="63">Prelimbic mPFC</text><text class="dd" x="38" y="80">goal-directed; aims the response</text><text class="dd" x="38" y="93">at the stressor itself</text></g>
+    <g><rect class="nb l" x="24" y="200" width="210" height="60" rx="9"/><text class="tt" x="38" y="223">Infralimbic mPFC</text><text class="dd" x="38" y="240">takes over when control over</text><text class="dd" x="38" y="253">the situation is lost</text></g>
+
+    <g><rect class="nb" x="390" y="22" width="200" height="54" rx="9"/><text class="tt" x="404" y="44">dorsolateral PAG</text><text class="dd" x="404" y="61">executes active coping: attack, escape</text></g>
+    <g><rect class="nb" x="390" y="100" width="200" height="54" rx="9"/><text class="tt" x="404" y="122">anteroventral BNST (GABA)</text><text class="dd" x="404" y="139">inhibits stress-induced HPA activity</text></g>
+    <g><rect class="nb" x="390" y="190" width="200" height="54" rx="9"/><text class="tt" x="404" y="212">ventrolateral PAG</text><text class="dd" x="404" y="229">executes passive coping: immobility</text></g>
+    <g><rect class="nb" x="390" y="268" width="200" height="54" rx="9"/><text class="tt" x="404" y="290">dorsolateral striatum</text><text class="dd" x="404" y="307">runs the stimulus-response routine</text></g>
+
+    <text class="el" x="614" y="47">costly: control is attempted</text>
+    <text class="el" x="614" y="125">the discount on that cost — the</text><text class="el" x="614" y="137">physiological bill is kept down</text>
+    <text class="el" x="614" y="215">cheap: control is given up, energy kept</text>
+    <text class="el" x="614" y="293">cheapest: performance kept,</text><text class="el" x="614" y="305">flexibility given up</text>
+
+    <line class="ln" x1="236" y1="62" x2="386" y2="49" marker-end="url(#ar3)"/><text class="el" x="248" y="44">drives</text>
+    <line class="ln" x1="236" y1="82" x2="386" y2="127" marker-end="url(#ar3)"/><text class="el" x="248" y="107">pre-pays the HPA cost, via GABA</text>
+    <line class="ln" x1="236" y1="222" x2="386" y2="217" marker-end="url(#ar3)"/><text class="el" x="248" y="205">drives</text>
+    <line class="ln" x1="236" y1="243" x2="386" y2="295" marker-end="url(#ar3)"/><text class="el" x="248" y="283">governs the habit mode</text>
+
+    <line class="ln dash" x1="129" y1="102" x2="129" y2="196" marker-end="url(#ar3)"/><text class="el" x="140" y="140">shifts here when the</text><text class="el" x="140" y="152">stressor proves</text><text class="el" x="140" y="164">uncontrollable — MR</text><text class="el" x="140" y="176">biases the shift</text>
+
+    <g><rect class="nb s" x="24" y="300" width="340" height="46" rx="9"/><text class="dd" x="38" y="320">GR then stores whichever mode was used,</text><text class="dd" x="38" y="334">so it is the one retrieved at the next encounter</text></g>
+  </svg>
+  </div>
+  <p class="cap"><b>The story:</b> two prefrontal subregions hold four output routes between them, graded from expensive and goal-directed to cheapest and automatic, and MR decides how far down that gradient the animal slides.</p>
+
+  <h3>Diagram C · The episode loop</h3>
+  <p class="prob"><b>Problem it solves</b> A stress episode has to leave the brain better prepared for the next one. The two receptors split that work and hand it back to each other across episodes.</p>
+  <div class="plate">
+  <svg viewBox="0 0 1080 300" style="min-width:900px" role="img" aria-label="The loop in which MR selects a coping style and GR stores it for the next episode">
+    <defs><marker id="ar4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--arrow)"/></marker></defs>
+
+    <g><rect class="nb s" x="20" y="24" width="176" height="76" rx="9"/><text class="tt" x="33" y="46">Appraisal</text><text class="dd" x="33" y="63">low CORT, MR occupied:</text><text class="dd" x="33" y="76">retrieve what happened</text><text class="dd" x="33" y="89">last time</text></g>
+    <g><rect class="nb s" x="236" y="24" width="176" height="76" rx="9"/><text class="tt" x="249" y="46">Selection (MR)</text><text class="dd" x="249" y="63">cheap habit or costly</text><text class="dd" x="249" y="76">goal-directed strategy;</text><text class="dd" x="249" y="89">encoding opens</text></g>
+    <g><rect class="nb s" x="452" y="24" width="176" height="76" rx="9"/><text class="tt" x="465" y="46">Peak: GR recruited</text><text class="dd" x="465" y="63">stop the defence from</text><text class="dd" x="465" y="76">overshooting; buy</text><text class="dd" x="465" y="89">executive control</text></g>
+    <g><rect class="nb s" x="668" y="24" width="176" height="76" rx="9"/><text class="tt" x="681" y="46">Storage (GR)</text><text class="dd" x="681" y="63">contextualize and</text><text class="dd" x="681" y="76">consolidate the episode</text><text class="dd" x="681" y="89">and the strategy used</text></g>
+    <g><rect class="nb s" x="884" y="24" width="176" height="76" rx="9"/><text class="tt" x="897" y="46">Primed circuit</text><text class="dd" x="897" y="63">the imprint that the</text><text class="dd" x="897" y="76">next episode's MR</text><text class="dd" x="897" y="89">phase will read</text></g>
+
+    <line class="ln" x1="198" y1="62" x2="232" y2="62" marker-end="url(#ar4)"/>
+    <line class="ln" x1="414" y1="62" x2="448" y2="62" marker-end="url(#ar4)"/>
+    <line class="ln" x1="630" y1="62" x2="664" y2="62" marker-end="url(#ar4)"/>
+    <line class="ln" x1="846" y1="62" x2="880" y2="62" marker-end="url(#ar4)"/>
+    <text class="el" x="214" y="124" text-anchor="middle">what was retrieved</text><text class="el" x="214" y="136" text-anchor="middle">constrains the choice</text>
+    <text class="el" x="430" y="124" text-anchor="middle">CORT rises past</text><text class="el" x="430" y="136" text-anchor="middle">the GR threshold</text>
+    <text class="el" x="646" y="124" text-anchor="middle">the same GR action</text><text class="el" x="646" y="136" text-anchor="middle">that ends it writes it down</text>
+    <text class="el" x="862" y="124" text-anchor="middle">consolidation leaves</text><text class="el" x="862" y="136" text-anchor="middle">a primed circuit</text>
+
+    <polyline class="ln" points="972,102 972,210 108,210 108,102" marker-end="url(#ar4)"/>
+    <text class="el" x="540" y="202" text-anchor="middle">becomes the imprint MR retrieves at the next encounter — so each episode tunes the next</text>
+
+    <polyline class="ln dash" points="505,102 505,236" marker-end="url(#ar4)"/>
+    <g><rect class="nb risk" x="452" y="236" width="400" height="48" rx="9"/><text class="dd" x="466" y="256">If coping fails: GR activation persists, cognitive control is lost,</text><text class="dd" x="466" y="270">the loop no longer closes → the chronic stress construct</text></g>
+    <text class="el" x="516" y="160">the exit when</text><text class="el" x="516" y="172">appraisal finds</text><text class="el" x="516" y="184">no way to cope</text>
+  </svg>
+  </div>
+  <p class="cap"><b>The story:</b> MR reads what GR wrote during the previous episode and GR writes what MR will read during the next, so resilience is a loop that closes rather than a single well-sized hormone response.</p>
+</section>
+<section>
+  <p class="eyebrow">05 — Why questions</p>
+  <h2>Five questions a list cannot answer</h2>
+  <ol class="qs">
+    <li><p>Why does blocking MR lower vigilance and the sympathetic response while <em>raising</em> CORT output, when blocking GR does the opposite and prolongs the response?</p><p class="joins">joins: MR/GR affinity split · peak vs duration · the relay and feedback topology</p></li>
+    <li><p>Why can one chronic-stress trajectory end in hypercortisolaemic depression in one person and hypocortisolaemic PTSD in another, while both lose contextualization of the experience?</p><p class="joins">joins: habituation of the daily peak · GR up- vs downregulation · hippocampal and mPFC atrophy against amygdala hypertrophy</p></li>
+    <li><p>Why is an <em>anti</em>-glucocorticoid the right drug in the golden hours after trauma, and a <em>glucocorticoid</em> the right drug shortly before re-exposure — at the same receptor?</p><p class="joins">joins: timing decides the sign · which memory operation is running · consolidation vs retrieval vs extinction</p></li>
+    <li><p>Why is the proactive animal, whose HPA response looks better controlled, the less resilient one in a novel environment?</p><p class="joins">joins: high limbic MR and the habit bias · energy economy · flexibility as the adaptive trait rather than a low hormone response</p></li>
+    <li><p>Why does flattening the ultradian rhythm produce glucocorticoid resistance even when the amount of cortisol secreted in a day has not changed?</p><p class="joins">joins: MR stays nuclear across pulses while GR binds and dissociates · hourly gene pulsing maintains responsiveness · receptor activity, not ligand level, as the limiting step</p></li>
+  </ol>
+</section>
+
+</div>
+
+</body></html>
