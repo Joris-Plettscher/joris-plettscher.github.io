@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sleep &amp; Systems Memory Synthesis</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&display=swap" rel="stylesheet">
+<style>
+:root {
+  /* Layout: one reading column, wide figures scroll on their own; state colours encode wake / NREM / REM everywhere */
+  --bg: #eef1f4;
+  --surface: #ffffff;
+  --ink: #17202b;
+  --muted: #566273;
+  --line: #c9d1db;
+  --accent: #2b5c8a;
+  --wake: #a8650e;
+  --nrem: #3b4fa8;
+  --rem: #0d7f7a;
+  --wake-bg: #fbf1e2;
+  --nrem-bg: #e8ebf8;
+  --rem-bg: #e2f3f1;
+  --display: "Source Serif 4", Georgia, "Times New Roman", serif;
+  --body: "IBM Plex Sans", "Helvetica Neue", Arial, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #12171e; --surface: #1a212b; --ink: #e6ebf1; --muted: #9aa6b5; --line: #344150;
+    --accent: #8db8e3; --wake: #e8a650; --nrem: #9aa8f0; --rem: #5cc9c2;
+    --wake-bg: #2b2216; --nrem-bg: #1d2236; --rem-bg: #13292a; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #12171e; --surface: #1a212b; --ink: #e6ebf1; --muted: #9aa6b5; --line: #344150;
+  --accent: #8db8e3; --wake: #e8a650; --nrem: #9aa8f0; --rem: #5cc9c2;
+  --wake-bg: #2b2216; --nrem-bg: #1d2236; --rem-bg: #13292a; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 15.5px; line-height: 1.55; }
+main { max-width: 1180px; margin: 0 auto; padding: 32px 20px 80px; display: grid; gap: 44px; }
+header { display: grid; gap: 10px; max-width: 70ch; }
+h1 { font-family: var(--display); font-size: 2.1rem; line-height: 1.15; margin: 0; text-wrap: balance; }
+h2 { font-family: var(--display); font-size: 1.5rem; margin: 0 0 4px; text-wrap: balance; }
+h3 { font-family: var(--display); font-size: 1.15rem; margin: 0; text-wrap: balance; }
+p { margin: 0; }
+.lede { color: var(--muted); max-width: 70ch; }
+.legend { display: flex; flex-wrap: wrap; gap: 8px 16px; font-size: 13px; color: var(--muted); }
+.chip { display: inline-flex; align-items: center; gap: 6px; }
+.chip i { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
+.chip .w { background: var(--wake); } .chip .n { background: var(--nrem); } .chip .r { background: var(--rem); }
+section { display: grid; gap: 18px; }
+.sec-head { display: grid; gap: 6px; max-width: 75ch; }
+.sec-num { font-family: var(--mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 20px; display: grid; gap: 14px; }
+figure { margin: 0; display: grid; gap: 10px; }
+figcaption { font-size: 14px; color: var(--muted); max-width: 80ch; }
+figcaption b { color: var(--ink); font-weight: 600; }
+.svgwrap { overflow-x: auto; }
+.svgwrap svg { display: block; width: 100%; min-width: 760px; height: auto; color: var(--ink); }
+svg text { font-family: var(--body); fill: currentColor; }
+svg .t { font-size: 13px; font-weight: 600; }
+svg .s { font-size: 11px; fill: var(--muted); }
+svg .e { font-size: 11px; fill: var(--accent); font-weight: 500; }
+svg .box { fill: var(--surface); stroke: var(--line); stroke-width: 1.3; }
+svg .box.q { fill: var(--accent); stroke: none; }
+svg text.qt { fill: var(--surface); font-size: 13.5px; font-weight: 600; }
+svg .box.wake { fill: var(--wake-bg); stroke: var(--wake); }
+svg .box.nrem { fill: var(--nrem-bg); stroke: var(--nrem); }
+svg .box.rem { fill: var(--rem-bg); stroke: var(--rem); }
+svg .edge { stroke: currentColor; stroke-width: 1.3; fill: none; opacity: .75; }
+svg .edge.dash { stroke-dasharray: 5 4; }
+svg .group { fill: none; stroke: var(--nrem); stroke-dasharray: 6 5; stroke-width: 1.2; }
+svg .gl { font-size: 11px; fill: var(--nrem); font-family: var(--mono); letter-spacing: .05em; }
+svg .band { font-size: 10.5px; fill: var(--muted); font-family: var(--mono); letter-spacing: .08em; }
+.template { display: flex; flex-wrap: wrap; gap: 8px; align-items: stretch; font-size: 14px; }
+.template span { background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 6px 10px; }
+.template .arrow { background: none; border: none; color: var(--accent); padding: 6px 0; font-weight: 600; }
+.tablewrap { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; min-width: 720px; }
+th, td { text-align: left; vertical-align: top; padding: 8px 10px; border-bottom: 1px solid var(--line); }
+thead th { font-size: 12px; font-family: var(--mono); text-transform: uppercase; letter-spacing: .05em; color: var(--muted); font-weight: 500; border-bottom: 2px solid var(--line); }
+tbody th { font-weight: 600; white-space: nowrap; }
+td.k, th.k { background: color-mix(in srgb, var(--accent) 7%, transparent); }
+.takeaway { font-size: 14.5px; border-left: 3px solid var(--accent); padding: 2px 0 2px 12px; }
+.takeaway b { font-weight: 600; }
+.analogy { font-size: 14px; background: var(--bg); border-radius: 6px; padding: 10px 12px; }
+.analogy b { font-family: var(--mono); font-size: 11.5px; letter-spacing: .06em; text-transform: uppercase; color: var(--accent); margin-right: 6px; }
+.problem { font-weight: 600; }
+.grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(330px, 1fr)); gap: 16px; }
+.figref { display: grid; gap: 6px; font-size: 14px; }
+.figref h4 { margin: 0; font-size: 14.5px; font-weight: 600; }
+.figref .where { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+.figref ul { margin: 0; padding-left: 18px; display: grid; gap: 3px; }
+ol.why { margin: 0; padding-left: 22px; display: grid; gap: 12px; max-width: 80ch; }
+ol.why li::marker { font-family: var(--mono); color: var(--accent); }
+.st-w { color: var(--wake); font-weight: 600; } .st-n { color: var(--nrem); font-weight: 600; } .st-r { color: var(--rem); font-weight: 600; }
+@media (max-width: 520px) { h1 { font-size: 1.7rem; } .card { padding: 14px; } }
+</style>
+</head>
+<body>
+<main>
+
+<header>
+  <h1>Sleep, Neuromodulation &amp; Systems Memory: Synthesis Layer</h1>
+  <p class="lede">Connections, shared principles and functional meaning across Kandel ch. 44, Headley &amp; Paré 2017, Guskjolen &amp; Cembrowski 2023, Lindsay 2020 and Slater 2022. Details live in the study notes; section numbers (§) point there.</p>
+  <div class="legend">
+    <span class="chip"><i class="w"></i>Wake / fast mode</span>
+    <span class="chip"><i class="n"></i>NREM / slow mode</span>
+    <span class="chip"><i class="r"></i>REM (fast mode in sleep)</span>
+  </div>
+</header>
+
+<!-- 1. OVERVIEW MAP -->
+<section id="overview">
+  <div class="sec-head">
+    <span class="sec-num">1 · Overview map</span>
+    <h2>How a waking experience becomes a lasting memory</h2>
+  </div>
+  <div class="card">
+    <figure>
+      <div class="svgwrap">
+      <svg viewBox="0 0 1130 600" role="img" aria-label="Map: brain state selects fast or slow mode; attention and neuromodulators decide what is allocated; slow-mode replay drives synaptic and systems consolidation; the index drives retrieval; forgetting undoes engram wiring.">
+        <defs>
+          <marker id="m1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="currentColor"/></marker>
+        </defs>
+        <!-- question -->
+        <rect class="box q" x="215" y="8" width="700" height="34" rx="17"/>
+        <text class="qt" x="565" y="30" text-anchor="middle">Central question: how does a waking experience become a lasting, retrievable memory?</text>
+        <!-- band labels -->
+        <text class="band" x="30" y="76">STATE LAYER</text>
+        <text class="band" x="1100" y="302" text-anchor="end">ENGRAM LIFECYCLE</text>
+        <text class="band" x="250" y="514">OFFLINE MACHINERY (SLEEP)</text>
+
+        <!-- top band -->
+        <rect class="box" x="30" y="80" width="220" height="56" rx="8"/>
+        <text class="t" x="140" y="103" text-anchor="middle">Sleep–wake switches &amp; drives</text>
+        <text class="s" x="140" y="122" text-anchor="middle">flip-flops · adenosine · SCN</text>
+
+        <rect class="box" x="330" y="80" width="220" height="56" rx="8"/>
+        <text class="t" x="440" y="103" text-anchor="middle">Neuromodulatory state</text>
+        <text class="s" x="440" y="122" text-anchor="middle">ACh · NE · 5-HT levels</text>
+
+        <rect class="box wake" x="640" y="80" width="220" height="56" rx="8"/>
+        <text class="t" x="750" y="103" text-anchor="middle">Fast mode</text>
+        <text class="s" x="750" y="122" text-anchor="middle">theta–gamma (wake, REM)</text>
+
+        <rect class="box" x="300" y="200" width="170" height="44" rx="8"/>
+        <text class="t" x="385" y="218" text-anchor="middle">Attention</text>
+        <text class="s" x="385" y="234" text-anchor="middle">control of limited resources</text>
+
+        <!-- middle band -->
+        <rect class="box" x="30" y="310" width="170" height="56" rx="8"/>
+        <text class="t" x="115" y="333" text-anchor="middle">Engram allocation</text>
+        <text class="s" x="115" y="352" text-anchor="middle">excitability competition</text>
+
+        <rect class="box" x="270" y="310" width="180" height="56" rx="8"/>
+        <text class="t" x="360" y="333" text-anchor="middle">Synaptic consolidation</text>
+        <text class="s" x="360" y="352" text-anchor="middle">CREB, protein synthesis</text>
+
+        <rect class="box" x="520" y="310" width="180" height="56" rx="8"/>
+        <text class="t" x="610" y="333" text-anchor="middle">Systems consolidation</text>
+        <text class="s" x="610" y="352" text-anchor="middle">hippocampal index → mPFC</text>
+
+        <rect class="box" x="770" y="310" width="140" height="56" rx="8"/>
+        <text class="t" x="840" y="333" text-anchor="middle">Retrieval</text>
+        <text class="s" x="840" y="352" text-anchor="middle">pattern completion</text>
+
+        <rect class="box" x="960" y="310" width="140" height="56" rx="8"/>
+        <text class="t" x="1030" y="333" text-anchor="middle">Forgetting</text>
+        <text class="s" x="1030" y="352" text-anchor="middle">remodelling · noise</text>
+
+        <!-- bottom band -->
+        <rect class="box nrem" x="270" y="520" width="150" height="56" rx="8"/>
+        <text class="t" x="345" y="543" text-anchor="middle">SWR replay</text>
+        <text class="s" x="345" y="562" text-anchor="middle">compressed, prioritised</text>
+
+        <rect class="box nrem" x="480" y="520" width="260" height="56" rx="8"/>
+        <text class="t" x="610" y="543" text-anchor="middle">Slow mode coupling</text>
+        <text class="s" x="610" y="562" text-anchor="middle">slow oscillation · spindles · ripples</text>
+
+        <rect class="box rem" x="830" y="520" width="170" height="56" rx="8"/>
+        <text class="t" x="915" y="543" text-anchor="middle">REM theta</text>
+        <text class="s" x="915" y="562" text-anchor="middle">→ amygdala: emotional memory</text>
+
+        <!-- edges -->
+        <line class="edge" x1="250" y1="108" x2="327" y2="108" marker-end="url(#m1)"/>
+        <text class="e" x="289" y="100" text-anchor="middle">sets</text>
+
+        <line class="edge" x1="550" y1="108" x2="637" y2="108" marker-end="url(#m1)"/>
+        <text class="e" x="595" y="100" text-anchor="middle">high ACh/NE</text>
+
+        <line class="edge" x1="440" y1="136" x2="440" y2="197" marker-end="url(#m1)"/>
+        <text class="e" x="448" y="172">arousal level</text>
+
+        <line class="edge" x1="340" y1="136" x2="112" y2="307" marker-end="url(#m1)"/>
+        <text class="e" x="226" y="205" text-anchor="end">gates plasticity</text>
+
+        <line class="edge" x1="320" y1="244" x2="162" y2="308" marker-end="url(#m1)"/>
+        <text class="e" x="258" y="290">selects inputs</text>
+
+        <path class="edge" d="M660 80 V62 H14 V338 H27" marker-end="url(#m1)"/>
+        <text class="e" x="330" y="56" text-anchor="middle">times encoding (theta–gamma nesting)</text>
+
+        <line class="edge" x1="497" y1="136" x2="497" y2="517" marker-end="url(#m1)"/>
+        <text class="e" x="505" y="262">low ACh/NE (NREM)</text>
+
+        <line class="edge" x1="830" y1="136" x2="840" y2="307" marker-end="url(#m1)"/>
+        <text class="e" x="848" y="230">theta coherence carries</text>
+
+        <path class="edge" d="M860 108 H1116 V548 H1003" marker-end="url(#m1)"/>
+        <text class="e" x="990" y="100" text-anchor="middle">same mode in REM</text>
+
+        <line class="edge" x1="200" y1="338" x2="267" y2="338" marker-end="url(#m1)"/>
+        <text class="e" x="234" y="330" text-anchor="middle">same cells</text>
+
+        <line class="edge" x1="450" y1="338" x2="517" y2="338" marker-end="url(#m1)"/>
+        <text class="e" x="472" y="330" text-anchor="middle">then</text>
+
+        <line class="edge" x1="700" y1="338" x2="767" y2="338" marker-end="url(#m1)"/>
+        <text class="e" x="735" y="330" text-anchor="middle">drives</text>
+
+        <line class="edge" x1="960" y1="338" x2="913" y2="338" marker-end="url(#m1)"/>
+        <text class="e" x="936" y="330" text-anchor="middle">blocks</text>
+
+        <path class="edge dash" d="M1030 366 C1030 440, 400 440, 400 369" marker-end="url(#m1)"/>
+        <text class="e" x="935" y="432" text-anchor="middle">opposite of: undoes wiring</text>
+
+        <line class="edge" x1="345" y1="520" x2="345" y2="369" marker-end="url(#m1)"/>
+        <text class="e" x="337" y="470" text-anchor="end">strengthens engram synapses</text>
+
+        <line class="edge" x1="420" y1="548" x2="477" y2="548" marker-end="url(#m1)"/>
+        <text class="e" x="449" y="540" text-anchor="middle">nested in</text>
+
+        <line class="edge" x1="615" y1="520" x2="615" y2="369" marker-end="url(#m1)"/>
+        <text class="e" x="623" y="470">reinstates cortical engram</text>
+
+        <line class="edge dash" x1="740" y1="548" x2="827" y2="548" marker-end="url(#m1)"/>
+        <text class="e" x="785" y="540" text-anchor="middle">contrasts with</text>
+      </svg>
+      </div>
+      <figcaption><b>Story:</b> the state layer decides <em>when</em> memory work happens (fast mode for taking in and reading out, slow mode for offline transfer), attention and neuromodulators decide <em>which</em> cells and inputs are written, and sleep replay turns those cells into a cortical engram that retrieval can later reinstate and forgetting can erode.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- 2. RECURRING PRINCIPLES -->
+<section id="principles">
+  <div class="sec-head">
+    <span class="sec-num">2 · Recurring principles</span>
+    <h2>Five mechanisms the sources reuse</h2>
+  </div>
+
+  <div class="card">
+    <h3>2.1 Mutual inhibition turns a small bias into an all-or-none outcome</h3>
+    <div class="template"><span>Populations inhibit each other</span><span class="arrow">→</span><span>a small bias favours one</span><span class="arrow">→</span><span>the winner silences its rivals and loses their inhibition</span><span class="arrow">→</span><span>fast, complete outcome</span></div>
+    <figure>
+      <div class="tablewrap"><table>
+        <thead><tr><th>Instance</th><th>Competitors</th><th>Bias that tips it</th><th>Outcome</th><th class="k">What all-or-none buys</th></tr></thead>
+        <tbody>
+          <tr><th>Wake–sleep switch (§8)</th><td>VLPO / median preoptic vs arousal nuclei</td><td>Adenosine, circadian signal via DMH</td><td>Fully awake or fully asleep</td><td class="k">No vulnerable drowsy in-between state</td></tr>
+          <tr><th>REM switch (§8)</th><td>Subceruleus REM-on vs vlPAG REM-off</td><td>Orexin, LC, raphe (off) vs PPT/LDT ACh, MCH (on)</td><td>REM or NREM</td><td class="k">REM entered fully with atonia, never straight from wake</td></tr>
+          <tr><th>PING gamma cycle (§10)</th><td>Pyramidal cells via shared interneurons</td><td>Slightly stronger excitatory drive</td><td>Only the most driven cells fire per cycle</td><td class="k">Winner-take-all spike selection</td></tr>
+          <tr><th>Engram allocation (§14)</th><td>Neurons eligible for one memory</td><td>Intrinsic excitability (CREB)</td><td>Sparse engram; less excitable cells kept out</td><td class="k">A defined cell set that later consolidation and recall can find</td></tr>
+          <tr><th>Biased competition in attention (§6)</th><td>Stimuli competing for the neural response</td><td>Top-down or bottom-up attention</td><td>Attended stimulus dominates</td><td class="k">Limited resources go to one input</td></tr>
+        </tbody>
+      </table></div>
+      <figcaption><b>Story:</b> from sleep states to single spikes to memory cells, the brain uses the same motif to turn graded inputs (pressure, drive, excitability) into categorical choices.</figcaption>
+    </figure>
+    <p class="takeaway"><b>Takeaway:</b> remove the element that biases or stabilises the competition and the outcome becomes unstable, as orexin loss shows for both sleep switches.</p>
+  </div>
+
+  <div class="card">
+    <h3>2.2 Silencing, then release, paces the memory rhythms</h3>
+    <div class="template"><span>A population is silenced</span><span class="arrow">→</span><span>silencing wanes</span><span class="arrow">→</span><span>cells fire together on release</span><span class="arrow">→</span><span>that firing triggers the next silencing</span></div>
+    <figure>
+      <div class="tablewrap"><table>
+        <thead><tr><th>Rhythm</th><th>Silencer</th><th>Release mechanism</th><th>Who restarts the cycle</th><th class="k">Release window used for</th></tr></thead>
+        <tbody>
+          <tr><th class="st-n">Spindle (§12)</th><td>TRN GABA bursts onto relay cells</td><td>Rebound: de-inactivated T-type Ca²⁺ channels</td><td>Relay burst re-excites TRN</td><td class="k">Pulses into cortex, coupled to ripples</td></tr>
+          <tr><th class="st-w">Theta (§11)</th><td>Septal GABA silences hippocampal interneurons</td><td>Disinhibition of pyramidal cells</td><td>MS-DBB pacemaker (external)</td><td class="k">Gamma nesting, phase precession, REM consolidation</td></tr>
+          <tr><th class="st-w">Gamma, PING (§10)</th><td>PV basket-cell feedback inhibition</td><td>Inhibition decays, most-driven cells fire</td><td>Those pyramidal cells re-excite interneurons</td><td class="k">Packaging spikes for downstream impact and STDP</td></tr>
+          <tr><th class="st-n">Slow oscillation (§12)</th><td>Down-state = loss of synaptic drive (disfacilitation), not inhibition</td><td>Recurrent cortical excitation rebuilds</td><td>Cortical network itself</td><td class="k">Up-state onset receives SWRs</td></tr>
+        </tbody>
+      </table></div>
+      <figcaption><b>Story:</b> each rhythm is a cycle of silence and synchronous release; the difference is who silences (TRN, septum, PV cells, or nobody in the slow oscillation) and whether the pacemaker sits inside or outside the circuit.</figcaption>
+    </figure>
+    <p class="takeaway"><b>Takeaway:</b> the release moment is a shared timing window; that is why these rhythms can link spikes across cells and regions.</p>
+  </div>
+
+  <div class="card">
+    <h3>2.3 Nesting: a slow rhythm opens windows that let regions talk</h3>
+    <div class="template"><span>Slow rhythm alternates excitable and silent phases</span><span class="arrow">→</span><span>faster events land in the excitable phase</span><span class="arrow">→</span><span>a target region receives coincident input</span><span class="arrow">→</span><span>communication and plasticity between regions</span></div>
+    <figure>
+      <div class="tablewrap"><table>
+        <thead><tr><th>Instance</th><th>Slow carrier</th><th>Fast events nested</th><th>Coupled partners</th><th>Cut off</th><th class="k">Memory process</th></tr></thead>
+        <tbody>
+          <tr><th class="st-w">Theta–gamma, wake (§11, §13)</th><td>Hippocampal theta</td><td>Gamma; slow vs fast gamma at different phases (CA3 vs entorhinal input)</td><td>PFC, striatum, amygdala</td><td>—</td><td class="k">Encoding, retrieval</td></tr>
+          <tr><th class="st-n">Slow osc.–spindle–ripple, NREM (§15)</th><td>Cortical slow oscillation</td><td>SWRs at up-state onset; thalamic spindles</td><td>mPFC/neocortex, ventral striatum</td><td>—</td><td class="k">Systems consolidation</td></tr>
+          <tr><th class="st-r">REM theta (§16)</th><td>Hippocampal/entorhinal theta</td><td>Real-time replay, no SWRs</td><td>Amygdala</td><td>mPFC, striatum</td><td class="k">Emotional and contextual consolidation</td></tr>
+        </tbody>
+      </table></div>
+      <figcaption><b>Story:</b> the hippocampus is wired to all three partners all the time; state-dependent locking decides which connections carry memory traffic.</figcaption>
+    </figure>
+    <p class="takeaway"><b>Takeaway:</b> coupling, not any single rhythm, is the active ingredient: disrupting ripple–spindle coupling impairs memory even though ripples and spindles still occur.</p>
+    <p class="analogy"><b>Analogy</b>Two radios exchange messages only when tuned to the same station; the state decides which stations are on air. It breaks down because here the timing itself (which spike comes first) also decides whether synapses strengthen.</p>
+  </div>
+
+  <div class="card">
+    <h3>2.4 Reactivation is the shared operation of every stage after encoding</h3>
+    <div class="template"><span>An ensemble is active during experience</span><span class="arrow">→</span><span>the same pattern is re-expressed later</span><span class="arrow">→</span><span>re-expression strengthens, links or expresses the memory</span><span class="arrow">→</span><span>its probability falls as the circuit is remodelled</span></div>
+    <figure>
+      <div class="tablewrap"><table>
+        <thead><tr><th>Instance</th><th>State</th><th>Speed and driver</th><th>Partner regions</th><th class="k">Function</th></tr></thead>
+        <tbody>
+          <tr><th class="st-w">Awake SWR replay (§15)</th><td>Pauses, reward</td><td>Compressed; forward or reverse; upcoming paths before action</td><td>Hippocampus</td><td class="k">Link path to outcome; planning</td></tr>
+          <tr><th class="st-n">NREM SWR replay (§15)</th><td>SWS</td><td>Compressed, CA3-driven, prioritises weak memories</td><td>Cortex, ventral striatum</td><td class="k">Strengthen hippocampal and cortical engram</td></tr>
+          <tr><th class="st-n">Up-state reactivation (§15)</th><td>SWS</td><td>Compressed; possibly triggered by SWRs</td><td>Cortex, striatum</td><td class="k">Train the cortical engram</td></tr>
+          <tr><th class="st-r">REM replay (§16)</th><td>REM</td><td>Waking speed; CA3 influence weak</td><td>Amygdala</td><td class="k">Subcortical consolidation</td></tr>
+          <tr><th>Retrieval (§19)</th><td>Wake, cue</td><td>Pattern completion from a partial cue</td><td>Hippocampus → cortex, amygdala</td><td class="k">Express the memory; scales with memory strength</td></tr>
+          <tr><th>Artificial engram activation (§19, §20)</th><td>Opto/chemogenetic</td><td>Focal; completed by the network</td><td>Brain-wide engram</td><td class="k">Recall without cues; rescues “forgotten” memories</td></tr>
+        </tbody>
+      </table></div>
+      <figcaption><b>Story:</b> consolidation and retrieval use one operation, reinstating an ensemble, and differ in state, speed and whether behaviour follows; forgetting is measured as reinstatement failing.</figcaption>
+    </figure>
+    <p class="takeaway"><b>Takeaway:</b> compression marks the offline, plasticity-oriented versions; real-time reinstatement marks REM and retrieval.</p>
+  </div>
+
+  <div class="card">
+    <h3>2.5 Diffuse signals act as gates, not as content</h3>
+    <div class="template"><span>One source broadcasts widely</span><span class="arrow">→</span><span>targets differ in receptors or modules</span><span class="arrow">→</span><span>the signal shifts a threshold or a gain</span><span class="arrow">→</span><span>the effect depends on what is active at that moment</span></div>
+    <figure>
+      <div class="tablewrap"><table>
+        <thead><tr><th>Signal</th><th>Source</th><th>How specificity arises</th><th class="k">What it gates</th></tr></thead>
+        <tbody>
+          <tr><th>ACh (§4)</th><td>Nucleus basalis, MS-DBB, PPT/LDT</td><td>Topographic projections; nicotinic vs muscarinic</td><td class="k">Attentional gain, memory-update speed, theta, REM entry</td></tr>
+          <tr><th>NE (§5)</th><td>Locus coeruleus</td><td>LC modules; α1 / α2 / β receptors</td><td class="k">Arousal (tonic inverted U), network reset (phasic), synaptic strength</td></tr>
+          <tr><th>NE, 5-HT on REM switch (§8)</th><td>LC, dorsal raphe</td><td>Inhibit REM-on cells</td><td class="k">Block entry into REM while awake</td></tr>
+          <tr><th>Orexin (§8)</th><td>Lateral hypothalamus</td><td>Excites arousal nuclei and REM-off cells</td><td class="k">Stability of both sleep switches</td></tr>
+          <tr><th>Adenosine (§9)</th><td>ATP breakdown during wake</td><td>A1 inhibits arousal neurons; A2a activates VLPO via accumbens</td><td class="k">Push toward sleep</td></tr>
+          <tr><th>Neuromodulators at synapses (§6)</th><td>All four systems</td><td>Coincide with active synapses</td><td class="k">Plasticity from otherwise subthreshold activity</td></tr>
+        </tbody>
+      </table></div>
+      <figcaption><b>Story:</b> neuromodulators and sleep factors set when and where memory processing happens; the content comes from whichever ensemble is active, just as the oscillations that they select are blind to content.</figcaption>
+    </figure>
+    <p class="takeaway"><b>Takeaway:</b> one diffuse source can still act specifically, because specificity sits in the receivers (receptor mix, LC modules) and in timing.</p>
+    <p class="analogy"><b>Analogy</b>A mixing desk: one master fader reaches every channel, but each channel's own equaliser (its receptors) shapes the result. It breaks down for phasic NE, which works more like switching to a new track (network reset) than turning a fader.</p>
+  </div>
+</section>
+
+<!-- 3. CONTRAST TABLES -->
+<section id="contrasts">
+  <div class="sec-head">
+    <span class="sec-num">3 · Contrast tables</span>
+    <h2>Pairs and groups that are easy to mix up</h2>
+  </div>
+
+  <div class="grid2">
+    <div class="card">
+      <h3>Sleep and wake rhythms</h3>
+      <figure>
+        <div class="tablewrap"><table style="min-width:560px">
+          <thead><tr><th>Rhythm</th><th>Generator</th><th>State</th><th class="k">Memory role</th></tr></thead>
+          <tbody>
+            <tr><th class="st-n">Slow oscillation / delta</th><td>Cortex (intrinsic)</td><td>N3 / SWS</td><td class="k">Conductor: up-states time hippocampal input</td></tr>
+            <tr><th class="st-n">K-complex</td><td>Cortex (single large slow wave)</td><td>N2</td><td class="k">Marker of N2</td></tr>
+            <tr><th class="st-n">Spindle</th><td>Thalamus: TRN ↔ relay</td><td>N2, NREM</td><td class="k">Relay coupling ripples to cortex</td></tr>
+            <tr><th class="st-n">Sharp-wave ripple</th><td>Hippocampus CA3 → CA1</td><td>SWS, quiet wake</td><td class="k">Carrier of compressed replay</td></tr>
+            <tr><th class="st-r">Theta</th><td>MS-DBB pacing + entorhinal drive</td><td>Active wake, REM</td><td class="k">Clock for encoding, retrieval, REM consolidation</td></tr>
+            <tr><th class="st-w">Gamma</th><td>Local PING loops</td><td>All, strongest in fast mode</td><td class="k">Packages spikes; inter-areal synchrony</td></tr>
+          </tbody>
+        </table></div>
+        <figcaption><b>Story:</b> each rhythm comes from a different structure, so “which rhythm” also tells you “which region is speaking”.</figcaption>
+      </figure>
+    </div>
+
+    <div class="card">
+      <h3>Three kinds of “homeostasis” around sleep</h3>
+      <figure>
+        <div class="tablewrap"><table style="min-width:560px">
+          <thead><tr><th></th><th>Homeostatic sleep drive</th><th>Circadian drive</th><th>Synaptic homeostasis</th></tr></thead>
+          <tbody>
+            <tr><th>Regulates</th><td>How much sleep is needed</td><td>When sleep is allowed</td><td>Synaptic strengths</td></tr>
+            <tr><th>Signal</th><td>Adenosine from ATP use</td><td>SCN clock genes, light</td><td>Downscaling of smaller synapses in sleep</td></tr>
+            <tr><th>Builds with</th><td>Time awake</td><td>Time of day, not prior sleep</td><td>Learning-induced synapse growth</td></tr>
+            <tr><th class="k">Link to memory</th><td class="k">Sets SWS depth (more N3 after deprivation)</td><td class="k">Places REM-rich sleep late in the night</td><td class="k">Keeps strong inputs, removes weaker competitors (case 2)</td></tr>
+          </tbody>
+        </table></div>
+        <figcaption><b>Story:</b> two drives decide when and how deeply you sleep; synaptic homeostasis is something sleep does, not something that causes sleep.</figcaption>
+      </figure>
+    </div>
+
+    <div class="card">
+      <h3>Arousal: essential core vs modulatory groups</h3>
+      <figure>
+        <div class="tablewrap"><table style="min-width:560px">
+          <thead><tr><th></th><th>Essential core</th><th>Modulatory groups</th></tr></thead>
+          <tbody>
+            <tr><th>Cells</th><td>Glutamatergic parabrachial/PPT, basal forebrain (ACh, GABA, Glu), supramammillary, LH GABA</td><td>LC (NE), raphe (5-HT), TMN (histamine), PPT/LDT (ACh), orexin</td></tr>
+            <tr><th>Lesion</th><td>Coma or profound sleepiness</td><td>Little change in total sleep; poor wake under adverse conditions (orexin: unstable states)</td></tr>
+            <tr><th>Stimulation</th><td>Arousal</td><td>Strong arousal</td></tr>
+            <tr><th class="k">Memory relevance</th><td class="k">Keeps cortex able to process at all</td><td class="k">Sets the neuromodulatory state that gates plasticity, attention and REM entry</td></tr>
+          </tbody>
+        </table></div>
+        <figcaption><b>Story:</b> the systems that matter most for memory quality are the ones whose loss barely changes how long you are awake.</figcaption>
+      </figure>
+    </div>
+
+    <div class="card">
+      <h3>Intrinsic excitability vs synaptic plasticity in the engram</h3>
+      <figure>
+        <div class="tablewrap"><table style="min-width:560px">
+          <thead><tr><th>Stage</th><th>Excitability does</th><th>Synaptic plasticity does</th></tr></thead>
+          <tbody>
+            <tr><th>Allocation</th><td>Picks which cells join (CREB, natural fluctuation)</td><td>Pre-existing connectivity also biases</td></tr>
+            <tr><th>Ensemble formation</th><td>Can bind co-active cells with no new synapses</td><td>Not required at first</td></tr>
+            <tr><th>Consolidation</th><td>Primes cells for plasticity</td><td>Engram-to-engram wiring (spines, GluR1)</td></tr>
+            <tr><th>Retrieval</th><td>Kir2.1-driven rise after recall sharpens discrimination</td><td>Strength needed to drive recall</td></tr>
+            <tr><th class="k">Forgetting</th><td class="k">—</td><td class="k">Remodelling disassembles wiring</td></tr>
+          </tbody>
+        </table></div>
+        <figcaption><b>Story:</b> excitability decides who takes part and when; synapses decide how the participants are bound together.</figcaption>
+      </figure>
+    </div>
+
+    <div class="card">
+      <h3>Why a memory does not come back</h3>
+      <figure>
+        <div class="tablewrap"><table style="min-width:560px">
+          <thead><tr><th>Cause</th><th>What changes</th><th>Engram reactivation</th><th class="k">Engram stimulation restores it?</th></tr></thead>
+          <tbody>
+            <tr><th>Never consolidated</th><td>No sleep reactivation or no protein synthesis after learning</td><td>No stable engram</td><td class="k">Not shown</td></tr>
+            <tr><th>Synaptic remodelling</th><td>Neurogenesis, microglia, astrocytes, depotentiation, Rac1</td><td>Less likely</td><td class="k">Yes (neurogenesis-induced)</td></tr>
+            <tr><th>Noise at retrieval</th><td>Non-engram cells or unrelated synapses activated</td><td>Often unchanged</td><td class="k">Not tested</td></tr>
+            <tr><th>Lost access</th><td>Infantile amnesia, Alzheimer-model mice; spine strength at baseline</td><td>Fails under natural cues</td><td class="k">Yes</td></tr>
+          </tbody>
+        </table></div>
+        <figcaption><b>Story:</b> most forgetting the sources describe is a failure of readout (accessibility), not loss of the stored pattern (availability).</figcaption>
+      </figure>
+    </div>
+
+    <div class="card">
+      <h3>State mixing: which switch part fails</h3>
+      <figure>
+        <div class="tablewrap"><table style="min-width:560px">
+          <thead><tr><th>Phenomenon</th><th>Failing element</th><th class="k">What intrudes into what</th></tr></thead>
+          <tbody>
+            <tr><th>Cataplexy, sleep paralysis</th><td>Orexin brake on REM-off missing</td><td class="k">REM atonia into wake</td></tr>
+            <tr><th>REM sleep behaviour disorder</th><td>Atonia-driving REM-on neurons lost</td><td class="k">Waking movement into REM</td></tr>
+            <tr><th>Insomnia under stress</th><td>VLPO and arousal nuclei active together</td><td class="k">Wake-like fast activity into NREM</td></tr>
+            <tr><th>Sleepwalking, night terrors</th><td>Incomplete arousal from N3</td><td class="k">Waking behaviour with N3 delta EEG</td></tr>
+          </tbody>
+        </table></div>
+        <figcaption><b>Story:</b> cataplexy and REM behaviour disorder are mirror images, which shows that atonia and the REM brain state are produced by separable outputs of the same switch.</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- 4. FUNCTIONAL DIAGRAMS -->
+<section id="diagrams">
+  <div class="sec-head">
+    <span class="sec-num">4 · Functional diagrams</span>
+    <h2>What the parts do</h2>
+  </div>
+
+  <div class="card">
+    <h3>4.1 The NREM hippocampal–thalamic–cortical dialogue</h3>
+    <p class="problem">Problem solved: let a fast-learning hippocampus train slow cortex while new input is shut out.</p>
+    <figure>
+      <div class="svgwrap">
+      <svg viewBox="0 0 960 430" role="img" aria-label="Low neuromodulatory tone permits the slow mode; cortical up-states time hippocampal ripples; spindles couple to ripples; compressed replay and spindle pulses reach cortical engram cells, which strengthen over nights into a hippocampus-independent memory.">
+        <defs>
+          <marker id="m2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="currentColor"/></marker>
+        </defs>
+        <rect class="box" x="360" y="14" width="240" height="50" rx="8"/>
+        <text class="t" x="480" y="35" text-anchor="middle">Low ACh / NE (NREM)</text>
+        <text class="s" x="480" y="53" text-anchor="middle">permits the offline mode</text>
+
+        <rect class="group" x="40" y="100" width="880" height="212" rx="12"/>
+        <text class="gl" x="56" y="120">SLOW MODE · SWS</text>
+
+        <rect class="box nrem" x="70" y="132" width="250" height="62" rx="8"/>
+        <text class="t" x="195" y="156" text-anchor="middle">Neocortex: slow oscillation</text>
+        <text class="s" x="195" y="176" text-anchor="middle">conductor: up-state opens the window</text>
+
+        <rect class="box nrem" x="640" y="132" width="250" height="62" rx="8"/>
+        <text class="t" x="765" y="156" text-anchor="middle">Hippocampus CA3→CA1: SWR</text>
+        <text class="s" x="765" y="176" text-anchor="middle">index: replays the day, compressed</text>
+
+        <rect class="box nrem" x="355" y="232" width="250" height="62" rx="8"/>
+        <text class="t" x="480" y="256" text-anchor="middle">Thalamus TRN ↔ relay: spindle</text>
+        <text class="s" x="480" y="276" text-anchor="middle">relay: pulses input into cortex</text>
+
+        <rect class="box" x="70" y="352" width="260" height="62" rx="8"/>
+        <text class="t" x="200" y="376" text-anchor="middle">Cortical engram cells (mPFC)</text>
+        <text class="s" x="200" y="396" text-anchor="middle">learner: engram synapses strengthen</text>
+
+        <rect class="box" x="630" y="352" width="260" height="62" rx="8"/>
+        <text class="t" x="760" y="376" text-anchor="middle">Hippocampus-independent memory</text>
+        <text class="s" x="760" y="396" text-anchor="middle">outcome: gist-like, self-sustaining</text>
+
+        <line class="edge" x1="480" y1="64" x2="480" y2="98" marker-end="url(#m2)"/>
+        <text class="e" x="488" y="86">permits</text>
+
+        <line class="edge" x1="320" y1="150" x2="637" y2="150" marker-end="url(#m2)"/>
+        <text class="e" x="478" y="142" text-anchor="middle">up-state onset times the SWR (via entorhinal)</text>
+
+        <line class="edge" x1="260" y1="194" x2="380" y2="230" marker-end="url(#m2)"/>
+        <text class="e" x="300" y="226" text-anchor="end">nests spindles</text>
+
+        <line class="edge" x1="700" y1="194" x2="582" y2="230" marker-end="url(#m2)" marker-start="url(#m2)"/>
+        <text class="e" x="660" y="226">ripple–spindle coupling</text>
+
+        <path class="edge" d="M840 194 V332 H230 V349" marker-end="url(#m2)"/>
+        <text class="e" x="720" y="326" text-anchor="middle">compressed replay reinstates the ensemble</text>
+
+        <line class="edge" x1="410" y1="294" x2="300" y2="349" marker-end="url(#m2)"/>
+        <text class="e" x="345" y="300" text-anchor="end">pulses in the same window</text>
+
+        <line class="edge" x1="330" y1="383" x2="627" y2="383" marker-end="url(#m2)"/>
+        <text class="e" x="478" y="375" text-anchor="middle">repeated over many nights</text>
+      </svg>
+      </div>
+      <figcaption><b>Story:</b> the cortex sets the beat, the hippocampus supplies the content at the beat, the thalamus delivers it in step, and many repetitions leave the cortex holding the memory on its own.</figcaption>
+    </figure>
+    <p class="analogy"><b>Analogy</b>A tutor (hippocampus) rehearses lessons with a pupil (cortex), but only when the pupil signals readiness (up-state) and through an interpreter (thalamus). It breaks down because the tutor also learns from each session (replay strengthens hippocampal synapses too) and picks the weakest lessons first.</p>
+  </div>
+
+  <div class="card">
+    <h3>4.2 Brain states as a memory schedule</h3>
+    <p class="problem">Problem solved: alternate taking in new information with consolidating old information, without the two competing.</p>
+    <figure>
+      <div class="svgwrap">
+      <svg viewBox="0 0 960 400" role="img" aria-label="Wake encodes in the fast mode; sleep pressure flips the VLPO switch into NREM, which transfers memories in the slow mode; REM-on wins to enter REM, which consolidates subcortically; orexin and monoamines block direct wake-to-REM entry.">
+        <defs>
+          <marker id="m3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="currentColor"/></marker>
+        </defs>
+        <rect class="box wake" x="70" y="40" width="270" height="96" rx="10"/>
+        <text class="t" x="205" y="66" text-anchor="middle">WAKE · fast mode</text>
+        <text class="s" x="205" y="88" text-anchor="middle">high ACh + NE, attention</text>
+        <text class="s" x="205" y="106" text-anchor="middle">job: encode (theta–gamma), retrieve</text>
+        <text class="s" x="205" y="124" text-anchor="middle">builds sleep pressure</text>
+
+        <rect class="box rem" x="620" y="40" width="270" height="96" rx="10"/>
+        <text class="t" x="755" y="66" text-anchor="middle">REM · fast mode in sleep</text>
+        <text class="s" x="755" y="88" text-anchor="middle">high ACh, NE/5-HT silent</text>
+        <text class="s" x="755" y="106" text-anchor="middle">job: subcortical consolidation</text>
+        <text class="s" x="755" y="124" text-anchor="middle">(theta to amygdala, cortex cut off)</text>
+
+        <rect class="box nrem" x="345" y="262" width="270" height="96" rx="10"/>
+        <text class="t" x="480" y="288" text-anchor="middle">NREM · slow mode</text>
+        <text class="s" x="480" y="310" text-anchor="middle">low ACh + NE</text>
+        <text class="s" x="480" y="328" text-anchor="middle">job: hippocampus → cortex transfer</text>
+        <text class="s" x="480" y="346" text-anchor="middle">(slow osc. · spindles · SWRs)</text>
+
+        <rect class="box" x="30" y="290" width="230" height="56" rx="8"/>
+        <text class="t" x="145" y="313" text-anchor="middle">Adenosine + circadian dip</text>
+        <text class="s" x="145" y="332" text-anchor="middle">timer: when to sleep</text>
+
+        <rect class="box" x="700" y="290" width="230" height="56" rx="8"/>
+        <text class="t" x="815" y="313" text-anchor="middle">Orexin, NE, 5-HT</text>
+        <text class="s" x="815" y="332" text-anchor="middle">lock: keep REM out of wake</text>
+
+        <line class="edge" x1="240" y1="136" x2="400" y2="259" marker-end="url(#m3)"/>
+        <text class="e" x="300" y="214" text-anchor="end">VLPO switch flips</text>
+
+        <line class="edge" x1="575" y1="262" x2="690" y2="139" marker-end="url(#m3)"/>
+        <text class="e" x="645" y="222">REM-on wins (ACh, MCH)</text>
+
+        <line class="edge" x1="660" y1="136" x2="545" y2="259" marker-end="url(#m3)"/>
+        <text class="e" x="596" y="186" text-anchor="end">next cycle</text>
+
+        <line class="edge" x1="620" y1="70" x2="343" y2="70" marker-end="url(#m3)"/>
+        <text class="e" x="480" y="62" text-anchor="middle">waking (often from REM)</text>
+
+        <line class="edge dash" x1="340" y1="112" x2="617" y2="112" marker-end="url(#m3)"/>
+        <text class="e" x="480" y="104" text-anchor="middle">direct entry blocked</text>
+
+        <line class="edge" x1="260" y1="318" x2="342" y2="318" marker-end="url(#m3)"/>
+        <text class="e" x="301" y="310" text-anchor="middle">pushes toward</text>
+
+        <line class="edge" x1="815" y1="290" x2="800" y2="139" marker-end="url(#m3)"/>
+        <text class="e" x="822" y="230">inhibits entry via REM-off</text>
+      </svg>
+      </div>
+      <figcaption><b>Story:</b> each state is a different neuromodulatory setting with its own memory job, and the switches and drives schedule them: wake writes, early-night NREM transfers to cortex, late-night REM consolidates subcortically.</figcaption>
+    </figure>
+  </div>
+
+  <div class="card">
+    <h3>4.3 Already drawn in the sources: role labels to add</h3>
+    <div class="grid2">
+      <div class="figref">
+        <h4>Kandel Fig. 44-1A (hypnogram)</h4>
+        <span class="where">notes §7, §15–16</span>
+        <ul>
+          <li>Early N3 blocks = main window for slow-mode transfer</li>
+          <li>Late, long REM blocks = main window for REM-theta consolidation</li>
+        </ul>
+      </div>
+      <div class="figref">
+        <h4>Kandel Fig. 44-2 (slow oscillation, spindle)</h4>
+        <span class="where">notes §12</span>
+        <ul>
+          <li>Up-state = transmission window; down-state = network reset</li>
+          <li>TRN burst = pacemaker inhibition</li>
+          <li>T-type Ca²⁺ spike = rebound trigger</li>
+          <li>Relay Na⁺ burst = pulse delivered to cortex</li>
+          <li>Waning TRN response = spindle terminator</li>
+        </ul>
+      </div>
+      <div class="figref">
+        <h4>Kandel Fig. 44-4B and 44-5 (sleep and REM switches)</h4>
+        <span class="where">notes §8</span>
+        <ul>
+          <li>VLPO/MnPO = sleep side; LC, DR, TMN, PB = wake side</li>
+          <li>Mutual inhibition = holds the chosen state</li>
+          <li>Subceruleus REM-on = REM generator + paralysis driver</li>
+          <li>vlPAG REM-off = gatekeeper</li>
+          <li>Orexin, LC, DR = lock against wake → REM; PPT/LDT ACh = push into REM</li>
+        </ul>
+      </div>
+      <div class="figref">
+        <h4>Kandel Fig. 44-6A and 44-7 (circadian control)</h4>
+        <span class="where">notes §9</span>
+        <ul>
+          <li>Circadian wake drive = counterweight to rising sleep pressure</li>
+          <li>Its late-night low = keeps sleep going once pressure is spent</li>
+          <li>vSPZ = inverter (fires in antiphase to SCN)</li>
+          <li>DMH = output stage that decides wake vs sleep</li>
+        </ul>
+      </div>
+      <div class="figref">
+        <h4>Headley Fig. 1 (delta, SWRs, striatum)</h4>
+        <span class="where">notes §12, §15</span>
+        <ul>
+          <li>Propagating cortical delta = conductor of the slow mode</li>
+          <li>SWRs locked to delta phase = hippocampal output timed to cortex</li>
+          <li>Striatal delta from cortex = cortex imposes timing on striatal reactivation</li>
+        </ul>
+      </div>
+      <div class="figref">
+        <h4>Headley Fig. 2 (theta)</h4>
+        <span class="where">notes §11</span>
+        <ul>
+          <li>MS-DBB = pacemaker; entorhinal cortex = excitatory power supply</li>
+          <li>CA1/subiculum → cortex and striatum = theta broadcast to targets</li>
+        </ul>
+      </div>
+      <div class="figref">
+        <h4>Headley Fig. 3 (gamma)</h4>
+        <span class="where">notes §10</span>
+        <ul>
+          <li>Stages 1–2 = drive; stage 3 interneurons = shared clock and reset</li>
+          <li>Stage 4 silence = selection window → winner-take-all</li>
+          <li>Sparse pyramidal rasters = only winners fire</li>
+        </ul>
+      </div>
+      <div class="figref">
+        <h4>Guskjolen Fig. 1 (engram across stages)</h4>
+        <span class="where">notes §14, §19–20</span>
+        <ul>
+          <li>Prior excitability / connectivity = entry ticket for allocation</li>
+          <li>Learning = competition picks the engram</li>
+          <li>Consolidation = engram-to-engram wiring (what sleep replay drives)</li>
+          <li>Retrieval = reinstatement of that wiring</li>
+          <li>Forgetting left = remodelling lowers reactivation; right = noise masks it</li>
+        </ul>
+      </div>
+      <div class="figref">
+        <h4>Guskjolen Fig. 2 (indexing theory)</h4>
+        <span class="where">notes §2, §15, §19</span>
+        <ul>
+          <li>Index cells = pointer; perceptual cells = content</li>
+          <li>Consolidation stage = what NREM replay does (4.1)</li>
+          <li>Partial cue → full index = pattern completion</li>
+        </ul>
+      </div>
+      <div class="figref">
+        <h4>Lindsay Fig. 1 (LC, Yerkes–Dodson)</h4>
+        <span class="where">notes §5–6</span>
+        <ul>
+          <li>Broad LC projections = one source broadcasting gain</li>
+          <li>Inverted U = LC tonic firing: medium is best</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 6. WHY QUESTIONS -->
+<section id="why">
+  <div class="sec-head">
+    <span class="sec-num">5 · Why questions</span>
+    <h2>Answerable only from the connections</h2>
+  </div>
+  <div class="card">
+    <ol class="why">
+      <li>Why would consolidation work worse if hippocampal replay ran during the fast mode of active wake, given what the slow mode provides that the fast mode does not?</li>
+      <li>Why does disrupting ripple–spindle coupling impair memory even though ripples and spindles each still occur, and what does that say about where the plasticity happens?</li>
+      <li>Why can REM sleep help fear memory but not skilled motor or source memory, judging from which targets stay theta-coupled to the hippocampus in REM?</li>
+      <li>Why can stimulating a dentate engram restore a memory lost to neurogenesis, while noise-induced forgetting leaves engram reactivation intact, and what does each case say about storage vs readout?</li>
+      <li>Why does losing orexin destabilise sleep states, and losing CREB-driven excitability change engram allocation, if both rely on the same mutual-inhibition motif?</li>
+    </ol>
+  </div>
+</section>
+
+</main>
+</body>
+</html>

@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dopamine Synthesis Map</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,500;6..72,600&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+/* Layout idea: one reading column of study exhibits; amber = burst / positive error, blue = dip / negative error. */
+:root {
+  --bg: #f4f6f9;
+  --panel: #ffffff;
+  --ink: #1b2230;
+  --muted: #5a6477;
+  --line: #d3d9e2;
+  --burst: #b86a00;
+  --dip: #2f63ad;
+  --burst-soft: #fbefdc;
+  --dip-soft: #e4edf9;
+  --display: "Newsreader", Georgia, "Times New Roman", serif;
+  --body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #11151c; --panel: #19202a; --ink: #e5e9f0; --muted: #9aa4b5; --line: #2e3746;
+    --burst: #f0a33b; --dip: #7fa8ea; --burst-soft: #33281a; --dip-soft: #1c2a40;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #11151c; --panel: #19202a; --ink: #e5e9f0; --muted: #9aa4b5; --line: #2e3746;
+  --burst: #f0a33b; --dip: #7fa8ea; --burst-soft: #33281a; --dip-soft: #1c2a40;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 15.5px; line-height: 1.55; }
+main { max-width: 1060px; margin: 0 auto; padding: 40px 20px 80px; display: grid; gap: 44px; }
+header h1 { font-family: var(--display); font-weight: 600; font-size: 2.3rem; line-height: 1.15; margin: 0 0 8px; text-wrap: balance; }
+header p { margin: 0; color: var(--muted); max-width: 68ch; }
+.legend { display: flex; gap: 18px; flex-wrap: wrap; margin-top: 12px; font-size: 0.85rem; color: var(--muted); }
+.legend span::before { content: ""; display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: -1px; }
+.legend .b::before { background: var(--burst); }
+.legend .d::before { background: var(--dip); }
+section { display: grid; gap: 18px; }
+h2 { font-family: var(--display); font-weight: 600; font-size: 1.6rem; margin: 0; padding-bottom: 6px; border-bottom: 1px solid var(--line); text-wrap: balance; }
+h2 .num { color: var(--burst); margin-right: 8px; }
+h3 { font-family: var(--display); font-weight: 600; font-size: 1.2rem; margin: 0; text-wrap: balance; }
+.block { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 18px 20px; display: grid; gap: 12px; }
+.question { font-family: var(--display); font-size: 1.15rem; line-height: 1.4; margin: 0; max-width: 70ch; }
+.template { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 0; padding: 0; list-style: none; }
+.template li { background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 6px 10px; font-size: 0.9rem; }
+.template li b { color: var(--burst); font-weight: 600; margin-right: 4px; }
+.template .sep { border: none; background: none; padding: 0 2px; color: var(--muted); }
+.wrap { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 0.88rem; line-height: 1.45; min-width: 720px; }
+th, td { text-align: left; vertical-align: top; padding: 8px 10px; border-bottom: 1px solid var(--line); }
+th { font-weight: 600; color: var(--muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.03em; background: var(--bg); }
+td:first-child { font-weight: 600; }
+tr.exception td { background: var(--dip-soft); }
+.takeaway { margin: 0; font-size: 0.92rem; }
+.takeaway::before { content: "Takeaway  "; font-weight: 600; color: var(--burst); }
+figure { margin: 0; display: grid; gap: 10px; }
+figcaption, .caption { color: var(--muted); font-size: 0.92rem; margin: 0; max-width: 80ch; }
+.analogy { border-left: 3px solid var(--burst); padding: 4px 0 4px 12px; font-size: 0.9rem; margin: 0; }
+.analogy b { font-weight: 600; }
+.problem { margin: 0; font-size: 0.95rem; }
+.problem b { color: var(--burst); }
+svg { width: 100%; height: auto; display: block; color: var(--ink); }
+svg .box { fill: var(--panel); stroke: var(--ink); stroke-width: 1.2; }
+svg .box.hub { fill: var(--burst-soft); stroke: var(--burst); }
+svg .box.neg { fill: var(--dip-soft); stroke: var(--dip); }
+svg .nt { font-family: var(--body); font-size: 13.5px; font-weight: 600; fill: var(--ink); text-anchor: middle; }
+svg .ns { font-family: var(--body); font-size: 11.5px; fill: var(--muted); text-anchor: middle; }
+svg .tag { font-family: var(--body); font-size: 11.5px; font-style: italic; fill: var(--dip); text-anchor: middle; }
+svg .edge { stroke: var(--muted); stroke-width: 1.4; fill: none; }
+svg .edge.neg { stroke: var(--dip); }
+svg .edge.pos { stroke: var(--burst); }
+svg .el { font-family: var(--body); font-size: 11.5px; fill: var(--ink); paint-order: stroke; stroke: var(--panel); stroke-width: 4px; stroke-linejoin: round; }
+svg .el.neg { fill: var(--dip); }
+svg .el.pos { fill: var(--burst); }
+svg .ah { fill: var(--muted); }
+svg .ah.neg { fill: var(--dip); }
+svg .ah.pos { fill: var(--burst); }
+.figref td:nth-child(4) { color: var(--ink); }
+.figref td:first-child { white-space: nowrap; }
+ol.why { margin: 0; padding-left: 22px; display: grid; gap: 10px; max-width: 80ch; }
+ol.why li::marker { color: var(--burst); font-weight: 600; }
+@media (max-width: 600px) { header h1 { font-size: 1.8rem; } main { padding-top: 24px; } }
+</style>
+</head>
+<body>
+<main>
+
+<header>
+  <h1>Dopamine: how one signal teaches, drives and misleads</h1>
+  <p>A synthesis layer over the dopamine readings and the study notes: how the topics connect, which mechanisms recur, which concepts are easy to confuse, and what the circuits are for. Section numbers (§) point to the study notes.</p>
+  <div class="legend"><span class="b">burst / positive error / Go</span><span class="d">dip / negative error / NoGo</span></div>
+</header>
+
+<!-- 1. OVERVIEW MAP -->
+<section id="overview">
+  <h2><span class="num">1</span>Overview map</h2>
+  <div class="block">
+    <p class="question">How does one broadcast dopamine signal both teach behaviour and drive it, and what happens to reward, motivation and the sting of setbacks when that signal is blunted or mistimed?</p>
+    <figure>
+      <div class="wrap">
+      <svg viewBox="0 0 1000 650" role="img" aria-label="Release control shapes the prediction-error signal; the error is the fast change of a value signal; error teaches the Go/NoGo circuit while value sets its gain; distortions explain the treadmill, depression, schizophrenia and the three puzzles.">
+        <defs>
+          <marker id="a1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah" d="M0,0 L10,5 L0,10 z"/></marker>
+          <marker id="a1n" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah neg" d="M0,0 L10,5 L0,10 z"/></marker>
+          <marker id="a1p" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah pos" d="M0,0 L10,5 L0,10 z"/></marker>
+        </defs>
+
+        <!-- edges -->
+        <line class="edge" x1="230" y1="96" x2="287" y2="166" marker-end="url(#a1)"/>
+        <text class="el" x="268" y="126">sets spread of</text>
+
+        <line class="edge neg" x1="760" y1="96" x2="406" y2="168" marker-end="url(#a1n)"/>
+        <text class="el neg" x="540" y="100" text-anchor="middle">LHb: drives dips in</text>
+        <text class="el" x="540" y="115" text-anchor="middle">OFC: same relative coding as</text>
+
+        <line class="edge" x1="410" y1="198" x2="586" y2="198" marker-end="url(#a1)"/>
+        <text class="el" x="498" y="190" text-anchor="middle">= fast change of</text>
+
+        <line class="edge pos" x1="272" y1="226" x2="234" y2="296" marker-end="url(#a1p)"/>
+        <text class="el pos" x="244" y="266" text-anchor="end">teaches</text>
+
+        <line class="edge" x1="728" y1="226" x2="768" y2="296" marker-end="url(#a1)"/>
+        <text class="el" x="760" y="262">sets gain at choice</text>
+
+        <line class="edge pos" x1="310" y1="328" x2="406" y2="328" marker-end="url(#a1p)"/>
+        <text class="el" x="358" y="320" text-anchor="middle">rewrites G, N</text>
+
+        <line class="edge" x1="690" y1="328" x2="594" y2="328" marker-end="url(#a1)"/>
+        <text class="el" x="642" y="320" text-anchor="middle">scales βG, βN</text>
+
+        <path class="edge" d="M230,198 C40,198 30,330 108,436" marker-end="url(#a1)"/>
+        <text class="el" x="86" y="380">self-cancels</text>
+
+        <line class="edge neg" x1="240" y1="356" x2="438" y2="437" marker-end="url(#a1n)"/>
+        <text class="el neg" x="330" y="421" text-anchor="end">reward fails to teach in</text>
+
+        <line class="edge" x1="560" y1="356" x2="798" y2="437" marker-end="url(#a1)"/>
+        <text class="el" x="722" y="428" text-anchor="end">aberrant gating + weak Go in</text>
+
+        <line class="edge neg" x1="594" y1="468" x2="776" y2="468" marker-start="url(#a1n)" marker-end="url(#a1n)"/>
+        <text class="el neg" x="685" y="460" text-anchor="middle">share blunted reward PE</text>
+
+        <line class="edge" x1="110" y1="496" x2="376" y2="594" marker-end="url(#a1)"/>
+        <text class="el" x="232" y="566" text-anchor="end">explains spikes, setbacks</text>
+
+        <line class="edge" x1="500" y1="496" x2="500" y2="566" marker-end="url(#a1)"/>
+        <text class="el" x="508" y="536">explains setbacks, apathy</text>
+
+        <line class="edge" x1="870" y1="496" x2="624" y2="594" marker-end="url(#a1)"/>
+        <text class="el" x="762" y="572">explains apathy, relief from drugs</text>
+
+        <!-- nodes -->
+        <rect class="box" x="120" y="40" width="180" height="56" rx="6"/>
+        <text class="nt" x="210" y="63">Release control</text><text class="ns" x="210" y="81">§1–2 · DAT, autoreceptors</text>
+
+        <rect class="box neg" x="700" y="40" width="180" height="56" rx="6"/>
+        <text class="nt" x="790" y="63">LHb &amp; OFC</text><text class="ns" x="790" y="81">§5 · negative &amp; relative value</text>
+
+        <rect class="box hub" x="230" y="170" width="180" height="56" rx="6"/>
+        <text class="nt" x="320" y="193">Reward prediction error</text><text class="ns" x="320" y="211">§4 · burst / dip</text>
+
+        <rect class="box hub" x="590" y="170" width="180" height="56" rx="6"/>
+        <text class="nt" x="680" y="193">Value of work</text><text class="ns" x="680" y="211">§7 · discounted reward ahead</text>
+
+        <rect class="box" x="130" y="300" width="180" height="56" rx="6"/>
+        <text class="nt" x="220" y="323">Learning</text><text class="ns" x="220" y="341">§6 · LTP / LTD of G, N</text>
+
+        <rect class="box" x="410" y="300" width="180" height="56" rx="6"/>
+        <text class="nt" x="500" y="323">Go / NoGo circuit</text><text class="ns" x="500" y="341">§3 · net βG·G − βN·N</text>
+
+        <rect class="box" x="690" y="300" width="180" height="56" rx="6"/>
+        <text class="nt" x="780" y="323">Performance</text><text class="ns" x="780" y="341">§6 · βG↑ βN↓ at choice</text>
+
+        <rect class="box" x="20" y="440" width="180" height="56" rx="6"/>
+        <text class="nt" x="110" y="463">Treadmill &amp; addiction</text><text class="ns" x="110" y="481">§8</text>
+
+        <rect class="box" x="410" y="440" width="180" height="56" rx="6"/>
+        <text class="nt" x="500" y="463">Depression</text><text class="ns" x="500" y="481">§9</text>
+
+        <rect class="box" x="780" y="440" width="180" height="56" rx="6"/>
+        <text class="nt" x="870" y="463">Schizophrenia</text><text class="ns" x="870" y="481">§10</text>
+
+        <rect class="box hub" x="380" y="570" width="240" height="56" rx="6"/>
+        <text class="nt" x="500" y="593">Spikes · apathy · setbacks</text><text class="ns" x="500" y="611">§11 · the three puzzles</text>
+      </svg>
+      </div>
+      <figcaption>The story: two readings of one dopamine signal (error and value) feed one striatal circuit in two ways (teaching its weights, setting its gain), and every disorder or puzzle in the material is a distortion of one of those links.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- 2. RECURRING PRINCIPLES -->
+<section id="principles">
+  <h2><span class="num">2</span>Recurring principles</h2>
+
+  <div class="block">
+    <h3>A. Only the surprise gets through</h3>
+    <ol class="template">
+      <li><b>1</b>Outcome arrives</li><li class="sep">→</li>
+      <li><b>2</b>Compared with a reference</li><li class="sep">→</li>
+      <li><b>3</b>Only the difference is signalled</li><li class="sep">→</li>
+      <li><b>4</b>Reference updates, so the same outcome signals less next time</li>
+    </ol>
+    <div class="wrap"><table>
+      <thead><tr><th>Instance</th><th>Reference (stage 2)</th><th>What is signalled (stage 3)</th><th>How the reference moves (stage 4)</th><th>Key difference</th></tr></thead>
+      <tbody>
+        <tr><td>DA reward prediction error §4</td><td>Predicted reward, including its timing</td><td>Burst if better, dip if worse, nothing if equal</td><td>Learning raises or lowers the prediction</td><td>Bidirectional, broadcast to almost all striatal neurons</td></tr>
+        <tr><td>Transfer to cues §4</td><td>Prediction of the cue itself by an earlier cue</td><td>Response to the earliest unpredicted cue</td><td>Each cue becomes predicted by the one before it</td><td>Moves the signal back in time, building chains</td></tr>
+        <tr><td>Adaptive coding §4</td><td>Expected range of outcomes (its SD)</td><td>Error scaled to that range</td><td>Changes when a cue announces a new range</td><td>Changes the sensitivity, not the zero point</td></tr>
+        <tr><td>OFC relative value §5</td><td>The rewards currently on offer</td><td>Which option is preferred among them</td><td>Shifts when the menu changes (apple vs raisin)</td><td>Value, not error; matches Prospect Theory's reference point</td></tr>
+        <tr><td>Hedonic treadmill §8</td><td>Habituated level, or what others have</td><td>Burst only for a bigger or new reward</td><td>Every reward becomes the new norm</td><td>The behavioural cost: an ever-rising bar</td></tr>
+        <tr class="exception"><td>Drugs of addiction §8</td><td>None: the DA effect is not compared against a prediction</td><td>A positive-error-like surge every time</td><td>Prediction cannot cancel it</td><td>The rule breaks, so the signal never fades</td></tr>
+        <tr class="exception"><td>Mesolimbic [DA] as value §7</td><td>Previous value estimate</td><td>Absolute level = value; only the abrupt relative change = error</td><td>Baseline shifts up after a surprising reward, down after a miss</td><td>The level itself is not cancelled; only its jumps carry surprise</td></tr>
+      </tbody>
+    </table></div>
+    <p class="takeaway">Reward signals report outcomes against a moving reference; addiction is the case where the reference can never catch up, and Hamid's value signal shows that the surprise rides on top of a level that does not cancel.</p>
+    <p class="analogy"><b>Analogy (adaptive coding):</b> a camera's auto-exposure stretches whatever scene it sees across the full brightness range. It breaks down because dopamine needs a cue announcing the range in advance, and its cue response still tracks expected value.</p>
+  </div>
+
+  <div class="block">
+    <h3>B. Opponent channels, net output</h3>
+    <ol class="template">
+      <li><b>1</b>Two channels code opposite signs</li><li class="sep">→</li>
+      <li><b>2</b>Output is their difference</li><li class="sep">→</li>
+      <li><b>3</b>A modulator tilts the balance</li><li class="sep">→</li>
+      <li><b>4</b>A lasting tilt shows up as symptoms</li>
+    </ol>
+    <div class="wrap"><table>
+      <thead><tr><th>Instance</th><th>Channels (1)</th><th>Net output (2)</th><th>What tilts it (3)</th><th>Tilt → symptom (4)</th></tr></thead>
+      <tbody>
+        <tr><td>Action selection §3</td><td>Go (D1 MSNs, G) vs NoGo (D2 MSNs, N)</td><td>βG·G − βN·N reaches cortex</td><td>DA: excites Go via D1, inhibits NoGo via D2</td><td>Low DA or D2 block → inaction, parkinsonism</td></tr>
+        <tr><td>Learning from outcomes §6</td><td>δ+ (bursts) vs δ− (pauses)</td><td>Net change in G and N weights</td><td>DA level: low DA weakens δ+ but spares δ−</td><td>Parkinson's and schizophrenia: learn from losses, not from gains</td></tr>
+        <tr><td>Error sources §5</td><td>DA neurons vs lateral habenula (sign-inverted)</td><td>DA burst or dip</td><td>Habenula drives inhibitory midbrain neurons onto DA cells</td><td>Not described in the sources</td></tr>
+        <tr><td>Using feedback in depression §9</td><td>Amygdala / ACC error alarm vs prefrontal control</td><td>Adjustment after feedback</td><td>Loss of ACC → DLPFC coupling</td><td>Magnified failure, no plan to fix it</td></tr>
+        <tr><td>Reward vs punishment in depression §9</td><td>Reward sensitivity vs punishment weighting</td><td>Overall bias of behaviour</td><td>Blunted striatal reward PE, over-weighted misleading negative feedback</td><td>Anhedonia plus worthlessness</td></tr>
+      </tbody>
+    </table></div>
+    <p class="takeaway">Across circuit, learning rule and clinical picture, the sources explain symptoms as a shift in the balance between a positive and a negative channel, not as the loss of one channel.</p>
+    <p class="analogy"><b>Analogy (Go/NoGo):</b> accelerator and brake pressed at once; dopamine presses the accelerator and eases the brake. It breaks down because every action has its own learned pair of pedals, and dopamine after an outcome also rebuilds the pedals themselves.</p>
+  </div>
+
+  <div class="block">
+    <h3>C. One signal, read at two moments</h3>
+    <ol class="template">
+      <li><b>1</b>A DA change occurs</li><li class="sep">→</li>
+      <li><b>2a</b>After an outcome: plasticity reads it → future behaviour</li><li class="sep">/</li>
+      <li><b>2b</b>During choice: excitability reads it → current behaviour</li>
+    </ol>
+    <div class="wrap"><table>
+      <thead><tr><th>Instance</th><th>DA change</th><th>Read as learning (2a)</th><th>Read as performance (2b)</th><th>Time course</th></tr></thead>
+      <tbody>
+        <tr><td>OpAL model §6</td><td>Phasic δ; tonic τ + cue δ</td><td>G and N weights updated</td><td>βG = β(1+ρ), βN = β(1−ρ)</td><td>Learning accumulates; gain acts at once</td></tr>
+        <tr><td>Optogenetics in rats §6</td><td>Laser-evoked DA pulse</td><td>At side entry: same choice repeated next trial</td><td>At light-on: shorter latency on that trial</td><td>Each effect only at its own moment</td></tr>
+        <tr><td>Mesolimbic value signal §7</td><td>[DA] level and its jumps</td><td>Abrupt relative change = RPE</td><td>Absolute level = value of work → hazard of starting</td><td>Same trace, two features</td></tr>
+        <tr><td>DA neuron stimulation §6</td><td>Stimulate / inhibit DA neurons</td><td>At outcome: appetitive / aversive learning</td><td>During choice: more / less approach</td><td>Timing decides the effect</td></tr>
+        <tr><td>Antipsychotics §10</td><td>D2 blockade</td><td>NoGo plasticity ↑ → learned non-gating</td><td>NoGo activity ↑ → less gating now</td><td>Quick improvement that keeps building</td></tr>
+      </tbody>
+    </table></div>
+    <p class="takeaway">Whether dopamine teaches or drives depends on when the change arrives relative to the action, which is why tonic-versus-phasic is less decisive than outcome-versus-choice.</p>
+  </div>
+
+  <div class="block">
+    <h3>D. Dopamine teaches whatever it coincides with</h3>
+    <ol class="template">
+      <li><b>1</b>A transient occurs</li><li class="sep">→</li>
+      <li><b>2</b>Whatever event or action is present gets the credit</li><li class="sep">→</li>
+      <li><b>3</b>Its value and Go weight rise</li><li class="sep">→</li>
+      <li><b>4</b>Behaviour or thought turns towards it</li>
+    </ol>
+    <div class="wrap"><table>
+      <thead><tr><th>Instance</th><th>What triggers the transient</th><th>What it coincides with</th><th>Informative?</th><th>Result</th></tr></thead>
+      <tbody>
+        <tr><td>Natural RPE §4, §6</td><td>Better-than-expected outcome</td><td>The action that produced it</td><td>Yes</td><td>Adaptive learning</td></tr>
+        <tr><td>Optogenetic pulse §6</td><td>Laser</td><td>The chosen side, rewarded or not</td><td>No</td><td>Choice repeated regardless of food</td></tr>
+        <tr><td>Drugs of addiction §8</td><td>Drug pharmacology, unfiltered by senses</td><td>Drug taking and its cues</td><td>Never predicted away</td><td>Continuing reinforcement → addiction</td></tr>
+        <tr class="exception"><td>Spontaneous transients §10</td><td>Nothing: chaotic firing</td><td>Neutral stimuli, thoughts, percepts</td><td>No</td><td>Aberrant value and gating → delusions, hallucinations</td></tr>
+        <tr class="exception"><td>Blunted adaptive transients §9, §10</td><td>Relevant outcome, but the transient is small</td><td>The right action, under-credited</td><td>Yes, but too weak</td><td>Little learning from reward → anhedonia, avolition</td></tr>
+      </tbody>
+    </table></div>
+    <p class="takeaway">Dopamine carries no record of why it fired, so its timing alone assigns credit; positive symptoms are credit given to the wrong thing, negative symptoms credit withheld from the right one.</p>
+  </div>
+</section>
+
+<!-- 3. CONTRAST TABLES -->
+<section id="contrasts">
+  <h2><span class="num">3</span>Contrast tables</h2>
+
+  <div class="block">
+    <h3>Prediction error vs value vs detection</h3>
+    <div class="wrap"><table>
+      <thead><tr><th>Signal</th><th>Encodes</th><th>Time course in a trial</th><th>When an expected reward is omitted</th><th>Read out as</th></tr></thead>
+      <tbody>
+        <tr><td>Phasic RPE §4</td><td>Reward − prediction</td><td>Brief burst or dip at unpredicted events only</td><td>Brief dip at the expected time</td><td>Teaching signal</td></tr>
+        <tr><td>Value / mesolimbic [DA] §7</td><td>Time-discounted reward available from now</td><td>Ramps up as reward nears, steps at informative cues</td><td>Lasting shift down of the level</td><td>Motivation to work; its jumps = RPE</td></tr>
+        <tr><td>Detection component §4</td><td>That something salient happened</td><td>First, before the object is identified</td><td>Not applicable</td><td>Early preparation, cancelled if not rewarding</td></tr>
+      </tbody>
+    </table></div>
+    <p class="caption">All three can sit in one dopamine trace, so a single burst is not automatically a reward prediction error.</p>
+  </div>
+
+  <div class="block">
+    <h3>Adaptive transients vs spontaneous transients vs tonic DA</h3>
+    <div class="wrap"><table>
+      <thead><tr><th>Kind</th><th>Time-locked to events?</th><th>In schizophrenia</th><th>Computational effect</th><th>Links to</th><th>High-dose amphetamine</th></tr></thead>
+      <tbody>
+        <tr><td>Adaptive transients</td><td>Yes, to relevant cues and outcomes</td><td>Blunted</td><td>Less value and Go learning; less gain from cues</td><td>Negative symptoms</td><td>Abolished (moderate dose: enlarged)</td></tr>
+        <tr><td>Spontaneous transients</td><td>No</td><td>Increased</td><td>Positive errors for neutral events</td><td>Positive symptoms</td><td>Increased</td></tr>
+        <tr><td>Tonic DA</td><td>No, a baseline level</td><td>Possibly raised, but fits the data poorly</td><td>Go gain ↑, NoGo gain ↓ for all choices</td><td>Would predict more effort and vigour, which patients do not show</td><td>Small, short-lived rise</td></tr>
+      </tbody>
+    </table></div>
+    <p class="caption">The same drug can push the first two in opposite directions, which is why one dose can relieve negative symptoms while another worsens psychosis.</p>
+  </div>
+
+  <div class="block">
+    <h3>Blocking D2: the site decides the effect</h3>
+    <div class="wrap"><table>
+      <thead><tr><th>D2 site</th><th>Normal role</th><th>Consequence of blockade</th></tr></thead>
+      <tbody>
+        <tr><td>Postsynaptic, NoGo MSNs §3, §10</td><td>DA says “don't stop” to the indirect pathway</td><td>NoGo activity and plasticity rise → less gating of psychotic content; inaction, drug-induced parkinsonism</td></tr>
+        <tr><td>Presynaptic autoreceptors §1</td><td>Brake on DA release (gatekeeper)</td><td>Brake released → more phasic DA (low-dose amisulpride) → may ease negative symptoms</td></tr>
+        <tr><td>Nigrostriatal, chronic §2</td><td>Movement via the CSTC loop</td><td>Tardive dyskinesia</td></tr>
+        <tr><td>Tuberoinfundibular §2</td><td>Tonic inhibition of prolactin</td><td>Prolactin rises</td></tr>
+      </tbody>
+    </table></div>
+    <p class="caption">The same receptor brakes release at one end of the neuron and opposes the stop pathway at the other, so where a drug acts matters more than which receptor it binds.</p>
+  </div>
+
+  <div class="block">
+    <h3>Anhedonia in depression vs negative symptoms in schizophrenia</h3>
+    <div class="wrap"><table>
+      <thead><tr><th>Dimension</th><th>Depression §9</th><th>Schizophrenia §10</th></tr></thead>
+      <tbody>
+        <tr><td>Learning from reward</td><td>Reward fails to shift response bias</td><td>Impaired Go learning</td></tr>
+        <tr><td>Learning from punishment</td><td>Maladaptive: misleading negative feedback over-weighted, catastrophic response to failure</td><td>NoGo learning preserved</td></tr>
+        <tr><td>Prediction-error signal</td><td>Blunted, scaling with severity</td><td>Blunted for positive and aversive PEs</td></tr>
+        <tr><td>Hedonic report</td><td>Less happiness when anticipating reward; remitted patients rate rewards normally</td><td>Hedonic responses preserved</td></tr>
+        <tr><td>Response to amphetamine</td><td>Felt more rewarding</td><td>Can ease negative and worsen positive symptoms</td></tr>
+        <tr><td>Medication confound</td><td>SSRIs blunt PE responses</td><td>Antipsychotics produce the same deficits</td></tr>
+      </tbody>
+    </table></div>
+    <p class="caption">Both share a blunted reward signal; depression adds a distorted response to punishment, while schizophrenia leaves punishment learning intact.</p>
+  </div>
+
+  <div class="block">
+    <h3>Pleasure or pursuit: what the sources attribute to dopamine</h3>
+    <div class="wrap"><table>
+      <thead><tr><th>Source</th><th>Claim about dopamine</th><th>Basis</th></tr></thead>
+      <tbody>
+        <tr><td>Stahl Ch. 4</td><td>Mesolimbic pathway mediates pleasure and reward; possible final common pathway</td><td>Drug highs, anhedonia when DA is low</td></tr>
+        <tr><td>Eshel 2010</td><td>Nucleus accumbens putatively processes the hedonic response</td><td>Blunted ventral striatum responses to reward feedback</td></tr>
+        <tr><td>Schultz 2016</td><td>DA drives learning and approach towards ever more reward</td><td>Self-stimulation, RPE responses</td></tr>
+        <tr><td>Hamid 2016</td><td>DA signals the value of work; it drops during consumption</td><td>Voltammetry across the trial, optogenetics</td></tr>
+        <tr><td>Maia 2016</td><td>DA is not involved in hedonics</td><td>Preserved hedonic responses in schizophrenia</td></tr>
+      </tbody>
+    </table></div>
+    <p class="caption">The clinical sources speak of pleasure; the physiological and computational sources place dopamine in pursuing and learning about reward, not in consuming it.</p>
+  </div>
+</section>
+
+<!-- 4. FUNCTIONAL DIAGRAMS -->
+<section id="diagrams">
+  <h2><span class="num">4</span>Functional diagrams</h2>
+
+  <div class="block">
+    <h3>Why a small setback outweighs a big win</h3>
+    <p class="problem"><b>Problem solved:</b> keep predictions accurate and avoid what fails, at the price that wins are absorbed and misses are not.</p>
+    <figure>
+      <div class="wrap">
+      <svg viewBox="0 0 980 345" role="img" aria-label="Outcome and prediction meet at dopamine neurons; every error updates the prediction so wins raise the bar; the error is scaled to the expected range; dips lower the value baseline and teach NoGo.">
+        <defs>
+          <marker id="b1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0,0 L10,5 L0,10 z"/></marker>
+          <marker id="b1n" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah neg" d="M0,0 L10,5 L0,10 z"/></marker>
+          <marker id="b1p" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah pos" d="M0,0 L10,5 L0,10 z"/></marker>
+        </defs>
+        <line class="edge" x1="210" y1="61" x2="298" y2="123" marker-end="url(#b1)"/>
+        <text class="el" x="262" y="84">actual</text>
+        <line class="edge" x1="210" y1="251" x2="298" y2="189" marker-end="url(#b1)"/>
+        <text class="el" x="262" y="236">expected</text>
+        <line class="edge" x1="460" y1="156" x2="516" y2="156" marker-end="url(#b1)"/>
+        <text class="el" x="488" y="147" text-anchor="middle">raw error</text>
+        <line class="edge neg" x1="710" y1="140" x2="768" y2="74" marker-end="url(#b1n)"/>
+        <text class="el neg" x="746" y="100" text-anchor="end">dip lowers</text>
+        <line class="edge neg" x1="710" y1="172" x2="768" y2="238" marker-end="url(#b1n)"/>
+        <text class="el neg" x="746" y="222" text-anchor="end">dip teaches</text>
+        <line class="edge" x1="365" y1="187" x2="365" y2="261" marker-end="url(#b1)"/>
+        <text class="el" x="373" y="228">every error</text>
+        <line class="edge pos" x1="270" y1="296" x2="214" y2="272" marker-end="url(#b1p)"/>
+        <text class="el pos" x="140" y="310" text-anchor="middle">wins raise the bar</text>
+
+        <rect class="box" x="20" y="30" width="190" height="62" rx="6"/>
+        <text class="nt" x="115" y="56">Outcome</text><text class="ns" x="115" y="75">what actually happened</text>
+        <rect class="box" x="20" y="220" width="190" height="62" rx="6"/>
+        <text class="nt" x="115" y="246">Prediction</text><text class="ns" x="115" y="265">the bar set by past outcomes</text>
+        <rect class="box hub" x="270" y="125" width="190" height="62" rx="6"/>
+        <text class="nt" x="365" y="151">DA neurons (+ LHb)</text><text class="ns" x="365" y="170">report outcome − prediction</text>
+        <rect class="box" x="520" y="125" width="190" height="62" rx="6"/>
+        <text class="nt" x="615" y="151">Adaptive coding</text><text class="ns" x="615" y="170">scale error to expected range</text>
+        <rect class="box" x="270" y="263" width="190" height="62" rx="6"/>
+        <text class="nt" x="365" y="289">Prediction update</text><text class="ns" x="365" y="308">wins become the norm</text>
+        <rect class="box neg" x="770" y="30" width="190" height="62" rx="6"/>
+        <text class="nt" x="865" y="56">Value baseline</text><text class="ns" x="865" y="75">drive to work; stays low</text>
+        <rect class="box neg" x="770" y="220" width="190" height="62" rx="6"/>
+        <text class="nt" x="865" y="246">NoGo learning</text><text class="ns" x="865" y="265">marks the action to avoid</text>
+      </svg>
+      </div>
+      <figcaption>The story: a win is signalled once and then built into the prediction, while a shortfall below that raised, narrowly scaled prediction produces a full-sized dip whose effects outlast it in both motivation and future choice.</figcaption>
+    </figure>
+    <p class="analogy"><b>Analogy:</b> a high-jump bar raised after every clearance, so each success makes the next small miss more likely to count. It breaks down because the bar also drops after misses (the value baseline falls), and adaptive coding changes how sensitive the judge is, not only where the bar sits.</p>
+  </div>
+
+  <div class="block">
+    <h3>The depression cycle: when reinforcement stops steering behaviour</h3>
+    <p class="problem"><b>Problem the system normally solves:</b> use wins and losses to adjust behaviour. In depression each half of that loop fails in a different way, and the failures feed each other.</p>
+    <figure>
+      <div class="wrap">
+      <svg viewBox="0 -24 990 430" role="img" aria-label="Wins barely teach through blunted striatal prediction errors; losses trigger a magnified alarm that prefrontal control does not turn into a plan; behaviour is not adapted, producing fewer rewards and more punishments that restart the cycle.">
+        <defs>
+          <marker id="c1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0,0 L10,5 L0,10 z"/></marker>
+          <marker id="c1n" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah neg" d="M0,0 L10,5 L0,10 z"/></marker>
+          <marker id="c1p" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah pos" d="M0,0 L10,5 L0,10 z"/></marker>
+        </defs>
+        <line class="edge pos" x1="190" y1="91" x2="286" y2="91" marker-end="url(#c1p)"/>
+        <text class="el pos" x="239" y="83" text-anchor="middle">a win</text>
+        <line class="edge" x1="460" y1="91" x2="556" y2="91" marker-end="url(#c1)"/>
+        <text class="el" x="509" y="83" text-anchor="middle">weak teaching</text>
+        <line class="edge neg" x1="190" y1="301" x2="286" y2="301" marker-end="url(#c1n)"/>
+        <text class="el neg" x="239" y="293" text-anchor="middle">a loss</text>
+        <line class="edge" x1="460" y1="301" x2="556" y2="301" marker-end="url(#c1)"/>
+        <text class="el" x="509" y="293" text-anchor="middle">not coupled</text>
+        <line class="edge" x1="700" y1="270" x2="700" y2="126" marker-end="url(#c1)"/>
+        <text class="el" x="708" y="200">no plan</text>
+        <line class="edge" x1="730" y1="96" x2="826" y2="157" marker-end="url(#c1)"/>
+        <text class="el" x="790" y="112">poor choices</text>
+        <path class="edge pos" d="M940,158 C940,-22 105,-22 105,57" marker-end="url(#c1p)"/>
+        <text class="el pos" x="495" y="-6" text-anchor="middle">fewer rewards</text>
+        <path class="edge neg" d="M940,222 C940,392 105,392 105,335" marker-end="url(#c1n)"/>
+        <text class="el neg" x="495" y="396" text-anchor="middle">more punishments</text>
+
+        <rect class="box" x="20" y="60" width="170" height="62" rx="6"/>
+        <text class="nt" x="105" y="86">Reward feedback</text><text class="ns" x="105" y="105">a chance to learn</text>
+        <rect class="box hub" x="290" y="60" width="170" height="62" rx="6"/>
+        <text class="nt" x="375" y="86">VS / caudate PE</text><text class="ns" x="375" y="105">blunted: wins barely teach</text>
+        <text class="tag" x="375" y="140">→ anhedonia</text>
+        <rect class="box" x="560" y="60" width="170" height="62" rx="6"/>
+        <text class="nt" x="645" y="86">Behaviour</text><text class="ns" x="645" y="105">not adapted</text>
+        <rect class="box" x="800" y="160" width="170" height="62" rx="6"/>
+        <text class="nt" x="885" y="186">Outcomes</text><text class="ns" x="885" y="205">the environment answers</text>
+        <rect class="box" x="20" y="270" width="170" height="62" rx="6"/>
+        <text class="nt" x="105" y="296">Negative feedback</text><text class="ns" x="105" y="315">accurate or misleading</text>
+        <rect class="box neg" x="290" y="270" width="170" height="62" rx="6"/>
+        <text class="nt" x="375" y="296">Amygdala / ACC</text><text class="ns" x="375" y="315">alarm: failure magnified</text>
+        <text class="tag" x="375" y="262">→ worthlessness</text>
+        <rect class="box neg" x="560" y="270" width="170" height="62" rx="6"/>
+        <text class="nt" x="645" y="296">Prefrontal control</text><text class="ns" x="645" y="315">weak: alarm not used</text>
+        <text class="tag" x="615" y="262">→ indecisiveness</text>
+      </svg>
+      </div>
+      <figcaption>The story: wins fail to teach and losses alarm without guiding, so behaviour stops tracking reinforcement, and the resulting run of fewer rewards and more punishments feeds both broken halves again.</figcaption>
+    </figure>
+  </div>
+
+  <div class="block">
+    <h3>Source figures that already show it</h3>
+    <div class="wrap"><table class="figref">
+      <thead><tr><th>Figure</th><th>Shows</th><th>Notes</th><th>Role labels it lacks</th></tr></thead>
+      <tbody>
+        <tr><td>Stahl Fig 4-13B–F</td><td>Direct and indirect pathways, D1 go / D2 stop</td><td>§3</td><td>D1 MSN = store of reasons for (G) · D2 MSN = store of reasons against (N) · GPe = sign flipper for NoGo · GPi/SNr = comparator, sums and flips · thalamus = final flip, net value to cortex · SNc DA = teacher after outcomes, gain knob during choice. Maia Fig 2B shows the same circuit as arithmetic.</td></tr>
+        <tr><td>Stahl Fig 4-9</td><td>Mesocortical vs mesostriatal release control</td><td>§2</td><td>PFC cloud = broadcast reaching low-sensitivity D1 widely (volume transmission) · striatal DAT + terminal autoreceptors = keep the signal local · D3 vs D2 autoreceptor = fine vs coarse brake</td></tr>
+        <tr><td>Stahl Fig 4-5 to 4-8</td><td>D2/D3 autoreceptors on terminal and cell body</td><td>§1</td><td>Gatekeeper = negative feedback · terminal = local brake · somatodendritic = whole-neuron brake</td></tr>
+        <tr><td>Stahl Fig 4-10</td><td>The five DA pathways</td><td>§2</td><td>None needed</td></tr>
+        <tr><td>Schultz 2016 Fig 1, 2, 3A–B</td><td>Learning loop; three RPE cases; transfer to cues; TD fit</td><td>§4</td><td>None needed</td></tr>
+        <tr><td>Schultz 2016 Fig 4</td><td>Detection then value component</td><td>§4</td><td>None needed</td></tr>
+        <tr><td>Scholarpedia Fig 3</td><td>Blocking and conditioned inhibition</td><td>§4</td><td>None needed</td></tr>
+        <tr><td>Scholarpedia Fig 5</td><td>Adaptive coding to three reward ranges</td><td>§4, §11</td><td>Identical bursts = error scaled to the range, which is why a small shortfall in a narrow range gives a full-sized dip</td></tr>
+        <tr><td>Scholarpedia Fig 6</td><td>Delayed reward: dip then burst</td><td>§4</td><td>Dip at the habitual time = the timing is part of the prediction</td></tr>
+        <tr><td>Scholarpedia Fig 11</td><td>OFC preference shifts with available rewards</td><td>§5</td><td>Cereal or raisin = the reference against which apple is valued</td></tr>
+        <tr><td>Scholarpedia Fig 16</td><td>Reward modulating action-related activity</td><td>§5</td><td>None needed</td></tr>
+        <tr><td>Hamid 2016 Fig 4</td><td>Value function vs RPE in a trial</td><td>§7</td><td>None needed</td></tr>
+        <tr><td>Hamid 2016 Fig 5</td><td>Baseline shift across consecutive rewards</td><td>§7</td><td>Rising baseline = updated value · stable peak = fixed value of a certain reward</td></tr>
+        <tr><td>Hamid 2016 Fig 6</td><td>Optogenetic DA at side entry vs light-on</td><td>§6</td><td>Side entry = learning read-out · light-on = performance read-out</td></tr>
+        <tr><td>Maia 2016 Fig 1</td><td>Amphetamine dose vs adaptive and spontaneous transients</td><td>§10</td><td>Panel C moderate dose = adaptive ↑ (relief of negative symptoms) · panel C high dose = adaptive lost · panel D = spontaneous ↑ (psychotogenic)</td></tr>
+        <tr><td>Maia 2016 Fig 2A, 3A–D</td><td>DA effects on plasticity and gain of Go/NoGo MSNs</td><td>§6</td><td>None needed</td></tr>
+        <tr><td>Maia 2016 Fig 4, 5</td><td>Symptom chains from spontaneous and blunted transients</td><td>§10</td><td>None needed</td></tr>
+      </tbody>
+    </table></div>
+    <p class="caption">Most mechanisms are already drawn in the sources; what they mainly lack are the roles of the basal ganglia relays and the meaning of the adaptive-coding and baseline-shift panels.</p>
+  </div>
+</section>
+
+<!-- 5. WHY QUESTIONS -->
+<section id="why">
+  <h2><span class="num">5</span>Why questions</h2>
+  <div class="block">
+    <ol class="why">
+      <li>Why can a moderate dose of amphetamine ease negative symptoms while a high dose risks worsening them and triggering psychosis, although both raise dopamine?</li>
+      <li>Why does a fully predicted reward evoke no burst in dopamine neurons, yet in Hamid's rats the [DA] peak at the reward cue stays at the same level across consecutive rewards?</li>
+      <li>Why does the blunting of both prediction-error and value signals in schizophrenia point to a primary prediction-error deficit rather than a value deficit?</li>
+      <li>Why do antipsychotics improve positive symptoms both quickly and progressively, and why can the same action make apathy worse?</li>
+      <li>Why could the same small loss produce a larger dopamine dip in someone whose outcomes are usually consistent than in someone used to large swings, and why would its effect on motivation outlast the dip?</li>
+    </ol>
+  </div>
+</section>
+
+</main>
+</body>
+</html>
